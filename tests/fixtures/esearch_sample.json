@@ -1,0 +1,27 @@
+{
+  "header": {
+    "type": "esearch",
+    "version": "0.3"
+  },
+  "esearchresult": {
+    "count": "12345",
+    "retmax": "3",
+    "retstart": "0",
+    "idlist": [
+      "38522001",
+      "38521990",
+      "38521950"
+    ],
+    "translationset": [],
+    "translationstack": [
+      {
+        "term": "GLP-1-based therapies[All Fields]",
+        "field": "All Fields",
+        "count": "12345",
+        "explode": "Y",
+        "op": "AND"
+      }
+    ],
+    "querytranslation": "GLP-1-based therapies[All Fields]"
+  }
+}

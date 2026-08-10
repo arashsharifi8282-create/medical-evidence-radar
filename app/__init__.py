@@ -1,0 +1,1 @@
+"""Medical Evidence Radar application package."""

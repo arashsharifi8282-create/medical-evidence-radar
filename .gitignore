@@ -1,0 +1,11 @@
+# Generated output folders (keep parent dirs in the project)
+data/raw/pubmed/
+reports/pubmed/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/

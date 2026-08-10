@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2024//EN" "https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_240101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">38522001</PMID>
+      <DateCompleted>
+        <Year>2024</Year>
+        <Month>06</Month>
+        <Day>10</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2024</Year>
+        <Month>06</Month>
+        <Day>10</Day>
+      </DateRevised>
+      <Article PubModel="Print-Electronic">
+        <Journal>
+          <ISSN IssnType="Print">0149-5992</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>47</Volume>
+            <Issue>6</Issue>
+            <PubDate>
+              <Year>2024</Year>
+              <Month>Jun</Month>
+            </PubDate>
+          </JournalIssue>
+          <Title>Diabetes care</Title>
+          <ISOAbbreviation>Diabetes Care</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Cardiovascular outcomes with GLP-1 receptor agonists in type 2 diabetes: a systematic review.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>1010-1018</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText Label="BACKGROUND" NlmCategory="BACKGROUND">GLP-1 receptor agonists reduce major adverse cardiovascular events in patients with type 2 diabetes.</AbstractText>
+          <AbstractText Label="METHODS" NlmCategory="METHODS">We performed a systematic review of randomized controlled trials.</AbstractText>
+          <AbstractText Label="RESULTS" NlmCategory="RESULTS">Across 12 trials, the pooled hazard ratio was 0.86.</AbstractText>
+          <AbstractText Label="CONCLUSIONS" NlmCategory="CONCLUSIONS">GLP-1 receptor agonists confer significant cardiovascular benefit.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Smith</LastName>
+            <ForeName>John A</ForeName>
+            <Initials>JA</Initials>
+            <AffiliationInfo>
+              <Affiliation>Department of Medicine, University of California, San Francisco.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Chen</LastName>
+            <ForeName>Mei-Ling</ForeName>
+            <Initials>ML</Initials>
+            <AffiliationInfo>
+              <Affiliation>Division of Endocrinology, Johns Hopkins University.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Garcia</LastName>
+            <ForeName>Roberto</ForeName>
+            <Initials>R</Initials>
+            <AffiliationInfo>
+              <Affiliation>Cardiology Department, Cleveland Clinic.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D016449">Systematic Review</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2024</Year>
+          <Month>05</Month>
+          <Day>28</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>Diabetes Care</MedlineTA>
+        <NlmUniqueID>7805975</NlmUniqueID>
+        <ISSNLinking>0149-5992</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D000093742">Glucagon-Like Peptide-1 Receptor Agonists</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D003924" MajorTopicYN="N">Diabetes Mellitus, Type 2</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000093742" MajorTopicYN="Y">Glucagon-Like Peptide-1 Receptor Agonists</DescriptorName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">38522001</ArticleId>
+        <ArticleId IdType="doi">10.2337/dc24-0123</ArticleId>
+        <ArticleId IdType="pii">S0149-5992(24)00123-4</ArticleId>
+      </ArticleIdList>
+      <ReferenceList>
+        <Reference>
+          <Citation>N Engl J Med. 2016 Nov 10;375(19):1834-1844</Citation>
+        </Reference>
+      </ReferenceList>
+    </PubmedData>
+  </PubmedArticle>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">38521990</PMID>
+      <DateCompleted>
+        <Year>2024</Year>
+        <Month>06</Month>
+        <Day>05</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2024</Year>
+        <Month>06</Month>
+        <Day>05</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Print">0028-4793</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>390</Volume>
+            <Issue>21</Issue>
+            <PubDate>
+              <Year>2024</Year>
+              <Month>May</Month>
+              <Day>30</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>The New England journal of medicine</Title>
+          <ISOAbbreviation>N Engl J Med</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Semaglutide in patients with obesity and heart failure with preserved ejection fraction.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>1989-2001</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText Label="BACKGROUND" NlmCategory="BACKGROUND">Semaglutide improved symptoms and physical function in patients with obesity and heart failure with preserved ejection fraction.</AbstractText>
+          <AbstractText Label="METHODS" NlmCategory="METHODS">In this double-blind trial, we randomly assigned 529 patients to receive semaglutide or placebo.</AbstractText>
+          <AbstractText Label="RESULTS" NlmCategory="RESULTS">The primary end point was the change in the Kansas City Cardiomyopathy Questionnaire clinical summary score.</AbstractText>
+          <AbstractText Label="CONCLUSIONS" NlmCategory="CONCLUSIONS">Semaglutide led to a larger reduction in symptoms and physical limitations.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Kosiborod</LastName>
+            <ForeName>Mikhail N</ForeName>
+            <Initials>MN</Initials>
+            <AffiliationInfo>
+              <Affiliation>Saint Luke's Mid America Heart Institute, Kansas City, MO.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Abildstrøm</LastName>
+            <ForeName>Steen Z</ForeName>
+            <Initials>SZ</Initials>
+            <AffiliationInfo>
+              <Affiliation>Bispebjerg Hospital, Copenhagen, Denmark.</Affiliation>
+            </AffiliationInfo>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D016449">Randomized Controlled Trial</PublicationType>
+        </PublicationTypeList>
+        <ArticleDate DateType="Electronic">
+          <Year>2024</Year>
+          <Month>05</Month>
+          <Day>14</Day>
+        </ArticleDate>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>N Engl J Med</MedlineTA>
+        <NlmUniqueID>0255562</NlmUniqueID>
+        <ISSNLinking>0028-4793</ISSNLinking>
+      </MedlineJournalInfo>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D006333" MajorTopicYN="N">Heart Failure</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D009765" MajorTopicYN="N">Obesity</DescriptorName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">38521990</ArticleId>
+        <ArticleId IdType="doi">10.1056/NEJMoa2403919</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">38521950</PMID>
+      <DateCompleted>
+        <Year>2024</Year>
+        <Month>05</Month>
+        <Day>20</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2024</Year>
+        <Month>05</Month>
+        <Day>20</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Print">0025-7974</ISSN>
+          <JournalIssue CitedMedium="Print">
+            <Volume>103</Volume>
+            <Issue>20</Issue>
+            <PubDate>
+              <Year>2024</Year>
+              <Month>May</Month>
+            </PubDate>
+          </JournalIssue>
+          <Title>Medicine</Title>
+          <ISOAbbreviation>Medicine (Baltimore)</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Efficacy of liraglutide in weight management: a retrospective cohort study.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>e38123</MedlinePgn>
+        </Pagination>
+        <Abstract>
+          <AbstractText>Liraglutide was associated with significant weight loss at 12 months in this retrospective cohort.</AbstractText>
+        </Abstract>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <CollectiveName>Liraglutide Study Group</CollectiveName>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+          <PublicationType UI="D016449">Observational Study</PublicationType>
+        </PublicationTypeList>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>Medicine (Baltimore)</MedlineTA>
+        <NlmUniqueID>2985248R</NlmUniqueID>
+        <ISSNLinking>0025-7974</ISSNLinking>
+      </MedlineJournalInfo>
+      <CitationSubset>IM</CitationSubset>
+    </MedlineCitation>
+    <PubmedData>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">38521950</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>
