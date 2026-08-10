@@ -1,4 +1,4 @@
-"""End-to-end slice test: ESearch -> EFetch -> normalize, no network."""
+"""End-to-end slice test: ESearch -> EFetch -> normalize -> rank, no network."""
 
 import json
 from datetime import datetime
@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.sources.pubmed.cli import fetch_top_recent, save_results
 from app.sources.pubmed.client import PubMedClient
+from app.services.evidence import rank_articles
 
 FIXTURES = Path(__file__).parent / "fixtures"
 ESEARCH_JSON = json.loads((FIXTURES / "esearch_sample.json").read_text(encoding="utf-8"))
@@ -60,6 +61,8 @@ def test_fetch_top_recent_returns_normalized_articles():
     assert articles[0].publication_date_raw == "2024 Jun"
     assert articles[0].publication_date is not None
     assert articles[0].pubmed_url == "https://pubmed.ncbi.nlm.nih.gov/38522001/"
+    assert articles[0].mesh_headings  # MeSH headings extracted
+    assert articles[0].keywords  # author keywords extracted
 
 
 def test_fetch_top_recent_uses_esearch_then_efetch_only():
@@ -80,32 +83,37 @@ def test_fetch_top_recent_empty_idlist_returns_empty():
     assert fetch_top_recent(query="nothing", retmax=10, client=client) == []
 
 
-def test_save_results_writes_json_markdown_and_html(tmp_path: Path):
+def test_save_results_writes_json_markdown_html_and_profile(tmp_path: Path):
     client = _make_client()
     articles = fetch_top_recent(query="GLP-1-based therapies", retmax=3, client=client)
     fetched_at = datetime(2026, 8, 10, 9, 30, 0)
+    ranked = rank_articles(articles, fetched_at, topic="GLP-1-based therapies")
 
     json_dir = tmp_path / "data" / "raw" / "pubmed"
     md_dir = tmp_path / "reports" / "pubmed"
     html_dir = tmp_path / "reports" / "pubmed"
+    profile_dir = tmp_path / "data" / "topic_profiles"
 
-    json_path, md_path, html_path = save_results(
-        articles,
+    json_path, md_path, html_path, profile_path = save_results(
+        ranked,
         topic="GLP-1-based therapies",
         query="GLP-1-based therapies",
         fetched_at=fetched_at,
         json_dir=json_dir,
         md_dir=md_dir,
         html_dir=html_dir,
+        profile_dir=profile_dir,
     )
 
-    # All three files exist with timestamped names.
+    # All four files exist with timestamped names.
     assert json_path.exists()
     assert md_path.exists()
     assert html_path.exists()
+    assert profile_path.exists()
     assert json_path.name == "pubmed_20260810_093000.json"
     assert md_path.name == "pubmed_20260810_093000.md"
     assert html_path.name == "pubmed_20260810_093000.html"
+    assert profile_path.name == "glp_1_based_therapies.json"
 
     # JSON content.
     data = json.loads(json_path.read_text(encoding="utf-8"))
@@ -114,17 +122,23 @@ def test_save_results_writes_json_markdown_and_html(tmp_path: Path):
     assert data["fetched_at"] == "2026-08-10T09:30:00"
     assert len(data["articles"]) == 3
     assert data["articles"][0]["pmid"] == "38522001"
+    assert "assessment" in data["articles"][0]
+    assert data["articles"][0]["assessment"]["evidence_level"] == "systematic_review"
+    assert "discovered_terms" in data
+    assert "accepted" in data["discovered_terms"]
+    assert "rejected" in data["discovered_terms"]
 
     # Markdown content.
     text = md_path.read_text(encoding="utf-8")
     assert "# PubMed Report: GLP-1-based therapies" in text
     assert "**Fetch timestamp:** 2026-08-10T09:30:00" in text
     assert "Cardiovascular outcomes with GLP-1 receptor agonists" in text
-    assert "**Publication date as listed by PubMed:** 2024 Jun" in text
-    assert "**Publication types:** Journal Article, Systematic Review" in text
-    assert "**DOI:** 10.2337/dc24-0123" in text
-    assert "https://pubmed.ncbi.nlm.nih.gov/38522001/" in text
-    assert "**Abstract:**" in text
+    assert "**Evidence level:**" in text
+    assert "**Evidence score:**" in text
+    assert "**Why included:**" in text
+    assert "**Limitations:**" in text
+    assert "## Discovered terms" in text
+    assert "## Key evidence" in text
 
     # HTML content.
     html_text = html_path.read_text(encoding="utf-8")
@@ -132,15 +146,18 @@ def test_save_results_writes_json_markdown_and_html(tmp_path: Path):
     assert "PubMed Report: GLP-1-based therapies" in html_text
     assert "2026-08-10T09:30:00" in html_text
     assert "Cardiovascular outcomes with GLP-1 receptor agonists" in html_text
-    assert "Publication date:" in html_text
-    assert "2024 Jun" in html_text
-    assert "Publication types:" in html_text
-    assert "Journal Article, Systematic Review" in html_text
-    assert "DOI:" in html_text
-    assert "10.2337/dc24-0123" in html_text
-    assert "https://pubmed.ncbi.nlm.nih.gov/38522001/" in html_text
-    assert "Open in PubMed" in html_text
-    assert "Abstract:" in html_text
+    assert "Evidence level:" in html_text
+    assert "Why included:" in html_text
+    assert "Limitations:" in html_text
+    assert "Discovered terms" in html_text
+    assert "Key evidence" in html_text
+
+    # Topic profile content.
+    profile_data = json.loads(profile_path.read_text(encoding="utf-8"))
+    assert profile_data["topic"] == "GLP-1-based therapies"
+    assert profile_data["query"] == "GLP-1-based therapies"
+    assert "accepted_terms" in profile_data
+    assert "rejected_terms" in profile_data
 
 
 def test_save_results_uses_timestamped_filenames_no_overwrite(tmp_path: Path):
@@ -150,20 +167,26 @@ def test_save_results_uses_timestamped_filenames_no_overwrite(tmp_path: Path):
     json_dir = tmp_path / "data" / "raw" / "pubmed"
     md_dir = tmp_path / "reports" / "pubmed"
     html_dir = tmp_path / "reports" / "pubmed"
+    profile_dir = tmp_path / "data" / "topic_profiles"
 
-    json_path1, md_path1, html_path1 = save_results(
-        articles,
+    ranked1 = rank_articles(articles, datetime(2026, 8, 10, 9, 30, 0), topic="GLP-1-based therapies")
+    ranked2 = rank_articles(articles, datetime(2026, 8, 10, 10, 0, 0), topic="GLP-1-based therapies")
+
+    json_path1, md_path1, html_path1, _ = save_results(
+        ranked1,
         fetched_at=datetime(2026, 8, 10, 9, 30, 0),
         json_dir=json_dir,
         md_dir=md_dir,
         html_dir=html_dir,
+        profile_dir=profile_dir,
     )
-    json_path2, md_path2, html_path2 = save_results(
-        articles,
+    json_path2, md_path2, html_path2, _ = save_results(
+        ranked2,
         fetched_at=datetime(2026, 8, 10, 10, 0, 0),
         json_dir=json_dir,
         md_dir=md_dir,
         html_dir=html_dir,
+        profile_dir=profile_dir,
     )
 
     assert json_path1.name == "pubmed_20260810_093000.json"

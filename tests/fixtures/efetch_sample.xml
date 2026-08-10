@@ -95,7 +95,15 @@
         <MeshHeading>
           <DescriptorName UI="D000093742" MajorTopicYN="Y">Glucagon-Like Peptide-1 Receptor Agonists</DescriptorName>
         </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006801" MajorTopicYN="N">Cardiovascular Diseases</DescriptorName>
+        </MeshHeading>
       </MeshHeadingList>
+      <KeywordList Owner="NLM">
+        <Keyword>GLP-1 receptor agonists</Keyword>
+        <Keyword>type 2 diabetes</Keyword>
+        <Keyword>cardiovascular outcomes</Keyword>
+      </KeywordList>
     </MedlineCitation>
     <PubmedData>
       <ArticleIdList>
@@ -191,7 +199,15 @@
         <MeshHeading>
           <DescriptorName UI="D009765" MajorTopicYN="N">Obesity</DescriptorName>
         </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000093742" MajorTopicYN="Y">Glucagon-Like Peptide-1 Receptor Agonists</DescriptorName>
+        </MeshHeading>
       </MeshHeadingList>
+      <KeywordList Owner="NLM">
+        <Keyword>semaglutide</Keyword>
+        <Keyword>heart failure</Keyword>
+        <Keyword>obesity</Keyword>
+      </KeywordList>
     </MedlineCitation>
     <PubmedData>
       <ArticleIdList>
@@ -252,6 +268,19 @@
         <ISSNLinking>0025-7974</ISSNLinking>
       </MedlineJournalInfo>
       <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D009765" MajorTopicYN="N">Obesity</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D000093742" MajorTopicYN="N">Glucagon-Like Peptide-1 Receptor Agonists</DescriptorName>
+        </MeshHeading>
+      </MeshHeadingList>
+      <KeywordList Owner="NLM">
+        <Keyword>liraglutide</Keyword>
+        <Keyword>weight management</Keyword>
+        <Keyword>obesity</Keyword>
+      </KeywordList>
     </MedlineCitation>
     <PubmedData>
       <ArticleIdList>

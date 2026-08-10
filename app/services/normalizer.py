@@ -35,9 +35,13 @@ def normalize_article(article_elem: ET.Element) -> Article:
     authors = _authors(article_elem)
     journal = _text(article_elem, ".//Journal/Title") or ""
     publication_date_raw, publication_date = _publication_date(article_elem)
+    electronic_publication_date = _electronic_publication_date(article_elem)
+    is_epub_ahead_of_print = electronic_publication_date is not None and publication_date is None
     publication_types = _publication_types(article_elem)
     doi = _doi(article_elem)
     pubmed_url = f"{_PUBMED_BASE_URL}/{pmid}/" if pmid else ""
+    mesh_headings = _mesh_headings(article_elem)
+    keywords = _keywords(article_elem)
 
     return Article(
         pmid=pmid,
@@ -47,9 +51,13 @@ def normalize_article(article_elem: ET.Element) -> Article:
         journal=journal,
         publication_date=publication_date,
         publication_date_raw=publication_date_raw,
+        electronic_publication_date=electronic_publication_date,
+        is_epub_ahead_of_print=is_epub_ahead_of_print,
         publication_types=publication_types,
         doi=doi,
         pubmed_url=pubmed_url,
+        mesh_headings=mesh_headings,
+        keywords=keywords,
     )
 
 
@@ -101,6 +109,24 @@ def _doi(article_elem: ET.Element) -> str:
     return ""
 
 
+def _mesh_headings(article_elem: ET.Element) -> tuple[str, ...]:
+    """Extract MeSH descriptor names from ``<MeshHeadingList>``."""
+    return tuple(
+        dh.text.strip()
+        for dh in article_elem.findall(".//MeshHeadingList/MeshHeading/DescriptorName")
+        if dh.text and dh.text.strip()
+    )
+
+
+def _keywords(article_elem: ET.Element) -> tuple[str, ...]:
+    """Extract author keywords from ``<KeywordList>``."""
+    return tuple(
+        kw.text.strip()
+        for kw in article_elem.findall(".//KeywordList/Keyword")
+        if kw.text and kw.text.strip()
+    )
+
+
 def _publication_date(article_elem: ET.Element) -> tuple[str, date | None]:
     """Extract the raw publication date text and a precise :class:`date`.
 
@@ -144,6 +170,24 @@ def _publication_date(article_elem: ET.Element) -> tuple[str, date | None]:
     return raw, None
 
 
+def _electronic_publication_date(article_elem: ET.Element) -> date | None:
+    """Extract the electronic publication date from ``<ArticleDate DateType="Electronic">``."""
+    for article_date in article_elem.findall(".//ArticleDate"):
+        if article_date.get("DateType") != "Electronic":
+            continue
+        year = _text(article_date, "Year")
+        month = _text(article_date, "Month")
+        day = _text(article_date, "Day")
+        if year and month and day:
+            month_num = _month_number(month)
+            if month_num is not None:
+                try:
+                    return date(int(year), month_num, int(day))
+                except ValueError:
+                    return None
+    return None
+
+
 def _raw_date_text(
     pub_date: ET.Element,
     year: str | None,
@@ -160,4 +204,8 @@ def _raw_date_text(
 
 def _month_number(month: str) -> int | None:
     """Resolve a month name/abbreviation to its number, or ``None`` if unknown."""
-    return _MONTHS.get(month.strip().lower())
+    value = month.strip()
+    if value.isdigit():
+        number = int(value)
+        return number if 1 <= number <= 12 else None
+    return _MONTHS.get(value.lower())

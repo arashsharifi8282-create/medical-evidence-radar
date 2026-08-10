@@ -1,0 +1,1634 @@
+{
+  "topic": "GLP-1 receptor agonists for obesity",
+  "query": "GLP-1 receptor agonists for obesity",
+  "run_at": "2026-08-10T11:54:12.549437",
+  "accepted_terms": [
+    {
+      "term": "obesity",
+      "source": "mesh",
+      "document_frequency": 6,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "41275875",
+        "42012820",
+        "42422116",
+        "42021523",
+        "41838446",
+        "42361988"
+      ],
+      "score": 99.0,
+      "reasons": [
+        "document frequency 6/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "diabetes mellitus, type 2",
+      "source": "mesh",
+      "document_frequency": 6,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875",
+        "41999297",
+        "42474167",
+        "42021523",
+        "41562647",
+        "42361988"
+      ],
+      "score": 84.0,
+      "reasons": [
+        "document frequency 6/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "hypoglycemic agents",
+      "source": "mesh",
+      "document_frequency": 5,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875",
+        "41999297",
+        "42474167",
+        "41562647",
+        "42361988"
+      ],
+      "score": 77.3,
+      "reasons": [
+        "document frequency 5/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "glucagon-like peptides",
+      "source": "mesh",
+      "document_frequency": 5,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "41999297",
+        "41838446",
+        "41562647",
+        "42361988"
+      ],
+      "score": 77.3,
+      "reasons": [
+        "document frequency 5/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "semaglutide",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "41999297",
+        "41838446",
+        "42361988"
+      ],
+      "score": 75.7,
+      "reasons": [
+        "document frequency 4/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "glucagon-like peptide-1 receptor agonists",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41275875",
+        "41999297",
+        "42361988"
+      ],
+      "score": 72.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "anti-obesity agents",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "42012820",
+        "42021523",
+        "41838446"
+      ],
+      "score": 67.3,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "body mass index",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875",
+        "42012820",
+        "42021523"
+      ],
+      "score": 67.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "cost-benefit analysis",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "42021523",
+        "41562647"
+      ],
+      "score": 64.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "tirzepatide",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "42021523"
+      ],
+      "score": 62.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "weight management",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "42021523"
+      ],
+      "score": 60.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "cost-effectiveness analysis",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "42021523"
+      ],
+      "score": 57.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "quality-adjusted life years",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820",
+        "42021523"
+      ],
+      "score": 57.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "overweight",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820"
+      ],
+      "score": 55.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "surmount-5",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820"
+      ],
+      "score": 55.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "united states",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820"
+      ],
+      "score": 53.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "administration, oral",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "double-blind method",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glycated hemoglobin",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "fluorine compounds",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "oxadiazoles",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41275875"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mounjaro",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "wegovy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42012820"
+      ],
+      "score": 50.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glp-1 receptor agonists",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42422116"
+      ],
+      "score": 48.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glucagon-like peptide-1 receptor",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.4,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 45.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.40 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glp-1",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42472074"
+      ],
+      "score": 45.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "immunoglobulin fc fragments",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297",
+        "41562647"
+      ],
+      "score": 45.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "recombinant fusion proteins",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297",
+        "41562647"
+      ],
+      "score": 45.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "stroke",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glucagon-like peptide 1 receptor agonists",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chinese adults",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42422116"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "creatinine",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetic kidney disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glp-1 receptor",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42472074"
+      ],
+      "score": 42.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "liraglutide",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "type 2 diabetes mellitus",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "blood urea nitrogen",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "adolescents",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pharmacotherapy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetes mellitus, type 1",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.25,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 41.2,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.25 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "randomized controlled trials as topic",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647",
+        "42361988"
+      ],
+      "score": 39.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cerebrovascular circulation",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "neuroprotection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41999297"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiometabolic outcomes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42422116"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetic nephropathies",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renoprotection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sglt2 inhibitors",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42474167"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nanoemulsion",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42472074"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "denmark",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "weight loss",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "number needed to treat",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "r-based implementation",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diet",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "adipocytes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42472074"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "patient experiences",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "registries",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "united kingdom",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sleep apnea, obstructive",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "models, economic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "disease progression",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "i10",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "i15",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "patient simulation modelling",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021523"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug targeting",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42472074"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "qualitative research",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "rural population",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "interviews as topic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "weight loss medication, semaglutide",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "general practice/primary health care",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41838446"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular diseases",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "multicenter studies as topic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "clinical trials, phase iii as topic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pharmacoeconomics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "disease management",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "health economics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41562647"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "atherosclerosis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chronic disease",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "evidence-based medicine",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "atherosclerotic cardiovascular disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glp1 ra",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42361988"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    }
+  ]
+}

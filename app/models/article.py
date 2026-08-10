@@ -11,6 +11,10 @@ class Article:
     Fields are deliberately minimal: everything needed to display a search
     result, nothing more. ``source`` marks provenance for future multi-source
     support.
+
+    ``publication_date`` is the journal-issue/print date (may be in the future
+    for a scheduled issue). ``electronic_publication_date`` is when the article
+    was first posted electronically (epub ahead of print).
     """
 
     pmid: str
@@ -20,7 +24,11 @@ class Article:
     journal: str = ""
     publication_date: date | None = None
     publication_date_raw: str = ""
+    electronic_publication_date: date | None = None
+    is_epub_ahead_of_print: bool = False
     publication_types: tuple[str, ...] = ()
     doi: str = ""
     pubmed_url: str = ""
     source: str = "pubmed"
+    mesh_headings: tuple[str, ...] = ()
+    keywords: tuple[str, ...] = ()
