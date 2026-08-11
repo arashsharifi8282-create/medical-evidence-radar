@@ -17,18 +17,23 @@ from pathlib import Path
 from app.models.article import Article
 from app.models.assessment import RankedArticle
 from app.models.topic_profile import TopicProfile
+from app.models.concept import ConceptNormalizationResult
+from app.services.concept_normalization import normalize_medical_concepts
 from app.services.evidence import rank_articles
 from app.services.normalizer import normalize_article, parse_pubmed_articles
 from app.services.persistence import (
     DEFAULT_HTML_DIR,
     DEFAULT_JSON_DIR,
     DEFAULT_MD_DIR,
+    DEFAULT_CONCEPT_DIR,
     build_html_report,
     build_markdown_report,
     build_snapshot,
     save_html_report,
     save_markdown_report,
     save_snapshot,
+    save_concept_file,
+    concept_path_for_topic,
 )
 from app.services.topic_expansion import (
     DEFAULT_PROFILE_DIR,
@@ -39,6 +44,7 @@ from app.services.topic_expansion import (
     save_topic_profile,
 )
 from app.sources.pubmed.client import PubMedClient
+from app.sources.rxnorm.client import RxNormClient
 
 DEFAULT_QUERY = "GLP-1-based therapies"
 DEFAULT_RETMAX = 10
@@ -75,6 +81,8 @@ def save_results(
     md_dir: Path = DEFAULT_MD_DIR,
     html_dir: Path = DEFAULT_HTML_DIR,
     profile_dir: Path = DEFAULT_PROFILE_DIR,
+    concept_dir: Path = DEFAULT_CONCEPT_DIR,
+    concepts: ConceptNormalizationResult | None = None,
 ) -> tuple[Path, Path, Path, Path]:
     """Persist ``ranked`` articles and the topic profile.
 
@@ -84,6 +92,8 @@ def save_results(
 
     if profile is None:
         profile = build_topic_profile(topic, ranked, fetched_at)
+    if concepts is None:
+        concepts = normalize_medical_concepts(ranked, profile, rxnorm_client=None)
 
     snapshot = build_snapshot(
         topic=topic,
@@ -91,27 +101,31 @@ def save_results(
         fetched_at=fetched_at,
         ranked=ranked,
         profile=profile,
+        concepts=concepts,
     )
-    json_path = save_snapshot(snapshot, output_dir=json_dir, fetched_at=fetched_at)
+    json_path = save_snapshot(snapshot, output_dir=json_dir, fetched_at=fetched_at, query=query)
 
     markdown = build_markdown_report(
         topic=topic,
         fetched_at=fetched_at,
         ranked=ranked,
         profile=profile,
+        concepts=concepts,
     )
-    md_path = save_markdown_report(markdown, output_dir=md_dir, fetched_at=fetched_at)
+    md_path = save_markdown_report(markdown, output_dir=md_dir, fetched_at=fetched_at, query=query)
 
     html_report = build_html_report(
         topic=topic,
         fetched_at=fetched_at,
         ranked=ranked,
         profile=profile,
+        concepts=concepts,
     )
-    html_path = save_html_report(html_report, output_dir=html_dir, fetched_at=fetched_at)
+    html_path = save_html_report(html_report, output_dir=html_dir, fetched_at=fetched_at, query=query)
 
     # Persist the topic profile (always write one, even if empty).
     profile_path = save_topic_profile(profile, output_dir=profile_dir)
+    save_concept_file(topic, concepts, output_dir=concept_dir)
 
     return json_path, md_path, html_path, profile_path
 
@@ -179,6 +193,7 @@ def main(argv: list[str] | None = None) -> None:
         new_profile = build_topic_profile(topic, ranked, fetched_at)
         existing_profile = _load_or_new_profile(topic, DEFAULT_PROFILE_DIR)
         merged_profile = merge_topic_profiles(existing_profile, new_profile)
+        concept_result = normalize_medical_concepts(ranked, merged_profile, RxNormClient())
 
         json_path, md_path, html_path, profile_path = save_results(
             ranked,
@@ -186,11 +201,15 @@ def main(argv: list[str] | None = None) -> None:
             query=topic,
             fetched_at=fetched_at,
             profile=merged_profile,
+            concepts=concept_result,
         )
         print(f"\nSaved JSON snapshot: {json_path}")
         print(f"Saved Markdown report: {md_path}")
         print(f"Saved HTML report: {html_path}")
         print(f"Saved topic profile: {profile_path}")
+        print(f"Saved concept file: {concept_path_for_topic(topic)}")
+        for warning in concept_result.warnings:
+            print(f"Warning: {warning}")
 
 
 if __name__ == "__main__":

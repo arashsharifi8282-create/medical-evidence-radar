@@ -1,0 +1,1045 @@
+{
+  "topic": "losartan efficacy and safety in hypertension",
+  "query": "losartan efficacy and safety in hypertension",
+  "run_at": "2026-08-11T10:37:42.553527",
+  "accepted_terms": [
+    {
+      "term": "hypertension",
+      "source": "mesh",
+      "document_frequency": 7,
+      "evidence_max": "systematic_review",
+      "recency_days": 90,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "41351601",
+        "41036884",
+        "41082745",
+        "41670573",
+        "40858452",
+        "42199202",
+        "40274695"
+      ],
+      "score": 100.0,
+      "reasons": [
+        "document frequency 7/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "losartan",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "41670573",
+        "40858452",
+        "40274695",
+        "39369055"
+      ],
+      "score": 81.9,
+      "reasons": [
+        "document frequency 4/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "antihypertensive agents",
+      "source": "mesh",
+      "document_frequency": 5,
+      "evidence_max": "systematic_review",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601",
+        "41036884",
+        "41082745",
+        "41670573",
+        "40858452"
+      ],
+      "score": 78.6,
+      "reasons": [
+        "document frequency 5/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "blood pressure",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "systematic_review",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601",
+        "41082745",
+        "41670573",
+        "40858452"
+      ],
+      "score": 72.9,
+      "reasons": [
+        "document frequency 4/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "drug combinations",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "systematic_review",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745",
+        "41670573",
+        "40858452"
+      ],
+      "score": 64.1,
+      "reasons": [
+        "document frequency 3/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "chlorthalidone",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573",
+        "40274695"
+      ],
+      "score": 60.4,
+      "reasons": [
+        "document frequency 2/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "amlodipine",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573",
+        "40858452"
+      ],
+      "score": 58.4,
+      "reasons": [
+        "document frequency 2/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "republic of korea",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573",
+        "40858452"
+      ],
+      "score": 55.4,
+      "reasons": [
+        "document frequency 2/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "combination therapy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 54.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hypertension management",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 52.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "randomized controlled trials as topic",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "systematic_review",
+      "recency_days": 252,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601",
+        "41036884"
+      ],
+      "score": 50.4,
+      "reasons": [
+        "document frequency 2/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 252d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antihypertensives",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 252,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 252d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "double-blind method",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug therapy, combination",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "dose-response relationship, drug",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "low dose",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "single pill",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "randomized_trial",
+      "recency_days": 90,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41670573"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence randomized_trial (30%)",
+        "recency 90d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "treatment",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 252,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601"
+      ],
+      "score": 47.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 252d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "medication adherence",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 47.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular diseases",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 47.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "proteinuria",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 47.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renoprotection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 47.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "atenolol",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 374,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41036884"
+      ],
+      "score": 45.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 374d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "brazil",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 374,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41036884"
+      ],
+      "score": 45.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 374d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "general practice",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 252,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601"
+      ],
+      "score": 44.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 252d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "high dose",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 252,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41351601"
+      ],
+      "score": 44.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 252d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renal insufficiency, chronic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 350,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41082745"
+      ],
+      "score": 44.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 350d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "dyslipidemia",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 40.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "ezetimibe",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "rosuvastatin",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "dyslipidemias",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "prospective studies",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "rosuvastatin calcium",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cholesterol, ldl",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 313,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40858452"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence observational (30%)",
+        "recency 313d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "yiqi-shengjin granules",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 91,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42199202"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 91d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "abnormal glucose metabolism",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 91,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42199202"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 91d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "high blood pressure (htn)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 91,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42199202"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 91d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "traditional chinese medicine (tcm)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 91,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42199202"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 91d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hydrochlorothiazide",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 435,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40274695"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 435d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug safety",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "immunotherapy",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 435,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40274695"
+      ],
+      "score": 22.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 435d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "retrospective analysis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 22.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "tumor microenvironment",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 22.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antihypertensive therapy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug-specific variations",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "personalized medicine",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pharmacovigilance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 496,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40342468"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 496d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "ovarian neoplasms",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug resistance, neoplasm",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "insulin-like growth factor i",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cell line, tumor",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 647,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "39369055"
+      ],
+      "score": 19.7,
+      "reasons": [
+        "document frequency 1/7 (40%)",
+        "evidence other (30%)",
+        "recency 647d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    }
+  ]
+}

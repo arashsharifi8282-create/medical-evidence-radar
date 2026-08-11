@@ -9,17 +9,21 @@ from __future__ import annotations
 
 import html
 import json
+import re
+import unicodedata
 from datetime import datetime
 from pathlib import Path
 
 from app.models.article import Article
 from app.models.assessment import RankedArticle
+from app.models.concept import ArticleConceptLink, ConceptNormalizationResult, NormalizedConcept
 from app.services.evidence import assess_article
 from app.models.topic_profile import CandidateTerm, TopicProfile
 
 DEFAULT_JSON_DIR = Path("data/raw/pubmed")
 DEFAULT_MD_DIR = Path("reports/pubmed")
 DEFAULT_HTML_DIR = Path("reports/pubmed")
+DEFAULT_CONCEPT_DIR = Path("data/concepts")
 
 
 def _article_to_dict(article: Article) -> dict:
@@ -45,6 +49,15 @@ def _article_to_dict(article: Article) -> dict:
         "pubmed_url": article.pubmed_url,
         "source": article.source,
         "mesh_headings": list(article.mesh_headings),
+        "mesh_descriptors": [
+            {
+                "text": descriptor.text,
+                "ui": descriptor.ui,
+                "major_topic": descriptor.major_topic,
+                "supporting_pmid": descriptor.supporting_pmid,
+            }
+            for descriptor in article.mesh_descriptors
+        ],
         "keywords": list(article.keywords),
     }
 
@@ -89,12 +102,39 @@ def _ranked_to_dict(r: RankedArticle) -> dict:
     return d
 
 
+def _concept_to_dict(concept: NormalizedConcept) -> dict:
+    return {
+        "concept_id": concept.concept_id,
+        "vocabulary": concept.vocabulary,
+        "preferred_label": concept.preferred_label,
+        "original_term": concept.original_term,
+        "concept_type": concept.concept_type,
+        "match_method": concept.match_method,
+        "confidence": concept.confidence,
+        "supporting_pmids": list(concept.supporting_pmids),
+        "source_fields": list(concept.source_fields),
+    }
+
+
+def _concept_link_to_dict(link: ArticleConceptLink) -> dict:
+    return {
+        "relationship": link.relationship,
+        "pmid": link.pmid,
+        "concept_id": link.concept_id,
+        "source_field": link.source_field,
+        "match_method": link.match_method,
+        "confidence": link.confidence,
+        "evidence_level": link.evidence_level,
+    }
+
+
 def build_snapshot(
     topic: str,
     query: str,
     fetched_at: datetime,
     ranked: list[RankedArticle] | None = None,
     profile: TopicProfile | None = None,
+    concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
 ) -> dict:
     """Build the JSON snapshot payload."""
@@ -110,7 +150,42 @@ def build_snapshot(
         "accepted": [_candidate_to_dict(c) for c in profile.accepted_terms] if profile else [],
         "rejected": [_candidate_to_dict(c) for c in profile.rejected_terms] if profile else [],
     }
+    snapshot["normalized_concepts"] = [
+        _concept_to_dict(concept) for concept in concepts.normalized_concepts
+    ] if concepts else []
+    snapshot["article_concept_links"] = [
+        _concept_link_to_dict(link) for link in concepts.article_concept_links
+    ] if concepts else []
+    snapshot["concept_normalization_warnings"] = list(concepts.warnings) if concepts else []
     return snapshot
+
+
+def _normalized_concepts_markdown(concepts: ConceptNormalizationResult | None) -> str:
+    """Build an explainable concept section without clinical interpretation."""
+    if concepts is None:
+        return ""
+    lines = ["## Normalized medical concepts", ""]
+    for warning in concepts.warnings:
+        lines.append(f"> **Warning:** {warning}")
+        lines.append("")
+    if not concepts.normalized_concepts:
+        lines.extend(["No medical concepts were normalized.", ""])
+        return "\n".join(lines)
+    for concept in concepts.normalized_concepts:
+        pmids = ", ".join(concept.supporting_pmids) or "none"
+        lines.extend(
+            [
+                f"- **{concept.preferred_label}**",
+                f"  - Concept ID: `{concept.concept_id}`",
+                f"  - Vocabulary: {concept.vocabulary}",
+                f"  - Original term: {concept.original_term}",
+                f"  - Confidence: {concept.confidence:.2f}",
+                f"  - Supporting PMIDs: {pmids}",
+                f"  - Match method: {concept.match_method}",
+                "",
+            ]
+        )
+    return "\n".join(lines)
 
 
 def _discovered_terms_markdown(profile: TopicProfile | None) -> str:
@@ -149,6 +224,7 @@ def build_markdown_report(
     fetched_at: datetime,
     ranked: list[RankedArticle] | None = None,
     profile: TopicProfile | None = None,
+    concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
 ) -> str:
     """Build a human-readable Markdown report."""
@@ -169,6 +245,12 @@ def build_markdown_report(
     discovered = _discovered_terms_markdown(profile)
     if discovered:
         lines.append(discovered)
+        lines.append("---")
+        lines.append("")
+
+    normalized = _normalized_concepts_markdown(concepts)
+    if normalized:
+        lines.append(normalized)
         lines.append("---")
         lines.append("")
 
@@ -303,11 +385,41 @@ def _discovered_terms_html(profile: TopicProfile | None) -> str:
     return "\n".join(parts)
 
 
+def _normalized_concepts_html(concepts: ConceptNormalizationResult | None) -> str:
+    if concepts is None:
+        return ""
+    e = html.escape
+    parts = ['<section class="normalized-concepts">', "<h2>Normalized medical concepts</h2>"]
+    for warning in concepts.warnings:
+        parts.append(f'<p class="concept-warning"><strong>Warning:</strong> {e(warning)}</p>')
+    if not concepts.normalized_concepts:
+        parts.append('<p class="concept-empty">No medical concepts were normalized.</p>')
+    else:
+        parts.append('<ul class="concept-list">')
+        for concept in concepts.normalized_concepts:
+            pmids = ", ".join(concept.supporting_pmids) or "none"
+            parts.append(
+                '<li class="concept-item">'
+                f'<span class="concept-name">{e(concept.preferred_label)}</span>'
+                f'<dl><dt>Concept ID</dt><dd>{e(concept.concept_id)}</dd>'
+                f'<dt>Vocabulary</dt><dd>{e(concept.vocabulary)}</dd>'
+                f'<dt>Original term</dt><dd>{e(concept.original_term)}</dd>'
+                f'<dt>Confidence</dt><dd>{concept.confidence:.2f}</dd>'
+                f'<dt>Supporting PMIDs</dt><dd>{e(pmids)}</dd>'
+                f'<dt>Match method</dt><dd>{e(concept.match_method)}</dd></dl>'
+                "</li>"
+            )
+        parts.append("</ul>")
+    parts.append("</section>")
+    return "\n".join(parts)
+
+
 def build_html_report(
     topic: str,
     fetched_at: datetime,
     ranked: list[RankedArticle] | None = None,
     profile: TopicProfile | None = None,
+    concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
 ) -> str:
     """Build a polished, standalone HTML report directly from ranked data.
@@ -455,6 +567,7 @@ def build_html_report(
 
     cards_html = "\n".join(section_html_parts)
     discovered_html = _discovered_terms_html(profile)
+    concepts_html = _normalized_concepts_html(concepts)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -719,6 +832,19 @@ def build_html_report(
       font-size: 0.95rem;
     }}
 
+    .normalized-concepts {{
+      background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 1.75rem 2rem; margin-bottom: 2rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }}
+    .normalized-concepts h2 {{ color: #1a365d; margin-bottom: 1rem; }}
+    .concept-list {{ list-style: none; }}
+    .concept-item {{ padding: 0.75rem 0; border-bottom: 1px solid #edf2f7; }}
+    .concept-name {{ font-weight: 700; color: #2d3748; }}
+    .concept-item dl {{ display: grid; grid-template-columns: 10rem 1fr; gap: 0.2rem 1rem; }}
+    .concept-item dt {{ font-weight: 600; color: #4a5568; }}
+    .concept-warning {{ color: #9c4221; margin-bottom: 0.75rem; }}
+
     footer.report-footer {{
       text-align: center;
       color: #718096;
@@ -748,6 +874,8 @@ def build_html_report(
 
     {discovered_html}
 
+    {concepts_html}
+
     {cards_html}
 
     <footer class="report-footer">
@@ -764,15 +892,48 @@ def _timestamp_str(dt: datetime) -> str:
     return dt.strftime("%Y%m%d_%H%M%S")
 
 
+def _query_slug(query: str) -> str:
+    """Create a readable, filesystem-safe filename stem from a user query.
+
+    Unicode letters (including Persian text) are retained. Windows-reserved
+    filename characters and punctuation are replaced/removed, and an empty
+    result falls back to ``query``.
+    """
+    normalized = unicodedata.normalize("NFKC", query).strip().lower()
+    normalized = re.sub(r'[<>:"/\\|?*\x00-\x1f]', " ", normalized)
+    normalized = re.sub(r"[^\w\s-]", "", normalized, flags=re.UNICODE)
+    slug = re.sub(r"[\s_-]+", "_", normalized).strip("._-")
+    if not slug or slug.upper() in {"CON", "PRN", "AUX", "NUL"}:
+        return "query"
+    return slug
+
+
+def _path_for_output(
+    output_dir: Path,
+    extension: str,
+    fetched_at: datetime,
+    query: str | None,
+) -> Path:
+    """Return a query-named path, adding a timestamp only on collision."""
+    if query is None:
+        return output_dir / f"pubmed_{_timestamp_str(fetched_at)}.{extension}"
+
+    base = output_dir / f"{_query_slug(query)}.{extension}"
+    if not base.exists():
+        return base
+    return output_dir / f"{_query_slug(query)}_{_timestamp_str(fetched_at)}.{extension}"
+
+
 def save_snapshot(
     snapshot: dict,
     output_dir: Path = DEFAULT_JSON_DIR,
     fetched_at: datetime | None = None,
+    query: str | None = None,
 ) -> Path:
-    """Write the JSON snapshot to a timestamped file and return its path."""
+    """Write the JSON snapshot to a query-named file and return its path."""
     fetched_at = fetched_at or datetime.now()
     output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / f"pubmed_{_timestamp_str(fetched_at)}.json"
+    path = _path_for_output(output_dir, "json", fetched_at, query)
     path.write_text(
         json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -784,11 +945,12 @@ def save_markdown_report(
     markdown: str,
     output_dir: Path = DEFAULT_MD_DIR,
     fetched_at: datetime | None = None,
+    query: str | None = None,
 ) -> Path:
-    """Write the Markdown report to a timestamped file and return its path."""
+    """Write the Markdown report to a query-named file and return its path."""
     fetched_at = fetched_at or datetime.now()
     output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / f"pubmed_{_timestamp_str(fetched_at)}.md"
+    path = _path_for_output(output_dir, "md", fetched_at, query)
     path.write_text(markdown, encoding="utf-8")
     return path
 
@@ -797,10 +959,33 @@ def save_html_report(
     html_report: str,
     output_dir: Path = DEFAULT_HTML_DIR,
     fetched_at: datetime | None = None,
+    query: str | None = None,
 ) -> Path:
-    """Write the HTML report to a timestamped file and return its path."""
+    """Write the HTML report to a query-named file and return its path."""
     fetched_at = fetched_at or datetime.now()
     output_dir.mkdir(parents=True, exist_ok=True)
-    path = output_dir / f"pubmed_{_timestamp_str(fetched_at)}.html"
+    path = _path_for_output(output_dir, "html", fetched_at, query)
     path.write_text(html_report, encoding="utf-8")
+    return path
+
+
+def concept_path_for_topic(topic: str, output_dir: Path = DEFAULT_CONCEPT_DIR) -> Path:
+    return output_dir / f"{_query_slug(topic)}.json"
+
+
+def save_concept_file(
+    topic: str,
+    concepts: ConceptNormalizationResult,
+    output_dir: Path = DEFAULT_CONCEPT_DIR,
+) -> Path:
+    """Save the latest per-topic Phase B1 concept artifact."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = concept_path_for_topic(topic, output_dir)
+    payload = {
+        "topic": topic,
+        "normalized_concepts": [_concept_to_dict(item) for item in concepts.normalized_concepts],
+        "article_concept_links": [_concept_link_to_dict(item) for item in concepts.article_concept_links],
+        "warnings": list(concepts.warnings),
+    }
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path

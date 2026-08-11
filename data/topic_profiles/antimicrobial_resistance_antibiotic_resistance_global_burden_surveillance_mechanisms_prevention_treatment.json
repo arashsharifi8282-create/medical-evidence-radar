@@ -1,0 +1,1592 @@
+{
+  "topic": "antimicrobial resistance antibiotic resistance global burden surveillance mechanisms prevention treatment",
+  "query": "antimicrobial resistance antibiotic resistance global burden surveillance mechanisms prevention treatment",
+  "run_at": "2026-08-11T10:12:16.015676",
+  "accepted_terms": [
+    {
+      "term": "anti-bacterial agents",
+      "source": "mesh",
+      "document_frequency": 6,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846",
+        "41472371",
+        "41417517",
+        "41771383",
+        "41543189",
+        "42160795"
+      ],
+      "score": 87.0,
+      "reasons": [
+        "document frequency 6/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "drug resistance, bacterial",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "42095846",
+        "41472371",
+        "41417517",
+        "42160795"
+      ],
+      "score": 77.0,
+      "reasons": [
+        "document frequency 4/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "antimicrobial resistance",
+      "source": "keyword",
+      "document_frequency": 4,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "41417517",
+        "40723962",
+        "41543189",
+        "42160795"
+      ],
+      "score": 73.7,
+      "reasons": [
+        "document frequency 4/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "drug resistance, multiple, bacterial",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.25,
+      "supporting_articles": [
+        "42095846",
+        "41472371",
+        "41771383",
+        "41543189"
+      ],
+      "score": 72.2,
+      "reasons": [
+        "document frequency 4/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.25 (10%)"
+      ],
+      "accepted": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "global health",
+      "source": "keyword",
+      "document_frequency": 3,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "40723962",
+        "41771383",
+        "41543189"
+      ],
+      "score": 56.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "colistin",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 54.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "plasmids",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "gram-negative bacteria",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "gram-negative bacterial infections",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "colistina",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "enterobacteriaceae",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "epidemiología molecular",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "genes mcr",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mcr genes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "molecular epidemiology",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "plásmidos",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 97,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42095846"
+      ],
+      "score": 49.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 97d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antibiotic resistance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 45.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "macrolide resistance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 5,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42560049"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 5d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pathogenic mechanisms",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 5,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42560049"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 5d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "streptococcus pneumoniae",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "virulence factors",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 43.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antimicrobial stewardship",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 42.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hetero-resistance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 42.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "community-acquired pneumonia",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "meningitis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pili",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "serotype replacement",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antimicrobial resistance (amr)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.67,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 41.3,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.67 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "acinetobacter baumannii",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 39.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "carbapenem-resistant acinetobacter baumannii (crab)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 39.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "global burden of disease",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 39.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "multidrug resistance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 39.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mycoplasma pneumoniae",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 5,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42560049"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 5d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "causes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 5,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42560049"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 5d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "preventive measures",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 5,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42560049"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 5d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pneumococcal infections",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pneumococcal vaccines",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pneumococcal vaccine",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42160795"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "global health policies",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 38.0,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cefiderocol",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sulbactam",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "phage therapy",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "peptidomimetics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antibiotics",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517",
+        "40723962"
+      ],
+      "score": 37.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "helicobacter pylori",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "asia",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "biofilms",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "biofilm",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "resistance genes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 407,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "40723962"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 407d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "carbapenems",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "acinetobacter infections",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cross infection",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "microbial sensitivity tests",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cephalosporins",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 102,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41771383"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 102d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "klebsiella pneumoniae",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "liver abscess, pyogenic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "virulence",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "metagenomics",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "point-of-care testing",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "polysaccharides, bacterial",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "immune evasion",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hypervirulent",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pyogenic liver abscess",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "therapeutic strategies",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 163,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41543189"
+      ],
+      "score": 34.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 163d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug resistance, microbial",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 34.0,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "clarithromycin",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 33.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "metronidazole",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 33.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antibiofilm strategies",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 33.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antimicrobial sensitivity",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 33.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "prior antibiotic exposure",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 32.0,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "multidrug-resistant organisms (mdros)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 31.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "helicobacter infections",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pacific islands",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "asia‐pacific region",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41472371"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "bacteria",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "bacteriophage therapy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nanotechnology",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 191,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41417517"
+      ],
+      "score": 30.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 191d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "device-related infection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "immunocompromised patient",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "universal precautions",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 132,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42181488"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 132d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "socioeconomic inequities",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 407,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40723962"
+      ],
+      "score": 26.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 407d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    }
+  ]
+}

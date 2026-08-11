@@ -1,0 +1,278 @@
+{
+  "topic": "GLP-1-based therapies",
+  "normalized_concepts": [
+    {
+      "concept_id": "D006801",
+      "vocabulary": "mesh",
+      "preferred_label": "Cardiovascular Diseases",
+      "original_term": "Cardiovascular Diseases",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "38522001"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D003924",
+      "vocabulary": "mesh",
+      "preferred_label": "Diabetes Mellitus, Type 2",
+      "original_term": "Diabetes Mellitus, Type 2",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "38522001"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D000093742",
+      "vocabulary": "mesh",
+      "preferred_label": "Glucagon-Like Peptide-1 Receptor Agonists",
+      "original_term": "Glucagon-Like Peptide-1 Receptor Agonists",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "38521950",
+        "38521990",
+        "38522001"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D006333",
+      "vocabulary": "mesh",
+      "preferred_label": "Heart Failure",
+      "original_term": "Heart Failure",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "38521990"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D009765",
+      "vocabulary": "mesh",
+      "preferred_label": "Obesity",
+      "original_term": "Obesity",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "38521950",
+        "38521990"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "unresolved:7aa341431ac6adbf",
+      "vocabulary": "rxnorm",
+      "preferred_label": "glucagon-like peptide-1 receptor agonists",
+      "original_term": "glucagon-like peptide-1 receptor agonists",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "38521950",
+        "38521990",
+        "38522001"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "vocabulary": "rxnorm",
+      "preferred_label": "obesity",
+      "original_term": "obesity",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "38521950",
+        "38521990"
+      ],
+      "source_fields": [
+        "mesh",
+        "author_keyword",
+        "title",
+        "abstract"
+      ]
+    }
+  ],
+  "article_concept_links": [
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521950",
+      "concept_id": "D000093742",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521950",
+      "concept_id": "D009765",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521950",
+      "concept_id": "unresolved:7aa341431ac6adbf",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521950",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521950",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "D000093742",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "D006333",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "D009765",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "unresolved:7aa341431ac6adbf",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38521990",
+      "concept_id": "unresolved:a3cca0ced5ece765",
+      "source_field": "title",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38522001",
+      "concept_id": "D000093742",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38522001",
+      "concept_id": "D003924",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38522001",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "38522001",
+      "concept_id": "unresolved:7aa341431ac6adbf",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    }
+  ],
+  "warnings": [
+    "RxNorm lookup failed for 'glucagon-like peptide-1 receptor agonists': RxNorm lookup was not configured",
+    "RxNorm lookup failed for 'obesity': RxNorm lookup was not configured"
+  ]
+}

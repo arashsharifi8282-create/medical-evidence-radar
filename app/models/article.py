@@ -5,6 +5,16 @@ from datetime import date
 
 
 @dataclass(frozen=True)
+class MeshDescriptor:
+    """A MeSH descriptor exactly as supplied by PubMed EFetch metadata."""
+
+    text: str
+    ui: str
+    major_topic: bool
+    supporting_pmid: str
+
+
+@dataclass(frozen=True)
 class Article:
     """A single normalized article record.
 
@@ -32,3 +42,4 @@ class Article:
     source: str = "pubmed"
     mesh_headings: tuple[str, ...] = ()
     keywords: tuple[str, ...] = ()
+    mesh_descriptors: tuple[MeshDescriptor, ...] = ()

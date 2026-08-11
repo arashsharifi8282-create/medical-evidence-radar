@@ -10,7 +10,7 @@ import calendar
 import xml.etree.ElementTree as ET
 from datetime import date
 
-from app.models.article import Article
+from app.models.article import Article, MeshDescriptor
 
 # Month name -> number, used to resolve PubMed's abbreviated month names.
 _MONTHS = {name.lower(): num for num, name in enumerate(calendar.month_name) if name}
@@ -40,7 +40,8 @@ def normalize_article(article_elem: ET.Element) -> Article:
     publication_types = _publication_types(article_elem)
     doi = _doi(article_elem)
     pubmed_url = f"{_PUBMED_BASE_URL}/{pmid}/" if pmid else ""
-    mesh_headings = _mesh_headings(article_elem)
+    mesh_descriptors = _mesh_descriptors(article_elem, pmid)
+    mesh_headings = tuple(descriptor.text for descriptor in mesh_descriptors)
     keywords = _keywords(article_elem)
 
     return Article(
@@ -58,6 +59,7 @@ def normalize_article(article_elem: ET.Element) -> Article:
         pubmed_url=pubmed_url,
         mesh_headings=mesh_headings,
         keywords=keywords,
+        mesh_descriptors=mesh_descriptors,
     )
 
 
@@ -109,13 +111,22 @@ def _doi(article_elem: ET.Element) -> str:
     return ""
 
 
-def _mesh_headings(article_elem: ET.Element) -> tuple[str, ...]:
-    """Extract MeSH descriptor names from ``<MeshHeadingList>``."""
-    return tuple(
-        dh.text.strip()
-        for dh in article_elem.findall(".//MeshHeadingList/MeshHeading/DescriptorName")
-        if dh.text and dh.text.strip()
-    )
+def _mesh_descriptors(article_elem: ET.Element, pmid: str) -> tuple[MeshDescriptor, ...]:
+    """Retain PubMed's MeSH text, UI, major-topic flag, and supporting PMID."""
+    descriptors: list[MeshDescriptor] = []
+    for descriptor in article_elem.findall(".//MeshHeadingList/MeshHeading/DescriptorName"):
+        text = descriptor.text.strip() if descriptor.text else ""
+        if not text:
+            continue
+        descriptors.append(
+            MeshDescriptor(
+                text=text,
+                ui=(descriptor.get("UI") or "").strip(),
+                major_topic=(descriptor.get("MajorTopicYN") or "N").upper() == "Y",
+                supporting_pmid=pmid,
+            )
+        )
+    return tuple(descriptors)
 
 
 def _keywords(article_elem: ET.Element) -> tuple[str, ...]:

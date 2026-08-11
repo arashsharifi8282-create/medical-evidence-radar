@@ -1,0 +1,1594 @@
+{
+  "topic": "chlorotoxin",
+  "query": "chlorotoxin",
+  "run_at": "2026-08-10T12:05:01.705266",
+  "accepted_terms": [
+    {
+      "term": "glioblastoma",
+      "source": "mesh",
+      "document_frequency": 6,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41334733",
+        "42548581",
+        "41955189",
+        "42218471",
+        "41388541"
+      ],
+      "score": 71.0,
+      "reasons": [
+        "document frequency 6/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "chlorotoxin",
+      "source": "keyword",
+      "document_frequency": 4,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42436998",
+        "40838609",
+        "41334733",
+        "42548581"
+      ],
+      "score": 67.7,
+      "reasons": [
+        "document frequency 4/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "cell line, tumor",
+      "source": "mesh",
+      "document_frequency": 5,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733",
+        "41955189",
+        "42218471",
+        "40907802",
+        "41388541"
+      ],
+      "score": 59.3,
+      "reasons": [
+        "document frequency 5/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "brain neoplasms",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733",
+        "42218471",
+        "41388541"
+      ],
+      "score": 46.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "brain",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733",
+        "42218471"
+      ],
+      "score": 44.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "immunotherapy",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471",
+        "41388541"
+      ],
+      "score": 44.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "tumor microenvironment",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471",
+        "41388541"
+      ],
+      "score": 44.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "scorpion venoms",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41334733",
+        "41955189"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "peptide therapeutics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "solid-phase peptide synthesis (spps)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "structural engineering",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 41.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "in silico drug discovery",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nanoformulations",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "peptide–drug conjugates (pdcs)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "targeted drug delivery",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 80,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42356430"
+      ],
+      "score": 38.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 80d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "antineoplastic agents",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41334733",
+        "40907802"
+      ],
+      "score": 38.0,
+      "reasons": [
+        "document frequency 3/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "linc01235/mir-128-3p/yy1",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nrp1",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "vegfr2",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "melanoma",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "vasculogenic mimicry",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mmp-2",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42548581"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cancer",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "in silico",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "in vitro",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glioma",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 37.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "extracellular vesicles",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41334733"
+      ],
+      "score": 36.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "car t-cell",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42548581"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "phage display",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42548581"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "leuphasyl",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "vialox",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "myeloid cells",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "ctx-cnf1",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 35.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "blood-brain barrier",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41388541"
+      ],
+      "score": 34.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cerna network",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 24,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42436998"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 24d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "protein engineering",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 21,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42548581"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 21d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "venom derived peptides",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 34,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42412310"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 34d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "recombinant fusion proteins",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cd8-positive t-lymphocytes",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cellular reprogramming",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cd8+ t cells",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "murine models",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "recombinant proteins",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "translational oncology",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 72,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42218471"
+      ],
+      "score": 32.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 72d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "molecular dynamics simulation",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41955189"
+      ],
+      "score": 31.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug delivery systems",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609",
+        "41334733"
+      ],
+      "score": 31.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mice, nude",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802",
+        "41388541"
+      ],
+      "score": 31.3,
+      "reasons": [
+        "document frequency 2/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "oligonucleotides",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "curcumin",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cisplatin",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "autophagy",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cervical cancer",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cisplatin resistance",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "ferroptosis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 241,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41388541"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 241d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "bacterial outer membrane",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 241,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41388541"
+      ],
+      "score": 29.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 241d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "matrix metalloproteinase 2",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41955189"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "molecular docking simulation",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41955189"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "protein binding",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41955189"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "binding sites",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 123,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41955189"
+      ],
+      "score": 28.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 123d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "angiopep-2",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "apoptosis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chloride channel-3",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "escherichia coli",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 241,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41388541"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 241d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cell-penetrating peptides",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 241,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41388541"
+      ],
+      "score": 27.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 241d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "micrornas",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "transcytosis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "disease models, animal",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "rats, sprague-dawley",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "peptides",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "anti-microrna oligonucleotide",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 190,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40838609"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 190d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "administration, intranasal",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "intranasal delivery",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41334733"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chloride channels",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "uterine cervical neoplasms",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug resistance, neoplasm",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "tor serine-threonine kinases",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "proto-oncogene proteins c-akt",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "signal transduction",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "xenograft model antitumor assays",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 221,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "40907802"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 221d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "interferon-gamma",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 241,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41388541"
+      ],
+      "score": 24.7,
+      "reasons": [
+        "document frequency 1/6 (40%)",
+        "evidence other (30%)",
+        "recency 241d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    }
+  ]
+}

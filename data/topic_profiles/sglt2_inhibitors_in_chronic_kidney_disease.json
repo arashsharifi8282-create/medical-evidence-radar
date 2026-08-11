@@ -1,0 +1,1904 @@
+{
+  "topic": "SGLT2 inhibitors in chronic kidney disease",
+  "query": "SGLT2 inhibitors in chronic kidney disease",
+  "run_at": "2026-08-10T12:10:31.283852",
+  "accepted_terms": [
+    {
+      "term": "sodium-glucose transporter 2 inhibitors",
+      "source": "mesh",
+      "document_frequency": 8,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.2,
+      "supporting_articles": [
+        "42021630",
+        "42359837",
+        "42336367",
+        "42392584",
+        "42526999",
+        "41664339",
+        "41441751",
+        "42343656"
+      ],
+      "score": 89.0,
+      "reasons": [
+        "document frequency 8/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.20 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "renal insufficiency, chronic",
+      "source": "mesh",
+      "document_frequency": 7,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.33,
+      "supporting_articles": [
+        "42021630",
+        "42336367",
+        "42392584",
+        "41943607",
+        "41664339",
+        "41441751",
+        "42343656"
+      ],
+      "score": 85.3,
+      "reasons": [
+        "document frequency 7/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.33 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "chronic kidney disease",
+      "source": "keyword",
+      "document_frequency": 4,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42021630",
+        "41943607",
+        "42526999",
+        "42343656"
+      ],
+      "score": 82.0,
+      "reasons": [
+        "document frequency 4/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "diabetes mellitus, type 2",
+      "source": "mesh",
+      "document_frequency": 4,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837",
+        "42336367",
+        "42392584",
+        "42343656"
+      ],
+      "score": 67.0,
+      "reasons": [
+        "document frequency 4/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "sglt2 inhibitors",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42336367",
+        "42392584"
+      ],
+      "score": 63.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "benzhydryl compounds",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630",
+        "41441751",
+        "42343656"
+      ],
+      "score": 62.0,
+      "reasons": [
+        "document frequency 3/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "glucosides",
+      "source": "mesh",
+      "document_frequency": 3,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630",
+        "41441751",
+        "42343656"
+      ],
+      "score": 62.0,
+      "reasons": [
+        "document frequency 3/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "dapagliflozin",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630",
+        "42343656"
+      ],
+      "score": 62.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": true
+    },
+    {
+      "term": "heart failure",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837",
+        "42343656"
+      ],
+      "score": 60.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": true
+    }
+  ],
+  "rejected_terms": [
+    {
+      "term": "chronic",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 62.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "anemia",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 57.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "anemia of chronic disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 57.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hemoglobin",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 57.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sodium-glucose cotransporter 2 inhibitors",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.2,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 57.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.20 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "blood pressure",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 57.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "type 2",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 55.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hemoglobins",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "erythropoiesis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42021630"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hypertension",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetes mellitus",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renal insufficiency",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "systematic_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42359837"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence systematic_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "kidney",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 1.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 52.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 1.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetic kidney disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.67,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 48.7,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.67 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "quality of life",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 46.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "polypharmacy",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 46.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "clinical pharmacist",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 46.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nephrotoxicity",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 46.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetes-related kidney disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 45.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "pharmacists",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 43.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug-related side effects and adverse reactions",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "observational",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42336367"
+      ],
+      "score": 43.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence observational (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "hemodynamics",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "kidney fibrosis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "valsartan",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sacubitril/valsartan",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "bibliometric analysis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renoprotection",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607",
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetic nephropathies",
+      "source": "mesh",
+      "document_frequency": 2,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716",
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "china",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "policy",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glucagon-like peptide-1 receptor agonists",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "finerenone",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sglt inhibitors",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "type 1 diabetes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 42.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chronic kidney disease (ckd)",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.75,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 41.5,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.75 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "oxidative stress",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 40.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nephroprotection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 40.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renal hemodynamics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 40.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "tubuloglomerular feedback",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 40.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "dkd",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 40.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular-kidney-metabolic syndrome",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.25,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 38.5,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.25 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "nlrp3 inflammasome",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42392584"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "biphenyl compounds",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "aminobutyrates",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug combinations",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "bibliometrics",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "angiotensin receptor antagonists",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "tetrazoles",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiorenal syndrome",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41943607"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "clinical trials as topic",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "clinical trial landscape",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "drug research and development",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "generics",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41724716"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "diabetes mellitus, type 1",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "gastric inhibitory polypeptide",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "mineralocorticoid receptor antagonists",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "naphthyridines",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "glp-1 receptor agonists",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "narrative_review",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42526999"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence narrative_review (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "non-diabetic chronic kidney disease",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.6,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 37.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.60 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "regression analysis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "philippines",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "disease progression",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.5,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.50 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "standard of care",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cost-effectiveness analysis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "i15",
+      "source": "keyword",
+      "document_frequency": 2,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751",
+        "42343656"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 2/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "empagliflozin",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "spain",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "metabolic syndrome",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 36.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +5 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "propensity score",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 34.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "quality-adjusted life years",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 34.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "type 2 diabetes",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 34.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)",
+        "title/abstract boost +3 (support only)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chlorides",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "retrospective studies",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "chloride homeostasis",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiorenal protection",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "electrolyte signaling",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "renal tubular physiology",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sodium–glucose cotransporter 2 inhibitor",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41664339"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cost-benefit analysis",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "i18",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "economic evaluation",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "sodium glucose co-transporter 2 inhibitor",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "41441751"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardio-renal syndrome",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "cardiovascular diseases",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "models, econometric",
+      "source": "mesh",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "carbon dioxide footprint",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    },
+    {
+      "term": "i10",
+      "source": "keyword",
+      "document_frequency": 1,
+      "evidence_max": "other",
+      "recency_days": 0,
+      "direct_topic_overlap": 0.0,
+      "supporting_articles": [
+        "42343656"
+      ],
+      "score": 31.0,
+      "reasons": [
+        "document frequency 1/8 (40%)",
+        "evidence other (30%)",
+        "recency 0d (20%)",
+        "direct topic overlap 0.00 (10%)"
+      ],
+      "accepted": false
+    }
+  ]
+}

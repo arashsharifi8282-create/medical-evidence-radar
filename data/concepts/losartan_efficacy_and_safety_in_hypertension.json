@@ -1,0 +1,1763 @@
+{
+  "topic": "losartan efficacy and safety in hypertension",
+  "normalized_concepts": [
+    {
+      "concept_id": "D000368",
+      "vocabulary": "mesh",
+      "preferred_label": "Aged",
+      "original_term": "Aged",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D017311",
+      "vocabulary": "mesh",
+      "preferred_label": "Amlodipine",
+      "original_term": "Amlodipine",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D000818",
+      "vocabulary": "mesh",
+      "preferred_label": "Animals",
+      "original_term": "Animals",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D000959",
+      "vocabulary": "mesh",
+      "preferred_label": "Antihypertensive Agents",
+      "original_term": "Antihypertensive Agents",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41036884",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D001262",
+      "vocabulary": "mesh",
+      "preferred_label": "Atenolol",
+      "original_term": "Atenolol",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41036884"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D001794",
+      "vocabulary": "mesh",
+      "preferred_label": "Blood Pressure",
+      "original_term": "Blood Pressure",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D001938",
+      "vocabulary": "mesh",
+      "preferred_label": "Brazil",
+      "original_term": "Brazil",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41036884"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D045744",
+      "vocabulary": "mesh",
+      "preferred_label": "Cell Line, Tumor",
+      "original_term": "Cell Line, Tumor",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D002752",
+      "vocabulary": "mesh",
+      "preferred_label": "Chlorthalidone",
+      "original_term": "Chlorthalidone",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D008078",
+      "vocabulary": "mesh",
+      "preferred_label": "Cholesterol, LDL",
+      "original_term": "Cholesterol, LDL",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D004305",
+      "vocabulary": "mesh",
+      "preferred_label": "Dose-Response Relationship, Drug",
+      "original_term": "Dose-Response Relationship, Drug",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D004311",
+      "vocabulary": "mesh",
+      "preferred_label": "Double-Blind Method",
+      "original_term": "Double-Blind Method",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D004338",
+      "vocabulary": "mesh",
+      "preferred_label": "Drug Combinations",
+      "original_term": "Drug Combinations",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41082745",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D019008",
+      "vocabulary": "mesh",
+      "preferred_label": "Drug Resistance, Neoplasm",
+      "original_term": "Drug Resistance, Neoplasm",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D004359",
+      "vocabulary": "mesh",
+      "preferred_label": "Drug Therapy, Combination",
+      "original_term": "Drug Therapy, Combination",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D050171",
+      "vocabulary": "mesh",
+      "preferred_label": "Dyslipidemias",
+      "original_term": "Dyslipidemias",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D000069438",
+      "vocabulary": "mesh",
+      "preferred_label": "Ezetimibe",
+      "original_term": "Ezetimibe",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D005260",
+      "vocabulary": "mesh",
+      "preferred_label": "Female",
+      "original_term": "Female",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055",
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D006801",
+      "vocabulary": "mesh",
+      "preferred_label": "Humans",
+      "original_term": "Humans",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055",
+        "40858452",
+        "41036884",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D006973",
+      "vocabulary": "mesh",
+      "preferred_label": "Hypertension",
+      "original_term": "Hypertension",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41036884",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D007167",
+      "vocabulary": "mesh",
+      "preferred_label": "Immunotherapy",
+      "original_term": "Immunotherapy",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D007334",
+      "vocabulary": "mesh",
+      "preferred_label": "Insulin-Like Growth Factor I",
+      "original_term": "Insulin-Like Growth Factor I",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D019808",
+      "vocabulary": "mesh",
+      "preferred_label": "Losartan",
+      "original_term": "Losartan",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055",
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D008297",
+      "vocabulary": "mesh",
+      "preferred_label": "Male",
+      "original_term": "Male",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D055118",
+      "vocabulary": "mesh",
+      "preferred_label": "Medication Adherence",
+      "original_term": "Medication Adherence",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41082745"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D051379",
+      "vocabulary": "mesh",
+      "preferred_label": "Mice",
+      "original_term": "Mice",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D008875",
+      "vocabulary": "mesh",
+      "preferred_label": "Middle Aged",
+      "original_term": "Middle Aged",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D010051",
+      "vocabulary": "mesh",
+      "preferred_label": "Ovarian Neoplasms",
+      "original_term": "Ovarian Neoplasms",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D011446",
+      "vocabulary": "mesh",
+      "preferred_label": "Prospective Studies",
+      "original_term": "Prospective Studies",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D016032",
+      "vocabulary": "mesh",
+      "preferred_label": "Randomized Controlled Trials as Topic",
+      "original_term": "Randomized Controlled Trials as Topic",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41036884",
+        "41351601"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D051436",
+      "vocabulary": "mesh",
+      "preferred_label": "Renal Insufficiency, Chronic",
+      "original_term": "Renal Insufficiency, Chronic",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "41082745"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D056910",
+      "vocabulary": "mesh",
+      "preferred_label": "Republic of Korea",
+      "original_term": "Republic of Korea",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D000068718",
+      "vocabulary": "mesh",
+      "preferred_label": "Rosuvastatin Calcium",
+      "original_term": "Rosuvastatin Calcium",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D016896",
+      "vocabulary": "mesh",
+      "preferred_label": "Treatment Outcome",
+      "original_term": "Treatment Outcome",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40858452",
+        "41036884"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "D059016",
+      "vocabulary": "mesh",
+      "preferred_label": "Tumor Microenvironment",
+      "original_term": "Tumor Microenvironment",
+      "concept_type": "mesh_concept",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055"
+      ],
+      "source_fields": [
+        "mesh"
+      ]
+    },
+    {
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "vocabulary": "rxnorm",
+      "preferred_label": "antihypertensive agents",
+      "original_term": "antihypertensive agents",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "40858452",
+        "41036884",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh",
+        "abstract"
+      ]
+    },
+    {
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "vocabulary": "rxnorm",
+      "preferred_label": "blood pressure",
+      "original_term": "blood pressure",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "40858452",
+        "41082745",
+        "41351601",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh",
+        "abstract"
+      ]
+    },
+    {
+      "concept_id": "2409",
+      "vocabulary": "rxnorm",
+      "preferred_label": "chlorthalidone",
+      "original_term": "chlorthalidone",
+      "concept_type": "drug",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "40274695",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh",
+        "author_keyword",
+        "title",
+        "abstract"
+      ]
+    },
+    {
+      "concept_id": "unresolved:9f5a729884c7ce96",
+      "vocabulary": "rxnorm",
+      "preferred_label": "drug combinations",
+      "original_term": "drug combinations",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "40858452",
+        "41082745",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh",
+        "author_keyword"
+      ]
+    },
+    {
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "vocabulary": "rxnorm",
+      "preferred_label": "hypertension",
+      "original_term": "hypertension",
+      "concept_type": "unresolved",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "supporting_pmids": [
+        "40274695",
+        "40858452",
+        "41036884",
+        "41082745",
+        "41351601",
+        "41670573",
+        "42199202"
+      ],
+      "source_fields": [
+        "mesh",
+        "author_keyword",
+        "title",
+        "abstract"
+      ]
+    },
+    {
+      "concept_id": "52175",
+      "vocabulary": "rxnorm",
+      "preferred_label": "losartan",
+      "original_term": "losartan",
+      "concept_type": "drug",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "supporting_pmids": [
+        "39369055",
+        "40274695",
+        "40858452",
+        "41670573"
+      ],
+      "source_fields": [
+        "mesh",
+        "author_keyword",
+        "title",
+        "abstract"
+      ]
+    }
+  ],
+  "article_concept_links": [
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "52175",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "52175",
+      "source_field": "mesh",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "52175",
+      "source_field": "title",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D000818",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D005260",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D007167",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D007334",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D010051",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D019008",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D019808",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D045744",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D051379",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "39369055",
+      "concept_id": "D059016",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "2409",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "2409",
+      "source_field": "author_keyword",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "2409",
+      "source_field": "title",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "52175",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "52175",
+      "source_field": "author_keyword",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "52175",
+      "source_field": "title",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40274695",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "52175",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "52175",
+      "source_field": "author_keyword",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "52175",
+      "source_field": "mesh",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D000068718",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D000069438",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D000368",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D000959",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D001794",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D004338",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D005260",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D006973",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D008078",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D008297",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D008875",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D011446",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D016896",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D017311",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D019808",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D050171",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "D056910",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "title",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:9f5a729884c7ce96",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:9f5a729884c7ce96",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "40858452",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "observational"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D000959",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D001262",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D001938",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D006973",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D016032",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "D016896",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41036884",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D000959",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D001794",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D004338",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D006973",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D051436",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "D055118",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:9f5a729884c7ce96",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41082745",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "D000959",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "D001794",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "D006973",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "D016032",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "title",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41351601",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "systematic_review"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "2409",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "2409",
+      "source_field": "mesh",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "52175",
+      "source_field": "abstract",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "52175",
+      "source_field": "mesh",
+      "match_method": "exact",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D000368",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D000959",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D001794",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D002752",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D004305",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D004311",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D004338",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D004359",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D005260",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D006801",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D006973",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D008297",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D008875",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D017311",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D019808",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "D056910",
+      "source_field": "mesh",
+      "match_method": "source_metadata",
+      "confidence": 1.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:4c8e36ee49312968",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "title",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:9f5a729884c7ce96",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "41670573",
+      "concept_id": "unresolved:bd01a89edc9ae07e",
+      "source_field": "mesh",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "randomized_trial"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "42199202",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "abstract",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "42199202",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "author_keyword",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "other"
+    },
+    {
+      "relationship": "ARTICLE_MENTIONS_CONCEPT",
+      "pmid": "42199202",
+      "concept_id": "unresolved:97cf39b495a535aa",
+      "source_field": "title",
+      "match_method": "approximate",
+      "confidence": 0.0,
+      "evidence_level": "other"
+    }
+  ],
+  "warnings": []
+}

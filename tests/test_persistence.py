@@ -74,6 +74,23 @@ def test_save_snapshot_writes_timestamped_json(tmp_path: Path):
     assert first["abstract"].startswith("GLP-1 receptor agonists")
 
 
+def test_save_snapshot_uses_safe_query_slug_and_collision_suffix(tmp_path: Path):
+    snapshot = build_snapshot(
+        topic="Topic",
+        query='Psilocybin: PTSD / safety? *',
+        fetched_at=FIXED_DT,
+        articles=[],
+    )
+
+    first = save_snapshot(snapshot, output_dir=tmp_path, fetched_at=FIXED_DT, query=snapshot["query"])
+    second = save_snapshot(snapshot, output_dir=tmp_path, fetched_at=FIXED_DT, query=snapshot["query"])
+
+    assert first.name == "psilocybin_ptsd_safety.json"
+    assert second.name == "psilocybin_ptsd_safety_20260810_093000.json"
+    assert first.exists()
+    assert second.exists()
+
+
 def test_save_markdown_report_writes_timestamped_md(tmp_path: Path):
     articles = _sample_articles()
     markdown = build_markdown_report(

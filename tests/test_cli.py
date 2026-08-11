@@ -105,14 +105,14 @@ def test_save_results_writes_json_markdown_html_and_profile(tmp_path: Path):
         profile_dir=profile_dir,
     )
 
-    # All four files exist with timestamped names.
+    # All four files exist with query-based names.
     assert json_path.exists()
     assert md_path.exists()
     assert html_path.exists()
     assert profile_path.exists()
-    assert json_path.name == "pubmed_20260810_093000.json"
-    assert md_path.name == "pubmed_20260810_093000.md"
-    assert html_path.name == "pubmed_20260810_093000.html"
+    assert json_path.name == "glp_1_based_therapies.json"
+    assert md_path.name == "glp_1_based_therapies.md"
+    assert html_path.name == "glp_1_based_therapies.html"
     assert profile_path.name == "glp_1_based_therapies.json"
 
     # JSON content.
@@ -160,7 +160,7 @@ def test_save_results_writes_json_markdown_html_and_profile(tmp_path: Path):
     assert "rejected_terms" in profile_data
 
 
-def test_save_results_uses_timestamped_filenames_no_overwrite(tmp_path: Path):
+def test_save_results_uses_query_filenames_and_timestamp_on_collision(tmp_path: Path):
     client = _make_client()
     articles = fetch_top_recent(query="GLP-1-based therapies", retmax=3, client=client)
 
@@ -189,12 +189,12 @@ def test_save_results_uses_timestamped_filenames_no_overwrite(tmp_path: Path):
         profile_dir=profile_dir,
     )
 
-    assert json_path1.name == "pubmed_20260810_093000.json"
-    assert json_path2.name == "pubmed_20260810_100000.json"
-    assert md_path1.name == "pubmed_20260810_093000.md"
-    assert md_path2.name == "pubmed_20260810_100000.md"
-    assert html_path1.name == "pubmed_20260810_093000.html"
-    assert html_path2.name == "pubmed_20260810_100000.html"
+    assert json_path1.name == "glp_1_based_therapies.json"
+    assert json_path2.name == "glp_1_based_therapies_20260810_100000.json"
+    assert md_path1.name == "glp_1_based_therapies.md"
+    assert md_path2.name == "glp_1_based_therapies_20260810_100000.md"
+    assert html_path1.name == "glp_1_based_therapies.html"
+    assert html_path2.name == "glp_1_based_therapies_20260810_100000.html"
     assert json_path1 != json_path2
     assert md_path1 != md_path2
     assert html_path1 != html_path2
