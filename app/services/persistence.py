@@ -128,6 +128,100 @@ def _concept_link_to_dict(link: ArticleConceptLink) -> dict:
     }
 
 
+def _concept_key(concept: NormalizedConcept) -> tuple[str, str]:
+    """Return the stable identity used to prevent duplicate summary concepts."""
+    return concept.vocabulary, concept.concept_id
+
+
+def _compact_concept_to_dict(concept: NormalizedConcept) -> dict:
+    """Serialize only fields intended for the compact human-facing summary."""
+    return {
+        "preferred_label": concept.preferred_label,
+        "vocabulary": concept.vocabulary,
+        "concept_id": concept.concept_id,
+        "concept_type": concept.concept_type,
+        "supporting_article_count": len(set(concept.supporting_pmids)),
+        "match_method": concept.match_method,
+    }
+
+
+def build_concept_summary(
+    topic: str,
+    profile: TopicProfile | None,
+    concepts: ConceptNormalizationResult | None,
+) -> dict:
+    """Build the deterministic Phase B1.1 compact concept presentation.
+
+    This derives a human-scale view from Phase-A/B1 artifacts without changing
+    normalization, identifiers, links, provenance, or candidate retention.
+    """
+    normalized = tuple(concepts.normalized_concepts) if concepts else ()
+    accepted = {candidate.term.casefold(): candidate for candidate in (profile.accepted_terms if profile else ())}
+    normalized_topic = re.sub(r"\s+", " ", topic.strip().casefold())
+
+    def candidate_for(concept: NormalizedConcept):
+        return accepted.get(concept.original_term.casefold())
+
+    eligible = [
+        concept
+        for concept in normalized
+        if concept.concept_type != "unresolved" and candidate_for(concept) is not None
+    ]
+
+    core_candidates = []
+    for concept in eligible:
+        candidate = candidate_for(concept)
+        exact_rxnorm_in_topic = (
+            concept.vocabulary == "rxnorm"
+            and concept.match_method == "exact"
+            and re.sub(r"\s+", " ", concept.original_term.strip().casefold()) in normalized_topic
+        )
+        if candidate.direct_topic_overlap > 0 or exact_rxnorm_in_topic:
+            core_candidates.append(concept)
+
+    def ranking(concept: NormalizedConcept) -> tuple:
+        candidate = candidate_for(concept)
+        return (
+            -candidate.score,
+            -candidate.document_frequency,
+            -len(set(concept.supporting_pmids)),
+            concept.preferred_label.casefold(),
+            concept.vocabulary,
+            concept.concept_id,
+        )
+
+    core: list[NormalizedConcept] = []
+    seen: set[tuple[str, str]] = set()
+    for concept in sorted(core_candidates, key=ranking):
+        if _concept_key(concept) not in seen:
+            core.append(concept)
+            seen.add(_concept_key(concept))
+        if len(core) == 3:
+            break
+
+    related: list[NormalizedConcept] = []
+    related_candidates = [
+        concept
+        for concept in eligible
+        if len(set(concept.supporting_pmids)) >= 2 and _concept_key(concept) not in seen
+    ]
+    for concept in sorted(related_candidates, key=ranking):
+        if _concept_key(concept) not in seen:
+            related.append(concept)
+            seen.add(_concept_key(concept))
+        if len(related) == 5:
+            break
+
+    return {
+        "core_concepts": [_compact_concept_to_dict(concept) for concept in core],
+        "related_concepts": [_compact_concept_to_dict(concept) for concept in related],
+        "total_concepts": len(normalized),
+        "total_links": len(concepts.article_concept_links) if concepts else 0,
+        "unresolved_count": sum(concept.concept_type == "unresolved" for concept in normalized),
+        "rejected_candidate_count": len(profile.rejected_terms) if profile else 0,
+    }
+
+
 def build_snapshot(
     topic: str,
     query: str,
@@ -157,39 +251,58 @@ def build_snapshot(
         _concept_link_to_dict(link) for link in concepts.article_concept_links
     ] if concepts else []
     snapshot["concept_normalization_warnings"] = list(concepts.warnings) if concepts else []
+    snapshot["concept_summary"] = build_concept_summary(topic, profile, concepts)
     return snapshot
 
 
-def _normalized_concepts_markdown(concepts: ConceptNormalizationResult | None) -> str:
-    """Build an explainable concept section without clinical interpretation."""
-    if concepts is None:
+def _compact_concept_markdown(concept: dict) -> list[str]:
+    return [
+        f"- **{concept['preferred_label']}**",
+        f"  - Vocabulary and concept ID: {concept['vocabulary']} `{concept['concept_id']}`",
+        f"  - Concept type: {concept['concept_type']}",
+        f"  - Supporting articles: {concept['supporting_article_count']}",
+        f"  - Match method: {concept['match_method']}",
+    ]
+
+
+def _concept_summary_markdown(
+    topic: str,
+    profile: TopicProfile | None,
+    concepts: ConceptNormalizationResult | None,
+) -> str:
+    """Build the compact default Markdown concept presentation."""
+    if concepts is None and profile is None:
         return ""
-    lines = ["## Normalized medical concepts", ""]
-    for warning in concepts.warnings:
-        lines.append(f"> **Warning:** {warning}")
-        lines.append("")
-    if not concepts.normalized_concepts:
-        lines.extend(["No medical concepts were normalized.", ""])
-        return "\n".join(lines)
-    for concept in concepts.normalized_concepts:
-        pmids = ", ".join(concept.supporting_pmids) or "none"
-        lines.extend(
-            [
-                f"- **{concept.preferred_label}**",
-                f"  - Concept ID: `{concept.concept_id}`",
-                f"  - Vocabulary: {concept.vocabulary}",
-                f"  - Original term: {concept.original_term}",
-                f"  - Confidence: {concept.confidence:.2f}",
-                f"  - Supporting PMIDs: {pmids}",
-                f"  - Match method: {concept.match_method}",
-                "",
-            ]
+    summary = build_concept_summary(topic, profile, concepts)
+    lines = ["## Medical concept summary", "", "## Discovered terms", ""]
+    lines.append(
+        f"{summary['total_concepts']} normalized concepts and {summary['total_links']} "
+        "article-concept links were retained in the machine-readable audit data."
+    )
+    lines.extend(["", "### Core concepts", ""])
+    if summary["core_concepts"]:
+        for concept in summary["core_concepts"]:
+            lines.extend(_compact_concept_markdown(concept) + [""])
+    else:
+        lines.extend(["No core concepts met the presentation criteria.", ""])
+    lines.extend(["### Related concepts", ""])
+    if summary["related_concepts"]:
+        for concept in summary["related_concepts"]:
+            lines.extend(_compact_concept_markdown(concept) + [""])
+    else:
+        lines.extend(["No related concepts met the presentation criteria.", ""])
+    lines.append(f"**Unresolved concepts:** {summary['unresolved_count']}")
+    lines.append("")
+    if summary["rejected_candidate_count"]:
+        lines.append(
+            f"{summary['rejected_candidate_count']} additional candidates were rejected during quality filtering."
         )
+        lines.append("")
     return "\n".join(lines)
 
 
 def _discovered_terms_markdown(profile: TopicProfile | None) -> str:
-    """Build the 'Discovered terms' Markdown section."""
+    """Retained for compatibility; default reports use the compact summary."""
     if profile is None:
         return ""
     lines: list[str] = []
@@ -209,13 +322,10 @@ def _discovered_terms_markdown(profile: TopicProfile | None) -> str:
                 lines.append(f"  - Why: {reason}")
             lines.append("")
     if profile.rejected_terms:
-        lines.append("### Rejected")
+        lines.append(
+            f"{len(profile.rejected_terms)} additional candidates were rejected during quality filtering."
+        )
         lines.append("")
-        for c in profile.rejected_terms:
-            lines.append(f"- **{c.term}** — rejected (score {c.score:.0f}/100, DF {c.document_frequency}, evidence {c.evidence_max}, source {c.source})")
-            for reason in c.reasons:
-                lines.append(f"  - Why: {reason}")
-            lines.append("")
     return "\n".join(lines)
 
 
@@ -241,16 +351,9 @@ def build_markdown_report(
     lines.append("---")
     lines.append("")
 
-    # Discovered terms section.
-    discovered = _discovered_terms_markdown(profile)
-    if discovered:
-        lines.append(discovered)
-        lines.append("---")
-        lines.append("")
-
-    normalized = _normalized_concepts_markdown(concepts)
-    if normalized:
-        lines.append(normalized)
+    concept_summary = _concept_summary_markdown(topic, profile, concepts)
+    if concept_summary:
+        lines.append(concept_summary)
         lines.append("---")
         lines.append("")
 
@@ -333,83 +436,113 @@ def build_markdown_report(
     return "\n".join(lines)
 
 
-def _discovered_terms_html(profile: TopicProfile | None) -> str:
-    """Build the 'Discovered terms' HTML section."""
-    if profile is None:
+def _compact_concept_html(concept: dict) -> str:
+    e = html.escape
+    return (
+        '<li class="concept-item">'
+        f'<span class="concept-name">{e(concept["preferred_label"])}</span>'
+        f'<dl><dt>Vocabulary and concept ID</dt><dd>{e(concept["vocabulary"])} '
+        f'<code>{e(concept["concept_id"])}</code></dd>'
+        f'<dt>Concept type</dt><dd>{e(concept["concept_type"])}</dd>'
+        f'<dt>Supporting articles</dt><dd>{concept["supporting_article_count"]}</dd>'
+        f'<dt>Match method</dt><dd>{e(concept["match_method"])}</dd></dl>'
+        "</li>"
+    )
+
+
+def _technical_concept_item_html(
+    concept: NormalizedConcept,
+    link_count: int,
+) -> str:
+    """Render complete normalized-concept provenance plus aggregate link count."""
+    e = html.escape
+    pmids = ", ".join(concept.supporting_pmids) or "none"
+    source_fields = ", ".join(concept.source_fields) or "none"
+    return (
+        '<li class="concept-item technical-concept-item">'
+        f'<span class="concept-name">{e(concept.preferred_label)}</span>'
+        f'<dl><dt>Vocabulary</dt><dd>{e(concept.vocabulary)}</dd>'
+        f'<dt>Concept ID</dt><dd><code>{e(concept.concept_id)}</code></dd>'
+        f'<dt>Original term</dt><dd>{e(concept.original_term)}</dd>'
+        f'<dt>Concept type</dt><dd>{e(concept.concept_type)}</dd>'
+        f'<dt>Match method</dt><dd>{e(concept.match_method)}</dd>'
+        f'<dt>Confidence</dt><dd>{concept.confidence:.2f}</dd>'
+        f'<dt>Supporting PMIDs</dt><dd>{e(pmids)}</dd>'
+        f'<dt>Source fields</dt><dd>{e(source_fields)}</dd>'
+        f'<dt>Article-concept links</dt><dd>{link_count}</dd></dl>'
+        "</li>"
+    )
+
+
+def _concept_summary_html(
+    topic: str,
+    profile: TopicProfile | None,
+    concepts: ConceptNormalizationResult | None,
+) -> str:
+    """Build compact visible concepts and collapsed technical audit details."""
+    if concepts is None and profile is None:
         return ""
     e = html.escape
-    parts: list[str] = ['<section class="discovered-terms">', '<h2>Discovered terms</h2>']
+    summary = build_concept_summary(topic, profile, concepts)
+    normalized = tuple(concepts.normalized_concepts) if concepts else ()
+    links = tuple(concepts.article_concept_links) if concepts else ()
+    link_counts: dict[str, int] = {}
+    for link in links:
+        link_counts[link.concept_id] = link_counts.get(link.concept_id, 0) + 1
 
-    if not profile.accepted_terms and not profile.rejected_terms:
+    parts = [
+        '<section class="normalized-concepts concept-summary">',
+        '<h2>Medical concept summary</h2>',
+        '<p class="legacy-section-label"><strong>Discovered terms</strong></p>',
+    ]
+    parts.append(
+        f'<p>{summary["total_concepts"]} normalized concepts and {summary["total_links"]} '
+        "article-concept links were retained in the machine-readable audit data.</p>"
+    )
+    for heading, key in (("Core concepts", "core_concepts"), ("Related concepts", "related_concepts")):
+        parts.append(f"<h3>{heading}</h3>")
+        if summary[key]:
+            parts.append('<ul class="concept-list">')
+            parts.extend(_compact_concept_html(concept) for concept in summary[key])
+            parts.append("</ul>")
+        else:
+            parts.append(f'<p class="concept-empty">No {heading.lower()} met the presentation criteria.</p>')
+
+    parts.append(f'<p class="concept-count"><strong>Unresolved concepts:</strong> {summary["unresolved_count"]}</p>')
+    if summary["rejected_candidate_count"]:
         parts.append(
-            '<p class="discovered-empty">No candidate terms were discovered from '
-            "MeSH headings or author keywords.</p>"
+            f'<p class="rejected-count">{summary["rejected_candidate_count"]} additional candidates '
+            "were rejected during quality filtering.</p>"
         )
-    else:
-        if profile.accepted_terms:
-            parts.append('<h3>Accepted</h3>')
-            parts.append('<ul class="term-list">')
-            for c in profile.accepted_terms:
-                reasons_html = "".join(
-                    f'<li class="term-reason">{e(reason)}</li>' for reason in c.reasons
-                )
-                parts.append(
-                    f'<li class="term-item term-accepted">'
-                    f'<span class="term-name">{e(c.term)}</span> '
-                    f'<span class="term-badge accepted">accepted</span> '
-                    f'<span class="term-meta">score {c.score:.0f}/100 · DF {c.document_frequency} · '
-                    f'evidence {e(c.evidence_max)} · source {e(c.source)}</span>'
-                    f'<ul class="term-reasons">{reasons_html}</ul>'
-                    f"</li>"
-                )
-            parts.append("</ul>")
-        if profile.rejected_terms:
-            parts.append("<h3>Rejected</h3>")
-            parts.append('<ul class="term-list">')
-            for c in profile.rejected_terms:
-                reasons_html = "".join(
-                    f'<li class="term-reason">{e(reason)}</li>' for reason in c.reasons
-                )
-                parts.append(
-                    f'<li class="term-item term-rejected">'
-                    f'<span class="term-name">{e(c.term)}</span> '
-                    f'<span class="term-badge rejected">rejected</span> '
-                    f'<span class="term-meta">score {c.score:.0f}/100 · DF {c.document_frequency} · '
-                    f'evidence {e(c.evidence_max)} · source {e(c.source)}</span>'
-                    f'<ul class="term-reasons">{reasons_html}</ul>'
-                    f"</li>"
-                )
-            parts.append("</ul>")
 
-    parts.append("</section>")
-    return "\n".join(parts)
-
-
-def _normalized_concepts_html(concepts: ConceptNormalizationResult | None) -> str:
-    if concepts is None:
-        return ""
-    e = html.escape
-    parts = ['<section class="normalized-concepts">', "<h2>Normalized medical concepts</h2>"]
-    for warning in concepts.warnings:
-        parts.append(f'<p class="concept-warning"><strong>Warning:</strong> {e(warning)}</p>')
-    if not concepts.normalized_concepts:
-        parts.append('<p class="concept-empty">No medical concepts were normalized.</p>')
-    else:
+    unresolved = [concept for concept in normalized if concept.concept_type == "unresolved"]
+    parts.append('<details class="concept-details unresolved-details">')
+    parts.append(f'<summary>Unresolved concept details ({len(unresolved)})</summary>')
+    if unresolved:
         parts.append('<ul class="concept-list">')
-        for concept in concepts.normalized_concepts:
-            pmids = ", ".join(concept.supporting_pmids) or "none"
-            parts.append(
-                '<li class="concept-item">'
-                f'<span class="concept-name">{e(concept.preferred_label)}</span>'
-                f'<dl><dt>Concept ID</dt><dd>{e(concept.concept_id)}</dd>'
-                f'<dt>Vocabulary</dt><dd>{e(concept.vocabulary)}</dd>'
-                f'<dt>Original term</dt><dd>{e(concept.original_term)}</dd>'
-                f'<dt>Confidence</dt><dd>{concept.confidence:.2f}</dd>'
-                f'<dt>Supporting PMIDs</dt><dd>{e(pmids)}</dd>'
-                f'<dt>Match method</dt><dd>{e(concept.match_method)}</dd></dl>'
-                "</li>"
-            )
+        parts.extend(
+            _technical_concept_item_html(concept, link_counts.get(concept.concept_id, 0))
+            for concept in unresolved
+        )
         parts.append("</ul>")
+    else:
+        parts.append("<p>No unresolved concepts.</p>")
+    parts.append("</details>")
+
+    parts.append('<details class="concept-details technical-concept-details">')
+    parts.append("<summary>Technical concept details</summary>")
+    for warning in concepts.warnings if concepts else ():
+        parts.append(f'<p class="concept-warning"><strong>Warning:</strong> {e(warning)}</p>')
+    if normalized:
+        parts.append('<ul class="concept-list">')
+        parts.extend(
+            _technical_concept_item_html(concept, link_counts.get(concept.concept_id, 0))
+            for concept in normalized
+        )
+        parts.append("</ul>")
+    else:
+        parts.append('<p class="concept-empty">No medical concepts were normalized.</p>')
+    parts.append("</details>")
     parts.append("</section>")
     return "\n".join(parts)
 
@@ -566,8 +699,7 @@ def build_html_report(
         )
 
     cards_html = "\n".join(section_html_parts)
-    discovered_html = _discovered_terms_html(profile)
-    concepts_html = _normalized_concepts_html(concepts)
+    concepts_html = _concept_summary_html(topic, profile, concepts)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -838,12 +970,17 @@ def build_html_report(
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
     }}
     .normalized-concepts h2 {{ color: #1a365d; margin-bottom: 1rem; }}
+    .normalized-concepts h3 {{ color: #2d3748; margin: 1rem 0 0.5rem; }}
     .concept-list {{ list-style: none; }}
     .concept-item {{ padding: 0.75rem 0; border-bottom: 1px solid #edf2f7; }}
     .concept-name {{ font-weight: 700; color: #2d3748; }}
-    .concept-item dl {{ display: grid; grid-template-columns: 10rem 1fr; gap: 0.2rem 1rem; }}
+    .concept-item dl {{ display: grid; grid-template-columns: 13rem 1fr; gap: 0.2rem 1rem; }}
     .concept-item dt {{ font-weight: 600; color: #4a5568; }}
     .concept-warning {{ color: #9c4221; margin-bottom: 0.75rem; }}
+    .concept-count, .rejected-count {{ margin-top: 0.75rem; }}
+    .concept-details {{ margin-top: 1rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem; }}
+    .concept-details summary {{ cursor: pointer; font-weight: 600; color: #2b6cb0; }}
+    .concept-details[open] summary {{ margin-bottom: 0.75rem; }}
 
     footer.report-footer {{
       text-align: center;
@@ -871,8 +1008,6 @@ def build_html_report(
         <span><span class="label">Articles</span> {article_count}</span>
       </div>
     </header>
-
-    {discovered_html}
 
     {concepts_html}
 

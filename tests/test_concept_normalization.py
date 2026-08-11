@@ -3,11 +3,12 @@
 from datetime import datetime
 from pathlib import Path
 
+from app.models.concept import ArticleConceptLink, ConceptNormalizationResult, NormalizedConcept
 from app.models.topic_profile import CandidateTerm, TopicProfile
 from app.services.concept_normalization import ARTICLE_MENTIONS_CONCEPT, normalize_medical_concepts
 from app.services.evidence import rank_articles
 from app.services.normalizer import normalize_article, parse_pubmed_articles
-from app.services.persistence import build_html_report, build_markdown_report, build_snapshot
+from app.services.persistence import build_concept_summary, build_html_report, build_markdown_report, build_snapshot
 from app.sources.rxnorm.client import RxNormMatch
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -113,5 +114,119 @@ def test_outputs_include_concepts_and_only_supported_edge_type():
     assert {link["relationship"] for link in snapshot["article_concept_links"]} == {ARTICLE_MENTIONS_CONCEPT}
     forbidden = {"TREATS", "CAUSES", "IMPROVES", "REDUCES_RISK", "ASSOCIATED_WITH"}
     assert forbidden.isdisjoint({link["relationship"] for link in snapshot["article_concept_links"]})
-    assert "## Normalized medical concepts" in markdown
-    assert "Normalized medical concepts" in html
+    assert "## Medical concept summary" in markdown
+    assert "Medical concept summary" in html
+
+
+def _candidate(term, score, df, overlap=0.0, accepted=True):
+    return CandidateTerm(
+        term=term,
+        source="mesh",
+        document_frequency=df,
+        evidence_max="randomized_trial",
+        recency_days=1,
+        direct_topic_overlap=overlap,
+        supporting_articles=tuple(str(i) for i in range(df)),
+        score=score,
+        reasons=(f"private reason for {term}",),
+        accepted=accepted,
+    )
+
+
+def _concept(term, concept_id, pmid_count, *, unresolved=False):
+    return NormalizedConcept(
+        concept_id=concept_id,
+        vocabulary="rxnorm",
+        preferred_label=f"Preferred {term}",
+        original_term=term,
+        concept_type="unresolved" if unresolved else "drug",
+        match_method="approximate" if unresolved else "exact",
+        confidence=0.0 if unresolved else 1.0,
+        supporting_pmids=tuple(str(i) for i in range(pmid_count)),
+        source_fields=("mesh", "abstract"),
+    )
+
+
+def _phase_b11_fixture():
+    accepted = tuple(
+        [_candidate(f"core-{i}", 100 - i, 10 - i, overlap=1.0) for i in range(5)]
+        + [_candidate(f"related-{i}", 90 - i, 8 - i) for i in range(7)]
+    )
+    rejected = tuple(_candidate(f"rejected-secret-{i}", 10, 1, accepted=False) for i in range(46))
+    profile = TopicProfile("core-0 core-1 core-2 core-3 core-4", "query", NOW, accepted, rejected)
+    normalized = tuple(
+        [_concept(f"core-{i}", f"C{i}", 3) for i in range(5)]
+        + [_concept(f"related-{i}", f"R{i}", 2 + (i % 2)) for i in range(7)]
+        + [_concept("unresolved-secret", "unresolved:secret", 2, unresolved=True)]
+        # Duplicate stable identity must never appear twice in the compact summary.
+        + [_concept("related-0", "R0", 2)]
+    )
+    links = tuple(
+        ArticleConceptLink(
+            ARTICLE_MENTIONS_CONCEPT,
+            pmid,
+            concept.concept_id,
+            "mesh",
+            concept.match_method,
+            concept.confidence,
+            "randomized_trial",
+        )
+        for concept in normalized
+        for pmid in concept.supporting_pmids
+    )
+    return profile, ConceptNormalizationResult(normalized, links, ("private warning",))
+
+
+def test_compact_summary_caps_lists_and_has_no_duplicates():
+    profile, concepts = _phase_b11_fixture()
+    summary = build_concept_summary(profile.topic, profile, concepts)
+
+    assert len(summary["core_concepts"]) == 3
+    assert len(summary["related_concepts"]) == 5
+    identities = [
+        (item["vocabulary"], item["concept_id"])
+        for item in summary["core_concepts"] + summary["related_concepts"]
+    ]
+    assert len(identities) == len(set(identities))
+    assert summary["rejected_candidate_count"] == 46
+    assert summary["unresolved_count"] == 1
+
+
+def test_default_reports_hide_rejected_terms_and_individual_links():
+    profile, concepts = _phase_b11_fixture()
+    markdown = build_markdown_report(profile.topic, NOW, ranked=[], profile=profile, concepts=concepts)
+    html = build_html_report(profile.topic, NOW, ranked=[], profile=profile, concepts=concepts)
+
+    expected = "46 additional candidates were rejected during quality filtering."
+    assert expected in markdown
+    assert expected in html
+    assert "rejected-secret-0" not in markdown
+    assert "rejected-secret-0" not in html
+    assert "relationship" not in markdown
+    assert "ARTICLE_MENTIONS_CONCEPT" not in html
+    assert f"{len(concepts.article_concept_links)} article-concept links" in markdown
+    assert f"{len(concepts.article_concept_links)} article-concept links" in html
+
+
+def test_full_audit_data_remains_in_snapshot_json():
+    profile, concepts = _phase_b11_fixture()
+    snapshot = build_snapshot(profile.topic, profile.query, NOW, ranked=[], profile=profile, concepts=concepts)
+
+    assert len(snapshot["discovered_terms"]["rejected"]) == 46
+    assert snapshot["discovered_terms"]["rejected"][0]["reasons"]
+    assert len(snapshot["normalized_concepts"]) == len(concepts.normalized_concepts)
+    assert len(snapshot["article_concept_links"]) == len(concepts.article_concept_links)
+    assert snapshot["concept_normalization_warnings"] == ["private warning"]
+    assert snapshot["concept_summary"]["total_links"] == len(concepts.article_concept_links)
+
+
+def test_html_technical_and_unresolved_details_are_collapsed():
+    profile, concepts = _phase_b11_fixture()
+    html = build_html_report(profile.topic, NOW, ranked=[], profile=profile, concepts=concepts)
+
+    assert '<details class="concept-details technical-concept-details">' in html
+    assert '<summary>Technical concept details</summary>' in html
+    assert '<details class="concept-details technical-concept-details" open>' not in html
+    assert '<details class="concept-details unresolved-details">' in html
+    assert "unresolved-secret" in html
+    assert "Supporting PMIDs" in html
