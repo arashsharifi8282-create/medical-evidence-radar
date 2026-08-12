@@ -91,6 +91,23 @@ def test_save_snapshot_uses_safe_query_slug_and_collision_suffix(tmp_path: Path)
     assert second.exists()
 
 
+def test_save_snapshot_bounds_long_query_filename_with_stable_hash(tmp_path: Path):
+    query = "MASLD mechanisms " + "resmetirom semaglutide FGF21 pan-PPAR " * 20
+    snapshot = build_snapshot(
+        topic=query,
+        query=query,
+        fetched_at=FIXED_DT,
+        articles=[],
+    )
+
+    path = save_snapshot(snapshot, output_dir=tmp_path, fetched_at=FIXED_DT, query=query)
+
+    assert path.exists()
+    assert len(path.stem) <= 120
+    assert path.stem.startswith("masld_mechanisms_resmetirom")
+    assert len(path.stem.rsplit("_", 1)[-1]) == 12
+
+
 def test_save_markdown_report_writes_timestamped_md(tmp_path: Path):
     articles = _sample_articles()
     markdown = build_markdown_report(

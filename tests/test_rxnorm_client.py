@@ -85,3 +85,46 @@ def test_unresolved_result_is_cached_and_not_requested_twice(tmp_path):
     assert first_call_count == 2
     assert len(session.calls) == first_call_count
     assert len(list(tmp_path.glob("*.json"))) == 1
+
+
+def test_class_cache_keeps_only_structural_parent_relationships(tmp_path: Path):
+    cache = tmp_path / "classes_2677894.json"
+    cache.write_text(
+        json.dumps(
+            {
+                "classes": [
+                    {
+                        "class_id": "A05BA",
+                        "preferred_label": "Liver therapy",
+                        "vocabulary": "ATC",
+                        "relationship": "has_member",
+                        "source_rxcui": "2677894",
+                        "synonyms": [],
+                    },
+                    {
+                        "class_id": "D065626",
+                        "preferred_label": "Non-alcoholic Fatty Liver Disease",
+                        "vocabulary": "MEDRT",
+                        "relationship": "may_treat",
+                        "source_rxcui": "2677894",
+                        "synonyms": [],
+                    },
+                    {
+                        "class_id": "N0000000237",
+                        "preferred_label": "Thyroid Hormone Receptor Agonists",
+                        "vocabulary": "MEDRT",
+                        "relationship": "has_moa",
+                        "source_rxcui": "2677894",
+                        "synonyms": [],
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    classes = RxNormClient(cache_dir=tmp_path).classes_for_rxcui("2677894")
+
+    assert [(item.class_id, item.relationship) for item in classes] == [
+        ("A05BA", "has_member")
+    ]

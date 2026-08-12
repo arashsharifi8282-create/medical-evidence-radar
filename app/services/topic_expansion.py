@@ -10,6 +10,7 @@ Title/abstract text only boosts the score of an already-present candidate.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from datetime import datetime
@@ -306,7 +307,12 @@ DEFAULT_PROFILE_DIR = Path("data/topic_profiles")
 def _slugify(topic: str) -> str:
     """Create a deterministic filesystem-safe slug from a topic string."""
     slug = re.sub(r"[^a-z0-9]+", "_", topic.lower()).strip("_")
-    return slug or "topic"
+    if not slug:
+        return "topic"
+    if len(slug) > 120:
+        digest = hashlib.sha256(topic.encode("utf-8")).hexdigest()[:12]
+        slug = f"{slug[:107].rstrip('_')}_{digest}"
+    return slug
 
 
 def _candidate_to_dict(c: CandidateTerm) -> dict:

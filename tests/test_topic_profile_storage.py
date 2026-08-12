@@ -53,6 +53,14 @@ def test_profile_roundtrip(tmp_path: Path):
         assert loaded.accepted_terms[0].score == profile.accepted_terms[0].score
 
 
+def test_profile_path_bounds_long_topic_filename(tmp_path):
+    topic = "MASLD mechanisms " + "resmetirom semaglutide FGF21 pan PPAR " * 20
+    path = profile_path_for_topic(topic, output_dir=tmp_path)
+
+    assert len(path.stem) <= 120
+    assert len(path.stem.rsplit("_", 1)[-1]) == 12
+
+
 def test_load_missing_returns_none(tmp_path: Path):
     assert load_topic_profile(tmp_path / "missing.json") is None
 

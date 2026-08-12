@@ -8,6 +8,7 @@ and standalone HTML reports to timestamped files. No network calls are made here
 from __future__ import annotations
 
 import html
+import hashlib
 import json
 import re
 import unicodedata
@@ -17,6 +18,14 @@ from pathlib import Path
 from app.models.article import Article
 from app.models.assessment import RankedArticle
 from app.models.concept import ArticleConceptLink, ConceptNormalizationResult, NormalizedConcept
+from app.models.relevance import (
+    AssessedCandidate,
+    ClinicalRelevanceAssessment,
+    ClinicalTarget,
+    ConfirmedDrugClass,
+    RelevanceSignal,
+    SearchQualitySummary,
+)
 from app.services.evidence import assess_article
 from app.models.topic_profile import CandidateTerm, TopicProfile
 
@@ -24,6 +33,7 @@ DEFAULT_JSON_DIR = Path("data/raw/pubmed")
 DEFAULT_MD_DIR = Path("reports/pubmed")
 DEFAULT_HTML_DIR = Path("reports/pubmed")
 DEFAULT_CONCEPT_DIR = Path("data/concepts")
+MAX_QUERY_SLUG_LENGTH = 120
 
 
 def _article_to_dict(article: Article) -> dict:
@@ -99,7 +109,85 @@ def _ranked_to_dict(r: RankedArticle) -> dict:
     """Convert a :class:`RankedArticle` into a JSON-serializable dict."""
     d = _article_to_dict(r.article)
     d["assessment"] = _assessment_to_dict(r.assessment)
+    if r.clinical_relevance:
+        d["clinical_relevance"] = _clinical_relevance_to_dict(r.clinical_relevance)
     return d
+
+
+def _signal_to_dict(signal: RelevanceSignal) -> dict:
+    return {
+        "role": signal.role,
+        "matched_text": signal.matched_text,
+        "normalized_label": signal.normalized_label,
+        "concept_id": signal.concept_id,
+        "vocabulary": signal.vocabulary,
+        "source_field": signal.source_field,
+        "weight": signal.weight,
+        "relationship_source": signal.relationship_source,
+    }
+
+
+def _clinical_relevance_to_dict(assessment: ClinicalRelevanceAssessment) -> dict:
+    return {
+        "pmid": assessment.pmid,
+        "relevance_class": assessment.relevance_class,
+        "relevance_score": assessment.relevance_score,
+        "matched_intervention_signals": [
+            _signal_to_dict(item) for item in assessment.intervention_signals
+        ],
+        "matched_condition_signals": [
+            _signal_to_dict(item) for item in assessment.condition_signals
+        ],
+        "decision": assessment.decision,
+        "reason": assessment.reason,
+        "assessed_at": assessment.assessed_at.isoformat(),
+    }
+
+
+def _class_to_dict(item: ConfirmedDrugClass) -> dict:
+    return {
+        "class_id": item.class_id,
+        "preferred_label": item.preferred_label,
+        "vocabulary": item.vocabulary,
+        "relationship": item.relationship,
+        "source_rxcui": item.source_rxcui,
+        "synonyms": list(item.synonyms),
+    }
+
+
+def _target_to_dict(target: ClinicalTarget) -> dict:
+    return {
+        "intervention_term": target.intervention_term,
+        "condition_term": target.condition_term,
+        "extraction_method": target.extraction_method,
+        "intervention_rxcuis": list(target.intervention_rxcuis),
+        "intervention_labels": list(target.intervention_labels),
+        "condition_mesh_uis": list(target.condition_mesh_uis),
+        "condition_labels": list(target.condition_labels),
+        "confirmed_classes": [_class_to_dict(item) for item in target.confirmed_classes],
+        "warnings": list(target.warnings),
+    }
+
+
+def _quality_to_dict(summary: SearchQualitySummary) -> dict:
+    return {
+        "total_pubmed_result_count": summary.total_result_count,
+        "fetched_candidate_count": summary.fetched_candidate_count,
+        "raw_candidate_count": summary.raw_candidate_count,
+        "included_count": summary.included_count,
+        "excluded_count": summary.excluded_count,
+        "direct_count": summary.direct_count,
+        "class_level_count": summary.class_level_count,
+        "contextual_count": summary.contextual_count,
+        "irrelevant_count": summary.irrelevant_count,
+        "excluded_irrelevant_count": summary.excluded_irrelevant_count,
+        "excluded_report_limit_count": summary.excluded_report_limit_count,
+        "duplicate_count": summary.duplicate_count,
+        "duplicate_pmids": list(summary.duplicate_pmids),
+        "original_query": summary.query,
+        "candidate_limit": summary.candidate_limit,
+        "report_limit": summary.report_limit,
+    }
 
 
 def _concept_to_dict(concept: NormalizedConcept) -> dict:
@@ -230,16 +318,37 @@ def build_snapshot(
     profile: TopicProfile | None = None,
     concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
+    candidates: tuple[AssessedCandidate, ...] | None = None,
+    clinical_target: ClinicalTarget | None = None,
+    search_quality: SearchQualitySummary | None = None,
 ) -> dict:
     """Build the JSON snapshot payload."""
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
+    ranked_by_pmid = {item.article.pmid: item for item in ranked}
+    if candidates is not None:
+        serialized_articles = []
+        for candidate in candidates:
+            ranked_item = ranked_by_pmid.get(candidate.article.pmid)
+            payload = _article_to_dict(candidate.article)
+            payload["assessment"] = (
+                _assessment_to_dict(ranked_item.assessment) if ranked_item else None
+            )
+            payload["clinical_relevance"] = _clinical_relevance_to_dict(candidate.relevance)
+            serialized_articles.append(payload)
+    else:
+        serialized_articles = [_ranked_to_dict(r) for r in ranked]
     snapshot = {
+        "schema_version": "b2" if candidates is not None else "legacy",
         "topic": topic,
         "query": query,
         "fetched_at": fetched_at.isoformat(),
-        "articles": [_ranked_to_dict(r) for r in ranked],
+        "articles": serialized_articles,
     }
+    if clinical_target is not None:
+        snapshot["clinical_target"] = _target_to_dict(clinical_target)
+    if search_quality is not None:
+        snapshot["search_quality"] = _quality_to_dict(search_quality)
     snapshot["discovered_terms"] = {
         "accepted": [_candidate_to_dict(c) for c in profile.accepted_terms] if profile else [],
         "rejected": [_candidate_to_dict(c) for c in profile.rejected_terms] if profile else [],
@@ -336,6 +445,7 @@ def build_markdown_report(
     profile: TopicProfile | None = None,
     concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
+    search_quality: SearchQualitySummary | None = None,
 ) -> str:
     """Build a human-readable Markdown report."""
     legacy_articles = ranked is None and articles is not None
@@ -348,6 +458,28 @@ def build_markdown_report(
     lines.append("")
     lines.append(f"**Articles:** {len(ranked)}")
     lines.append("")
+    if search_quality:
+        total = (
+            search_quality.total_result_count
+            if search_quality.total_result_count is not None
+            else "not available"
+        )
+        lines.extend(
+            [
+                "## Search quality",
+                "",
+                f"- **Original query:** {search_quality.query}",
+                f"- **PubMed results:** {total}",
+                f"- **Candidates fetched:** {search_quality.fetched_candidate_count} "
+                f"(limit {search_quality.candidate_limit})",
+                f"- **Included / excluded:** {search_quality.included_count} / {search_quality.excluded_count} "
+                f"(report limit {search_quality.report_limit})",
+                f"- **Direct / class-level / contextual / irrelevant:** "
+                f"{search_quality.direct_count} / {search_quality.class_level_count} / "
+                f"{search_quality.contextual_count} / {search_quality.irrelevant_count}",
+                "",
+            ]
+        )
     lines.append("---")
     lines.append("")
 
@@ -379,14 +511,32 @@ def build_markdown_report(
             lines.append("")
         return "\n".join(lines)
 
-    # Group by section.
-    sections = {
-        "key_evidence": "Key evidence",
-        "important_updates": "Important updates",
-        "exploratory_evidence": "Exploratory evidence",
-    }
-    for section_key, section_label in sections.items():
-        section_articles = [r for r in ranked if r.assessment.section == section_key]
+    b2_mode = any(item.clinical_relevance for item in ranked)
+    sections = (
+        (
+            ("direct", "Key evidence"),
+            ("class_level", "Class-level evidence"),
+            ("contextual", "Background/contextual evidence"),
+        )
+        if b2_mode
+        else tuple(
+            {
+                "key_evidence": "Key evidence",
+                "important_updates": "Important updates",
+                "exploratory_evidence": "Exploratory evidence",
+            }.items()
+        )
+    )
+    for section_key, section_label in sections:
+        section_articles = [
+            r
+            for r in ranked
+            if (
+                r.clinical_relevance.relevance_class == section_key
+                if b2_mode and r.clinical_relevance
+                else r.assessment.section == section_key
+            )
+        ]
         if not section_articles:
             continue
         lines.append(f"## {section_label}")
@@ -398,6 +548,11 @@ def build_markdown_report(
             lines.append(f"## {i}. {article.title}")
             lines.append("")
             lines.append(f"- **Evidence level:** {a.evidence_level_label}")
+            if r.clinical_relevance:
+                lines.append(
+                    f"- **Clinical relevance:** {r.clinical_relevance.relevance_class} "
+                    f"({r.clinical_relevance.relevance_score}/100)"
+                )
             lines.append(f"- **Evidence score:** {a.evidence_score}/100")
             lines.append(f"- **Relevance score:** {a.relevance_score}/100")
             lines.append(f"- **Overall score:** {a.overall_score}/100")
@@ -419,7 +574,9 @@ def build_markdown_report(
                 lines.append(f"- **DOI:** {article.doi}")
             if article.pubmed_url:
                 lines.append(f"- **PubMed:** [Open in PubMed]({article.pubmed_url})")
-            if a.reasons:
+            if r.clinical_relevance:
+                lines.append(f"- **Why included:** {r.clinical_relevance.reason}")
+            elif a.reasons:
                 lines.append(f"- **Why included:** {'; '.join(a.reasons)}")
             if a.limitations:
                 lines.append(f"- **Limitations:** {'; '.join(a.limitations)}")
@@ -554,6 +711,7 @@ def build_html_report(
     profile: TopicProfile | None = None,
     concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
+    search_quality: SearchQualitySummary | None = None,
 ) -> str:
     """Build a polished, standalone HTML report directly from ranked data.
 
@@ -567,16 +725,32 @@ def build_html_report(
     esc_fetched_at = e(fetched_at.isoformat())
     article_count = len(ranked)
 
-    # Group by section.
-    sections = {
-        "key_evidence": "Key evidence",
-        "important_updates": "Important updates",
-        "exploratory_evidence": "Exploratory evidence",
-    }
+    b2_mode = any(item.clinical_relevance for item in ranked)
+    sections = (
+        {
+            "direct": "Key evidence",
+            "class_level": "Class-level evidence",
+            "contextual": "Background/contextual evidence",
+        }
+        if b2_mode
+        else {
+            "key_evidence": "Key evidence",
+            "important_updates": "Important updates",
+            "exploratory_evidence": "Exploratory evidence",
+        }
+    )
 
     section_html_parts: list[str] = []
     for section_key, section_label in sections.items():
-        section_articles = [r for r in ranked if r.assessment.section == section_key]
+        section_articles = [
+            r
+            for r in ranked
+            if (
+                r.clinical_relevance.relevance_class == section_key
+                if b2_mode and r.clinical_relevance
+                else r.assessment.section == section_key
+            )
+        ]
         if not section_articles:
             continue
 
@@ -598,6 +772,13 @@ def build_html_report(
             )
 
             meta_items: list[str] = []
+            if r.clinical_relevance:
+                meta_items.append(
+                    f'<div class="meta-item"><span class="meta-label">Clinical relevance:</span> '
+                    f'<span class="meta-value relevance-{e(r.clinical_relevance.relevance_class)}">'
+                    f'{e(r.clinical_relevance.relevance_class.replace("_", " ").title())} '
+                    f'({r.clinical_relevance.relevance_score}/100)</span></div>'
+                )
             meta_items.append(
                 f'<div class="meta-item"><span class="meta-label">Evidence level:</span> '
                 f'<span class="meta-value">{e(a.evidence_level_label)}</span></div>'
@@ -651,7 +832,12 @@ def build_html_report(
                     f'<a class="meta-link" href="{esc_url}" target="_blank" rel="noopener noreferrer">'
                     f"Open in PubMed</a></div>"
                 )
-            if a.reasons:
+            if r.clinical_relevance:
+                meta_items.append(
+                    f'<div class="meta-item"><span class="meta-label">Why included:</span> '
+                    f'<span class="meta-value">{e(r.clinical_relevance.reason)}</span></div>'
+                )
+            elif a.reasons:
                 reasons_html = "".join(
                     f'<li class="reason-item">{e(reason)}</li>' for reason in a.reasons
                 )
@@ -691,15 +877,38 @@ def build_html_report(
 </article>"""
             )
 
-        section_html_parts.append(
-            f'<section class="report-section" id="{section_key}">'
-            f'<h2 class="section-heading">{e(section_label)}</h2>'
-            f'{"".join(cards)}'
-            f"</section>"
+        content = (
+            f'<h2 class="section-heading">{e(section_label)}</h2>{"".join(cards)}'
         )
+        if b2_mode and section_key == "contextual":
+            section_html_parts.append(
+                f'<details class="report-section contextual-evidence" id="{section_key}">'
+                f'<summary>{e(section_label)} ({len(cards)})</summary>{"".join(cards)}</details>'
+            )
+        else:
+            section_html_parts.append(
+                f'<section class="report-section" id="{section_key}">{content}</section>'
+            )
 
     cards_html = "\n".join(section_html_parts)
     concepts_html = _concept_summary_html(topic, profile, concepts)
+    quality_html = ""
+    if search_quality:
+        total = (
+            str(search_quality.total_result_count)
+            if search_quality.total_result_count is not None
+            else "Not available"
+        )
+        quality_html = f'''<section class="search-quality">
+  <h2>Search quality</h2>
+  <dl>
+    <dt>Original query</dt><dd>{e(search_quality.query)}</dd>
+    <dt>PubMed results</dt><dd>{e(total)}</dd>
+    <dt>Candidates fetched</dt><dd>{search_quality.fetched_candidate_count} (limit {search_quality.candidate_limit})</dd>
+    <dt>Included / excluded</dt><dd>{search_quality.included_count} / {search_quality.excluded_count} (report limit {search_quality.report_limit})</dd>
+    <dt>Direct / class-level / contextual / irrelevant</dt><dd>{search_quality.direct_count} / {search_quality.class_level_count} / {search_quality.contextual_count} / {search_quality.irrelevant_count}</dd>
+  </dl>
+</section>'''
 
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -765,6 +974,14 @@ def build_html_report(
     .report-section {{
       margin-bottom: 2.5rem;
     }}
+
+    .search-quality {{ background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;
+      padding: 1.25rem 1.5rem; margin-bottom: 2rem; }}
+    .search-quality h2 {{ color: #1a365d; margin-bottom: 0.75rem; }}
+    .search-quality dl {{ display: grid; grid-template-columns: 14rem 1fr; gap: 0.3rem 1rem; }}
+    .search-quality dt {{ font-weight: 600; color: #4a5568; }}
+    .contextual-evidence > summary {{ cursor: pointer; color: #1a365d; font-weight: 700;
+      font-size: 1.2rem; margin-bottom: 1rem; }}
 
     .section-heading {{
       font-size: 1.4rem;
@@ -1009,6 +1226,8 @@ def build_html_report(
       </div>
     </header>
 
+    {quality_html}
+
     {concepts_html}
 
     {cards_html}
@@ -1040,6 +1259,9 @@ def _query_slug(query: str) -> str:
     slug = re.sub(r"[\s_-]+", "_", normalized).strip("._-")
     if not slug or slug.upper() in {"CON", "PRN", "AUX", "NUL"}:
         return "query"
+    if len(slug) > MAX_QUERY_SLUG_LENGTH:
+        digest = hashlib.sha256(query.encode("utf-8")).hexdigest()[:12]
+        slug = f"{slug[:MAX_QUERY_SLUG_LENGTH - len(digest) - 1].rstrip('._-')}_{digest}"
     return slug
 
 

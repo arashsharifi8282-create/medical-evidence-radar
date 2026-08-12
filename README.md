@@ -1,14 +1,14 @@
 # Medical Evidence Radar
 
-Phase A fetches and transparently ranks recent PubMed evidence. Phase B1 adds
-explainable medical concept normalization from PubMed MeSH metadata and the
-official public NLM RxNorm API.
+Phase A transparently ranks PubMed evidence, Phase B1 adds explainable concept
+normalization, and Phase B2 deterministically filters a larger recent candidate
+pool for direct clinical relevance before Phase-A ranking.
 
 ## Scope
 
 - **Source:** PubMed only (EUtils API)
 - **Topic:** any free-text PubMed topic (the default is `GLP-1-based therapies`)
-- **Goal:** fetch 10 recent results, normalize them into `Article` records, classify and rank evidence, and group articles into report sections
+- **Goal:** fetch 50 recent candidates by default, assess every candidate, and show at most 10 clinically relevant articles by default
 - **Topic expansion:** discover recurring MeSH headings and author keywords; accepted and rejected terms are stored for the topic without changing the original retrieval query
 - **Persistence:** optional local JSON snapshot + Markdown report + standalone HTML report + topic-profile JSON (no database, no hosting)
 - **Concept normalization:** retain PubMed MeSH identifiers and normalize only accepted discovered terms against RxNorm, preserving unresolved terms
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Fetch and print the 10 most recent articles for the default query:
+Fetch and assess the 50 most recent candidates, then print up to 10 report articles:
 
 ```bash
 python -m app.sources.pubmed.cli
@@ -58,6 +58,19 @@ and is also used for the transparent relevance score:
 python -m app.sources.pubmed.cli --topic "GLP-1 receptor agonists for obesity" --save
 ```
 
+Candidate and visible report limits are independent:
+
+```bash
+python -m app.sources.pubmed.cli --topic "losartan efficacy and safety in hypertension" \
+  --intervention losartan --condition hypertension \
+  --candidate-limit 50 --report-limit 10 --save
+```
+
+`--intervention` and `--condition` are optional for backward compatibility. Use
+them when the free-text topic does not follow a clear `<intervention> for/in
+<condition>` form. PubMed retrieval continues to use the original topic verbatim
+with `sort=pub_date`; no LLM or generated query is used.
+
 To open the HTML report, simply double-click the file or open it in any browser:
 
 ```bash
@@ -72,9 +85,22 @@ is HTML-escaped for safe display.
 
 ```json
 {
-  "topic": "GLP-1-based therapies",
+  "schema_version": "b2",
+  "topic": "losartan efficacy and safety in hypertension",
   "query": "GLP-1-based therapies",
   "fetched_at": "2026-08-10T09:30:00",
+  "search_quality": {
+    "total_pubmed_result_count": 127,
+    "fetched_candidate_count": 50,
+    "included_count": 10,
+    "excluded_count": 40,
+    "direct_count": 6,
+    "class_level_count": 3,
+    "contextual_count": 12,
+    "irrelevant_count": 29,
+    "candidate_limit": 50,
+    "report_limit": 10
+  },
   "articles": [
     {
       "pmid": "38522001",
@@ -87,7 +113,16 @@ is HTML-escaped for safe display.
       "publication_types": ["Journal Article", "Systematic Review"],
       "doi": "10.2337/dc24-0123",
       "pubmed_url": "https://pubmed.ncbi.nlm.nih.gov/38522001/",
-      "source": "pubmed"
+      "source": "pubmed",
+      "clinical_relevance": {
+        "relevance_class": "direct",
+        "relevance_score": 100,
+        "matched_intervention_signals": [{"source_field": "title", "weight": 30}],
+        "matched_condition_signals": [{"source_field": "mesh_major", "weight": 30}],
+        "decision": "included_direct",
+        "reason": "Included as direct evidence: ...",
+        "assessed_at": "2026-08-11T09:00:00"
+      }
     }
   ],
   "normalized_concepts": [
@@ -117,8 +152,11 @@ is HTML-escaped for safe display.
 }
 ```
 
-Each article also retains `mesh_descriptors` with descriptor text, MeSH UI,
-`major_topic`, and `supporting_pmid` directly from EFetch XML.
+Every fetched candidate remains in JSON, including candidates excluded as
+irrelevant or by the report limit. Each retains its source-field signals,
+decision, human-readable reason, and assessment timestamp. Articles also retain
+`mesh_descriptors` with descriptor text, MeSH UI, `major_topic`, and
+`supporting_pmid` directly from EFetch XML.
 
 ### Markdown report structure
 
@@ -159,6 +197,28 @@ Phase A uses deterministic, explainable rules—there is no LLM or opaque model:
 - Each article receives evidence, lexical relevance, and overall scores, plus reasons and limitations.
 - Reports are divided into `Key evidence`, `Important updates`, and `Exploratory evidence`; future journal-issue dates are kept out of the key-evidence section.
 - MeSH headings and author keywords occurring in at least two fetched articles are scored using document frequency, evidence quality, recency, and topic overlap. Terms are accepted or rejected transparently and merged into `data/topic_profiles` across runs.
+
+### Phase B2 clinical relevance
+
+- Every unique candidate is classified as `direct`, `class_level`, `contextual`,
+  or `irrelevant` before Phase-A evidence ranking.
+- A direct match requires both intervention and condition support. Field weights
+  are transparent: title and major MeSH `30`, ordinary MeSH `20`, author keyword
+  `18`, and abstract `10`, capped at 50 points per target side.
+- Class-level evidence requires an official RxClass ATC or MED-RT **structural
+  parent-membership** relationship for an RxNorm-confirmed intervention.
+  Indication (`may_treat`), mechanism, physiologic-effect, and ingredient links
+  are not treated as parent drug classes. Without a confirmed parent
+  relationship, the article remains contextual rather than being guessed as
+  class-level.
+- Final ordering is relevance class, B2 score, existing Phase-A section/score,
+  publication date, and PMID. Direct evidence therefore precedes class-level and
+  contextual evidence.
+- Only direct articles appear under `Key evidence`; class-level evidence has its
+  own section, contextual evidence is background (collapsed in HTML), and
+  irrelevant articles do not appear in default Markdown/HTML.
+- The compact search-quality summary reports PubMed total count when available,
+  candidate/inclusion/exclusion counts, class counts, original query, and limits.
 
 ### Phase B1 concept normalization
 
@@ -204,9 +264,12 @@ app/
   models/assessment.py        # EvidenceAssessment and RankedArticle dataclasses
   models/topic_profile.py     # CandidateTerm and TopicProfile dataclasses
   models/concept.py           # NormalizedConcept and safe article-link models
+  models/retrieval.py         # PubMed count/candidate retrieval metadata
+  models/relevance.py         # B2 targets, signals, decisions, and run summary
   services/evidence.py        # Rule-based evidence classification and ranking
   services/topic_expansion.py # MeSH/keyword discovery and profile persistence
   services/concept_normalization.py # Source-backed MeSH/RxNorm normalization
+  services/relevance.py       # Field-weighted clinical filtering before Phase A
   services/persistence.py    # JSON snapshot + Markdown + HTML report writers
   sources/pubmed/client.py   # ESearch / ESummary / EFetch HTTP client
   sources/pubmed/cli.py      # Orchestrator: ESearch -> EFetch -> normalize -> optional save

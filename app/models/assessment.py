@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 
 from app.models.article import Article
+from app.models.relevance import ClinicalRelevanceAssessment
 
 # Evidence level — a closed set of 6 categories.
 EvidenceLevel = str
@@ -38,3 +39,4 @@ class RankedArticle:
 
     article: Article
     assessment: EvidenceAssessment
+    clinical_relevance: ClinicalRelevanceAssessment | None = None

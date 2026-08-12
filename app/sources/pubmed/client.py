@@ -11,6 +11,8 @@ import time
 
 import requests
 
+from app.models.retrieval import PubMedSearchResult
+
 DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
 DEFAULT_POLL_DELAY = 0.34  # seconds between outbound calls (NCBI politeness)
 
@@ -28,8 +30,8 @@ class PubMedClient:
         self.base_url = base_url.rstrip("/")
         self.poll_delay = poll_delay
 
-    def esearch(self, term: str, retmax: int = 10) -> list[str]:
-        """Return a list of PMIDs matching ``term``, newest first."""
+    def search(self, term: str, retmax: int = 10) -> PubMedSearchResult:
+        """Return ordered PMIDs and the full PubMed result count."""
         params = {
             "db": "pubmed",
             "term": term,
@@ -38,7 +40,20 @@ class PubMedClient:
             "retmode": "json",
         }
         data = self._get_json("esearch.fcgi", params)
-        return data.get("esearchresult", {}).get("idlist", [])
+        result = data.get("esearchresult", {})
+        raw_count = result.get("count")
+        try:
+            total_count = int(raw_count) if raw_count is not None else None
+        except (TypeError, ValueError):
+            total_count = None
+        return PubMedSearchResult(
+            pmids=tuple(str(pmid) for pmid in result.get("idlist", [])),
+            total_count=total_count,
+        )
+
+    def esearch(self, term: str, retmax: int = 10) -> list[str]:
+        """Compatibility API returning only PMIDs, newest first."""
+        return list(self.search(term, retmax=retmax).pmids)
 
     def esummary(self, pmids: list[str]) -> dict:
         """Return ESummary JSON metadata for the given PMIDs.
