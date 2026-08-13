@@ -38,6 +38,7 @@ class StudyAssessment:
     prospective: TriState
     retrospective: TriState
     multicenter: TriState
+    treatment_duration_text: str | None
     follow_up_text: str | None
     data_source_type: str
     limitation_codes: tuple[str, ...]

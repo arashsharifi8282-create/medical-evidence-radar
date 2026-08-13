@@ -1,6 +1,8 @@
 """Offline regression coverage for Phase B3 study-design triage."""
 
 from datetime import datetime
+import json
+from pathlib import Path
 
 from app.models.article import AbstractSection, Article
 from app.services.evidence import assess_article, rank_articles
@@ -14,6 +16,19 @@ def article(*, title="Study", abstract="", types=("Journal Article",), sections=
         abstract=abstract,
         publication_types=types,
         abstract_sections=tuple(AbstractSection(label, text) for label, text in sections),
+    )
+
+
+def frozen_article(pmid: str) -> Article:
+    path = Path(__file__).parent / "fixtures" / "acyclovir_b3_1" / "frozen_articles.jsonl"
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+    row = next(item for item in rows if item["pmid"] == pmid)
+    return Article(
+        pmid=row["pmid"],
+        title=row["title"],
+        abstract=row["abstract"],
+        publication_types=tuple(row["publication_types"]),
+        keywords=tuple(row["keywords"]),
     )
 
 
@@ -136,8 +151,78 @@ def test_comparator_follow_up_and_data_source_are_preserved():
     ))
     assert result.comparator_status == "reported"
     assert "placebo" in result.comparator_text.casefold()
-    assert result.follow_up_text is not None
+    assert result.treatment_duration_text is not None
+    assert result.follow_up_text is None
     assert result.data_source_type == "EHR"
+
+
+def test_real_world_acyclovir_sample_sizes_and_duration_are_extracted():
+    enrolled = assess_study_design(article(
+        title="Randomized clinical trial of famciclovir or acyclovir for the treatment of herpes zoster in adults.",
+        abstract="One hundred and seventy-four patients were enrolled and randomized; 151 of these patients completed treatment.",
+        types=("Journal Article", "Randomized Controlled Trial"),
+    ))
+    randomized = assess_study_design(article(
+        abstract="A total of 87 patients were randomized to treatment.",
+        types=("Randomized Controlled Trial",),
+    ))
+    participants = assess_study_design(article(
+        abstract="This cohort included 120 participants with acute herpes zoster.",
+    ))
+    meta = assess_study_design(article(
+        title="Network meta-analysis of antiviral agents",
+        abstract="A total of 17 randomized control trials with 5,579 participants were included in this study.",
+        types=("Systematic Review", "Network Meta-Analysis", "Journal Article"),
+    ))
+    large_rct = assess_study_design(article(
+        title="Improved therapy study",
+        abstract="A randomized, double-blind study in 1,227 immunocompetent patients with herpes zoster treated for 7 days and assessed up to 24 weeks.",
+        types=("Journal Article",),
+    ))
+    pk = assess_study_design(article(
+        abstract="A total of 37 immunocompromised children were enrolled on one of two studies. Pharmacokinetic data are available for 32 patients.",
+        types=("Journal Article",),
+    ))
+
+    assert enrolled.sample_size == 174
+    assert randomized.sample_size == 87
+    assert participants.sample_size == 120
+    assert meta.design_family == "systematic_review_meta_analysis"
+    assert meta.sample_size == 5579
+    assert large_rct.sample_size == 1227
+    assert "7 days" in (large_rct.treatment_duration_text or "")
+    assert "24 weeks" in (large_rct.follow_up_text or "")
+    assert pk.sample_size == 37
+    assert any(span.source_type == "pk_data" and "32 patients" in span.text for span in pk.supporting_spans)
+
+
+def test_human_rct_with_in_vitro_background_remains_human():
+    result = assess_study_design(article(
+        title="Randomized trial in patients with herpes zoster",
+        abstract="Patients were randomized to treatment for 7 days. In conclusion, the greater in vitro antiviral activity may explain the findings.",
+        types=("Randomized Controlled Trial",),
+    ))
+    assert result.design_family == "randomized_controlled_trial"
+    assert result.population_scope == "human"
+    assert result.evidence_tier == "higher_strength"
+
+
+def test_frozen_acyclovir_fixture_replays_key_study_design_failures():
+    network = assess_study_design(frozen_article("37535772"))
+    famciclovir = assess_study_design(frozen_article("29746903"))
+    pk = assess_study_design(frozen_article("18561175"))
+    brivudin = assess_study_design(frozen_article("12834860"))
+    rat = assess_study_design(frozen_article("22270746"))
+
+    assert network.design_family == "systematic_review_meta_analysis"
+    assert network.sample_size == 5579
+    assert famciclovir.sample_size == 174
+    assert famciclovir.treatment_duration_text and "7 days" in famciclovir.treatment_duration_text
+    assert pk.sample_size == 37
+    assert any(span.source_type == "pk_data" for span in pk.supporting_spans)
+    assert brivudin.sample_size == 1227
+    assert brivudin.population_scope == "human"
+    assert rat.population_scope == "preclinical_only"
 
 
 def test_structured_abstract_sections_drive_results_and_provenance():

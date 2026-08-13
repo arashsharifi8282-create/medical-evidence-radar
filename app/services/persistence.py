@@ -117,6 +117,7 @@ def _study_assessment_to_dict(study: StudyAssessment) -> dict:
         "prospective": study.prospective,
         "retrospective": study.retrospective,
         "multicenter": study.multicenter,
+        "treatment_duration_text": study.treatment_duration_text,
         "follow_up_text": study.follow_up_text,
         "data_source_type": study.data_source_type,
         "limitation_codes": list(study.limitation_codes),
@@ -660,8 +661,11 @@ def build_markdown_report(
                         lines.append(f"- **Comparator:** {study.comparator_text}")
                     else:
                         lines.append("- **Comparator:** Not reported")
+                    lines.append(f"- **Treatment duration:** {study.treatment_duration_text or 'Not reported'}")
                     if study.follow_up_text:
                         lines.append(f"- **Follow-up:** {study.follow_up_text}")
+                    else:
+                        lines.append("- **Follow-up:** Not reported")
                     if study.limitation_codes:
                         lines.append(f"- **Study limitations:** {', '.join(study.limitation_codes)}")
                 if r.clinical_relevance:
@@ -910,10 +914,15 @@ def build_html_report(
                     f'<div class="meta-item"><span class="meta-label">Population scope:</span> <span class="meta-value">{e(study.population_scope)}</span></div>',
                     f'<div class="meta-item"><span class="meta-label">Sample size:</span> <span class="meta-value">{e(str(study.sample_size) if study.sample_size is not None else "Not reported")}</span></div>',
                     f'<div class="meta-item"><span class="meta-label">Comparator:</span> <span class="meta-value">{e(study.comparator_text or "Not reported")}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Treatment duration:</span> <span class="meta-value">{e(study.treatment_duration_text or "Not reported")}</span></div>',
                 ])
                 if study.follow_up_text:
                     meta_items.append(
                         f'<div class="meta-item"><span class="meta-label">Follow-up:</span> <span class="meta-value">{e(study.follow_up_text)}</span></div>'
+                    )
+                else:
+                    meta_items.append(
+                        '<div class="meta-item"><span class="meta-label">Follow-up:</span> <span class="meta-value">Not reported</span></div>'
                     )
                 if study.needs_review:
                     meta_items.append(

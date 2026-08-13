@@ -22,8 +22,9 @@ _INTENTS = {
     "emerging_pharmacotherapy": ("emerging pharmacotherapy", "emerging treatment", "drug development", "new indication"),
     "mechanism_research_trends": ("mechanism", "pathway", "research trend", "translational", "novel target"),
 }
-_PRECLINICAL = ("mice", "mouse", "murine", "rat", "zebrafish", "in vitro", "cell line")
+_PRECLINICAL = ("animals", "mice", "mouse", "murine", "rat", "rats", "zebrafish", "in vitro", "cell line")
 _HUMAN = ("patients", "participants", "human", "clinical trial", "cohort", "randomized")
+_PRECLINICAL_QUERY = ("animal", "animals", "mouse", "mice", "murine", "rat", "rats", "preclinical", "in vitro", "cell line", "zebrafish")
 
 
 def parse_clinical_target(topic: str, intervention: str | None = None, condition: str | None = None) -> tuple[str, str, str, tuple[str, ...]]:
@@ -48,7 +49,8 @@ def build_clinical_target(topic: str, *, intervention: str | None = None, condit
     c_uis = {d.ui for a in candidate_articles for d in a.mesh_descriptors if d.ui and _normalize(d.text) == c_norm}
     intervention_terms = _split_intervention_terms(i)
     labels = _unique((*intervention_terms, *intervention_labels))
-    return ClinicalTarget(i, c, method, tuple(dict.fromkeys(intervention_rxcuis)), labels, tuple(sorted(c_uis)), _unique((c, *condition_labels)), tuple(confirmed_classes), tuple(dict.fromkeys((*parse_warnings, *warnings))), tuple(dict.fromkeys(query_intents or _infer_intents(topic))), human_clinical_query, intervention_logic.upper() if intervention_logic.upper() in {"OR", "AND"} else "OR", _unique(target_interventions or intervention_terms or labels))
+    inferred_human_query = human_clinical_query and not any(_contains(topic, term) for term in _PRECLINICAL_QUERY)
+    return ClinicalTarget(i, c, method, tuple(dict.fromkeys(intervention_rxcuis)), labels, tuple(sorted(c_uis)), _unique((c, *condition_labels)), tuple(confirmed_classes), tuple(dict.fromkeys((*parse_warnings, *warnings))), tuple(dict.fromkeys(query_intents or _infer_intents(topic))), inferred_human_query, intervention_logic.upper() if intervention_logic.upper() in {"OR", "AND"} else "OR", _unique(target_interventions or intervention_terms or labels))
 
 
 def deduplicate_articles(articles: list[Article]) -> tuple[tuple[Article, ...], tuple[str, ...]]:
@@ -67,8 +69,9 @@ def assess_candidate(article: Article, target: ClinicalTarget, assessed_at: date
     for item in target.confirmed_classes:
         classes.extend(_signals(article, "intervention_class", _unique((item.preferred_label, *item.synonyms)), (item.class_id,), item.vocabulary, relationship=f"{item.vocabulary}:{item.relationship}"))
     intents, population = _infer_intents(_text(article)), _population(article)
-    focus = _focus(article, intervention, classes)
-    coherence = "coherent" if condition and focus in {"target_intervention_primary", "target_class_primary"} else ("background_only" if condition else "not_established")
+    focus = _focus(article, intervention, classes, condition)
+    coherent_condition = _substantive_condition(condition)
+    coherence = "coherent" if condition and focus == "target_intervention_primary" else ("coherent" if coherent_condition and focus == "target_class_primary" else ("background_only" if condition else "not_established"))
     role = _role(article, intervention, focus)
     intent_match = bool(set(target.query_intents) & set(intents))
     review = []
@@ -123,20 +126,49 @@ def _signals(article: Article, role: str, labels: tuple[str, ...], ids: tuple[st
 def _text(article: Article) -> str: return " ".join((article.title, article.abstract, " ".join(article.keywords), " ".join(x.text for x in article.mesh_descriptors)))
 def _infer_intents(text: str) -> tuple[str, ...]: return tuple(k for k, v in _INTENTS.items() if any(_contains(text, x) for x in v)) or ("unknown",)
 def _population(article: Article) -> str:
-    text = _text(article); pre, human = any(_contains(text, x) for x in _PRECLINICAL), any(_contains(text, x) for x in _HUMAN)
-    return "preclinical_only" if pre and not human else "mixed" if pre else "human" if human else "unknown"
-def _focus(article: Article, drug: list[RelevanceSignal], classes: list[RelevanceSignal]) -> str:
+    text = _text(article)
+    title = _normalize(article.title)
+    primary_abstract = re.split(r"\b(?:in conclusion|conclusion|conclusions)\b", _normalize(article.abstract), maxsplit=1)[0]
+    mesh_terms = {_normalize(item.text) for item in article.mesh_descriptors}
+    title_pre = any(_contains(title, term) for term in _PRECLINICAL)
+    title_human = any(_contains(title, term) for term in _HUMAN)
+    mesh_pre = any(term in mesh_terms for term in ("animals", "mice", "mouse", "rats", "rat", "murine", "zebrafish"))
+    mesh_human = "humans" in mesh_terms
+    pre = any(_contains(text, x) for x in _PRECLINICAL)
+    human = any(_contains(text, x) for x in _HUMAN)
+    explicit_mixed = bool(re.search(r"\b(?:patients?|participants?|humans?)\b.{0,80}\b(?:mice|mouse|rats?|animals?|in vitro|cell line)\b|\b(?:mice|mouse|rats?|animals?|in vitro|cell line)\b.{0,80}\b(?:patients?|participants?|humans?)\b", primary_abstract))
+    if title_pre and not title_human:
+        return "preclinical_only"
+    if mesh_pre and not mesh_human and not human:
+        return "preclinical_only"
+    if explicit_mixed:
+        return "mixed"
+    if title_human or mesh_human:
+        return "human"
+    if pre and not human:
+        return "preclinical_only"
+    if pre and human:
+        return "mixed"
+    if human:
+        return "human"
+    return "unknown"
+def _focus(article: Article, drug: list[RelevanceSignal], classes: list[RelevanceSignal], condition: list[RelevanceSignal]) -> str:
     if not drug and not classes: return "unknown"
     drug_title = any(x.source_field == "title" for x in drug)
     class_title = any(x.source_field == "title" for x in classes)
-    results = any(x.source_field in {"abstract_results", "abstract_conclusions", "abstract_conclusion", "abstract_methods", "abstract_objectives"} for x in drug)
+    structured_substantive = any(x.source_field in {"abstract_results", "abstract_conclusions", "abstract_conclusion", "abstract_methods", "abstract_objectives"} for x in drug)
     text = _normalize(_text(article))
     drug_substantive = any(
         re.search(rf"{re.escape(_normalize(signal.normalized_label))}.{{0,100}}(?:compared|reference|versus|adverse|efficacy|trial)|(?:compared|reference|versus).{{0,100}}{re.escape(_normalize(signal.normalized_label))}", text)
         for signal in drug if _normalize(signal.normalized_label)
     )
     repeated_drug = any(len(re.findall(rf"(?<![a-z0-9]){re.escape(_normalize(signal.normalized_label))}(?![a-z0-9])", text)) >= 2 for signal in drug if _normalize(signal.normalized_label))
-    if drug_title or results or (repeated_drug and drug_substantive): return "target_intervention_primary"
+    if drug_title:
+        return "target_intervention_primary"
+    if structured_substantive and repeated_drug:
+        return "target_intervention_primary"
+    if repeated_drug and drug_substantive and not _is_review_like(article):
+        return "target_intervention_primary"
     all_exposed = any(re.search(rf"\ball\b.{{0,160}}{re.escape(_normalize(signal.normalized_label))}", text) for signal in drug if _normalize(signal.normalized_label))
     if all_exposed: return "target_intervention_primary"
     if class_title or (any(x.source_field == "mesh_major" for x in classes) and any(_contains(text, term) for term in ("adverse", "complication", "risk", "safety"))):
@@ -194,6 +226,15 @@ def _unique(values: tuple[str, ...]) -> tuple[str, ...]:
     for value in values:
         if (key := _normalize(value)): out.setdefault(key, value.strip())
     return tuple(out.values())
+
+
+def _substantive_condition(signals: list[RelevanceSignal]) -> bool:
+    strong_sources = {"title", "mesh_major", "abstract_objectives", "abstract_methods", "abstract_results", "abstract_conclusions", "abstract_conclusion"}
+    return any(signal.source_field in strong_sources for signal in signals)
+
+
+def _is_review_like(article: Article) -> bool:
+    return any("review" in value.casefold() or "meta-analysis" in value.casefold() for value in article.publication_types)
 
 
 def _split_intervention_terms(value: str) -> tuple[str, ...]:

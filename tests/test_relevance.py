@@ -34,6 +34,19 @@ def article(pmid: str, title: str, *, abstract: str = "", mesh=(), types=("Journ
     )
 
 
+def frozen_acyclovir_article(pmid: str) -> Article:
+    path = Path(__file__).parent / "fixtures" / "acyclovir_b3_1" / "frozen_articles.jsonl"
+    rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+    raw = next(item for item in rows if item["pmid"] == pmid)
+    return Article(
+        pmid=raw["pmid"],
+        title=raw["title"],
+        abstract=raw["abstract"],
+        publication_types=tuple(raw["publication_types"]),
+        keywords=tuple(raw["keywords"]),
+    )
+
+
 def target(*, confirmed=True):
     classes = (
         ConfirmedDrugClass(
@@ -212,6 +225,60 @@ def test_b2_2b_intent_focus_population_section_and_audit_rules():
     snapshot = build_snapshot("topic", "topic", NOW, candidates=(AssessedCandidate(structured, structured_assessment),), clinical_target=sema_target)
     audit = snapshot["articles"][0]["clinical_relevance"]
     assert audit["needs_review"] is False and audit["content_role"] == "clinical_evidence"
+
+
+def test_incidental_background_and_preclinical_queries_are_handled_conservatively():
+    target_record = build_clinical_target(
+        "acyclovir efficacy and safety in herpes zoster",
+        intervention="acyclovir",
+        condition="herpes zoster",
+        intervention_labels=("acyclovir",),
+        query_intents=("efficacy", "safety"),
+    )
+    tofacitinib = article(
+        "t1",
+        "Successful initial tofacitinib treatment for acute severe ulcerative colitis with steroid resistance: a case series.",
+        abstract="Only one patient experienced an adverse event, local herpes zoster, and was treated with acyclovir.",
+        types=("Case Reports", "Journal Article"),
+    )
+    genital_review = article(
+        "t2",
+        "Valacyclovir for the treatment of genital herpes.",
+        abstract="Genital herpes is common. Herpes zoster can also be painful. Oral acyclovir and related agents are discussed.",
+        types=("Review", "Journal Article"),
+    )
+    rat = article(
+        "t3",
+        "The neurological safety of intrathecal acyclovir in rats.",
+        abstract="Rats received intrathecal acyclovir and neurological outcomes were assessed.",
+        types=("Journal Article",),
+    )
+    preclinical_target = build_clinical_target(
+        "acyclovir preclinical safety in rats",
+        intervention="acyclovir",
+        condition="rats",
+        intervention_labels=("acyclovir",),
+        query_intents=("safety",),
+    )
+
+    assert assess_candidate(tofacitinib, target_record, NOW).relevance_class == "contextual"
+    assert assess_candidate(genital_review, target_record, NOW).relevance_class == "contextual"
+    assert assess_candidate(rat, target_record, NOW).relevance_class == "irrelevant"
+    assert assess_candidate(rat, preclinical_target, NOW).relevance_class == "direct"
+
+
+def test_frozen_acyclovir_fixture_replays_focus_and_population_failures():
+    target_record = build_clinical_target(
+        "acyclovir efficacy and safety in herpes zoster",
+        intervention="acyclovir",
+        condition="herpes zoster",
+        intervention_labels=("acyclovir",),
+        query_intents=("efficacy", "safety"),
+    )
+    assert assess_candidate(frozen_acyclovir_article("36593812"), target_record, NOW).relevance_class == "contextual"
+    assert assess_candidate(frozen_acyclovir_article("16771614"), target_record, NOW).relevance_class == "contextual"
+    assert assess_candidate(frozen_acyclovir_article("34452412"), target_record, NOW).relevance_class == "contextual"
+    assert assess_candidate(frozen_acyclovir_article("22270746"), target_record, NOW).relevance_class == "irrelevant"
 
 
 def test_b2_2b_pilot_fixture_is_separate_preserved_and_decision_mapping_is_covered():
