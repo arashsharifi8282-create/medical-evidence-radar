@@ -10,7 +10,7 @@ import calendar
 import xml.etree.ElementTree as ET
 from datetime import date
 
-from app.models.article import Article, MeshDescriptor
+from app.models.article import AbstractSection, Article, MeshDescriptor
 
 # Month name -> number, used to resolve PubMed's abbreviated month names.
 _MONTHS = {name.lower(): num for num, name in enumerate(calendar.month_name) if name}
@@ -31,7 +31,8 @@ def normalize_article(article_elem: ET.Element) -> Article:
     """Convert a single ``<PubmedArticle>`` element into an :class:`Article`."""
     pmid = _text(article_elem, ".//PMID") or ""
     title = _text(article_elem, ".//ArticleTitle") or ""
-    abstract = _abstract(article_elem)
+    abstract_sections = _abstract_sections(article_elem)
+    abstract = " ".join(section.text for section in abstract_sections)
     authors = _authors(article_elem)
     journal = _text(article_elem, ".//Journal/Title") or ""
     publication_date_raw, publication_date = _publication_date(article_elem)
@@ -60,6 +61,7 @@ def normalize_article(article_elem: ET.Element) -> Article:
         mesh_headings=mesh_headings,
         keywords=keywords,
         mesh_descriptors=mesh_descriptors,
+        abstract_sections=abstract_sections,
     )
 
 
@@ -69,14 +71,13 @@ def _text(elem: ET.Element, path: str) -> str | None:
     return found.text if found is not None and found.text else None
 
 
-def _abstract(article_elem: ET.Element) -> str:
-    """Concatenate all ``<AbstractText>`` segments into a single string."""
-    segments = [
-        seg.text.strip()
+def _abstract_sections(article_elem: ET.Element) -> tuple[AbstractSection, ...]:
+    """Preserve labelled structured abstracts while retaining a flat abstract."""
+    return tuple(
+        AbstractSection((seg.get("Label") or "").strip(), seg.text.strip())
         for seg in article_elem.findall(".//Abstract/AbstractText")
         if seg.text and seg.text.strip()
-    ]
-    return " ".join(segments)
+    )
 
 
 def _authors(article_elem: ET.Element) -> tuple[str, ...]:

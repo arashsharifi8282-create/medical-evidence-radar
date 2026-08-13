@@ -1,8 +1,11 @@
 """Deterministic offline acceptance tests for Phase B2."""
 
 from datetime import date, datetime
+import hashlib
+import json
+from pathlib import Path
 
-from app.models.article import Article, MeshDescriptor
+from app.models.article import AbstractSection, Article, MeshDescriptor
 from app.models.relevance import AssessedCandidate, ConfirmedDrugClass
 from app.models.retrieval import RetrievalBatch
 from app.services.persistence import build_html_report, build_markdown_report, build_snapshot
@@ -169,3 +172,77 @@ def test_deduplication_empty_fewer_than_limit_and_collapsed_html_background():
     assert all(item.relevance.decision.startswith("included_") for item in audited)
     html = build_html_report("topic", NOW, selected)
     assert '<details class="report-section contextual-evidence"' in html
+
+
+def test_b2_2b_intent_focus_population_section_and_audit_rules():
+    safety_target = build_clinical_target(
+        "losartan safety in hypertension", intervention="losartan", condition="hypertension",
+        query_intents=("safety",),
+    )
+    safety = article("s1", "Losartan adverse-event safety in hypertension", abstract="Results: adverse events were compared.")
+    efficacy_only = article("s2", "Losartan efficacy in hypertension trial", abstract="Blood pressure benefit.")
+    assert assess_candidate(safety, safety_target, NOW).relevance_class == "direct"
+    mismatch = assess_candidate(efficacy_only, safety_target, NOW)
+    assert mismatch.relevance_class == "contextual" and mismatch.needs_review
+
+    class_target = target()
+    class_article = article("s3", "ARB safety in hypertension", abstract="Adverse events across ARB therapy.")
+    assert assess_candidate(class_article, class_target, NOW).relevance_class == "class_level"
+
+    mechanism_target = build_clinical_target("resmetirom emerging pharmacotherapy in MASLD", intervention="resmetirom", condition="MASLD", query_intents=("emerging_pharmacotherapy",))
+    mechanism = article("s4", "Nitric oxide pathway in MASLD", abstract="Mechanism research trend; resmetirom is background context.")
+    assessed = assess_candidate(mechanism, mechanism_target, NOW)
+    assert (assessed.relevance_class, assessed.content_role) == ("contextual", "emerging_mechanism")
+
+    enabler = article("s5", "Digital pathology AI for MASLD trials", abstract="Resmetirom is mentioned as a current option.")
+    assert assess_candidate(enabler, mechanism_target, NOW).content_role == "research_enabler"
+
+    background = article("s6", "MASLD disease management review", abstract="Background: resmetirom may be considered.")
+    assert assess_candidate(background, mechanism_target, NOW).relevance_class == "contextual"
+
+    mouse = article("s7", "Semaglutide safety in obese mice", abstract="Animal model adverse events in mice.")
+    sema_target = build_clinical_target("semaglutide safety in obesity", intervention="semaglutide", condition="obesity", query_intents=("safety",))
+    assert assess_candidate(mouse, sema_target, NOW).relevance_class == "irrelevant"
+
+    structured = Article("s8", "Semaglutide safety in obesity", "Background semaglutide.", abstract_sections=(AbstractSection("BACKGROUND", "Semaglutide background."), AbstractSection("RESULTS", "Semaglutide adverse events in obesity.")))
+    structured_assessment = assess_candidate(structured, sema_target, NOW)
+    assert structured_assessment.relevance_class == "direct"
+    assert any(s.source_field == "abstract_results" for s in structured_assessment.intervention_signals)
+
+    snapshot = build_snapshot("topic", "topic", NOW, candidates=(AssessedCandidate(structured, structured_assessment),), clinical_target=sema_target)
+    audit = snapshot["articles"][0]["clinical_relevance"]
+    assert audit["needs_review"] is False and audit["content_role"] == "clinical_evidence"
+
+
+def test_b2_2b_pilot_fixture_is_separate_preserved_and_decision_mapping_is_covered():
+    path = Path(__file__).parent / "fixtures" / "relevance_b2_2b" / "batch_01_reviewer_01_responses.jsonl"
+    raw = path.read_bytes()
+    rows = [json.loads(line) for line in raw.decode("utf-8").splitlines() if line]
+    assert len(rows) == 10
+    assert hashlib.sha256(raw).hexdigest() == "a70f1ce6c7dc4734a1d51150422a3658d55c5e9c4c4fed56eedff9e123dde93d"
+    assert all(row["reviewer_notes"] and row["source_snapshot_sha256"] for row in rows)
+    assert {row["selected_relevance_class"] for row in rows} == {"direct", "class_level", "contextual", "irrelevant"}
+    assert not (Path(__file__).parent / "fixtures" / "relevance_benchmark_small" / "adjudicated_labels.jsonl").read_text(encoding="utf-8").count("B01-")
+
+
+def test_b2_2b_real_frozen_snapshot_replay_reproduces_all_reviewer_classes():
+    articles_path = Path(__file__).parent / "fixtures" / "relevance_b2_2b" / "real_frozen_batch_01_articles.jsonl"
+    reviewer_path = Path(__file__).parent / "fixtures" / "relevance_b2_2b" / "batch_01_reviewer_01_responses.jsonl"
+    reviewer = {(x["topic_id"], x["pmid"]): x for x in map(json.loads, reviewer_path.read_text(encoding="utf-8").splitlines())}
+    frozen = [json.loads(line) for line in articles_path.read_text(encoding="utf-8").splitlines()]
+    assert len(frozen) == len(reviewer) == 10
+    actual = {}
+    for row in frozen:
+        raw = row["article"]
+        article_record = Article(raw["pmid"], raw["title"], raw["abstract"], publication_types=tuple(raw["publication_types"]), keywords=tuple(raw["keywords"]), mesh_descriptors=tuple(MeshDescriptor(x["text"], x["ui"], x.get("major_topic", False), x.get("supporting_pmid", "")) for x in raw["mesh_descriptors"]))
+        if row["topic_id"] == "losartan_hypertension":
+            target_record = build_clinical_target("losartan safety in hypertension", intervention="losartan", condition="hypertension", intervention_labels=("losartan",), query_intents=("safety",))
+        elif row["topic_id"] == "masld_mash_multi_intervention":
+            target_record = build_clinical_target("resmetirom emerging pharmacotherapy in MASLD/MASH", intervention="resmetirom", condition="MASLD", intervention_labels=("resmetirom",), condition_labels=("MASLD", "MASH", "metabolic dysfunction-associated steatohepatitis", "fatty liver", "non-alcoholic fatty liver disease"), query_intents=("emerging_pharmacotherapy",), intervention_logic="OR", target_interventions=("resmetirom", "semaglutide", "tirzepatide", "survodutide", "efruxifermin", "pegozafermin", "lanifibranor", "denifanstat", "FGF21", "thyroid hormone receptor beta", "pan-PPAR", "de novo lipogenesis"))
+        else:
+            target_record = build_clinical_target("semaglutide safety in obesity", intervention="semaglutide", condition="obesity", intervention_labels=("semaglutide",), query_intents=("safety",), confirmed_classes=(ConfirmedDrugClass("glp1", "GLP-1 receptor agonists", "fixture", "has_member", "", ("GLP-1 receptor", "GLP-1 RAs", "glucagon-like peptide-1 receptor agonist")), ConfirmedDrugClass("weight-loss", "Anti-Obesity Agents", "fixture", "has_member", "", ("medications utilised for weight loss",))))
+        assessment = assess_candidate(article_record, target_record, NOW)
+        actual[(row["topic_id"], raw["pmid"])] = assessment
+        assert row["source_snapshot_sha256"] == reviewer[(row["topic_id"], raw["pmid"])]["source_snapshot_sha256"]
+        assert assessment.intervention_signals and assessment.condition_signals
+    assert {key: value.relevance_class for key, value in actual.items()} == {key: value["selected_relevance_class"] for key, value in reviewer.items()}

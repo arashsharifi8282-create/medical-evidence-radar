@@ -69,6 +69,10 @@ def _article_to_dict(article: Article) -> dict:
             for descriptor in article.mesh_descriptors
         ],
         "keywords": list(article.keywords),
+        "abstract_sections": [
+            {"label": section.label, "text": section.text}
+            for section in article.abstract_sections
+        ],
     }
 
 
@@ -140,6 +144,14 @@ def _clinical_relevance_to_dict(assessment: ClinicalRelevanceAssessment) -> dict
         ],
         "decision": assessment.decision,
         "reason": assessment.reason,
+        "query_intents": list(assessment.query_intents),
+        "article_intents": list(assessment.article_intents),
+        "article_focus": assessment.article_focus,
+        "coherence_status": assessment.coherence_status,
+        "content_role": assessment.content_role,
+        "population_scope": assessment.population_scope,
+        "needs_review": assessment.needs_review,
+        "review_reasons": list(assessment.review_reasons),
         "assessed_at": assessment.assessed_at.isoformat(),
     }
 
@@ -166,6 +178,10 @@ def _target_to_dict(target: ClinicalTarget) -> dict:
         "condition_labels": list(target.condition_labels),
         "confirmed_classes": [_class_to_dict(item) for item in target.confirmed_classes],
         "warnings": list(target.warnings),
+        "query_intents": list(target.query_intents),
+        "human_clinical_query": target.human_clinical_query,
+        "intervention_logic": target.intervention_logic,
+        "target_interventions": list(target.target_interventions),
     }
 
 
@@ -542,53 +558,68 @@ def build_markdown_report(
         lines.append(f"## {section_label}")
         lines.append("")
 
-        for i, r in enumerate(section_articles, start=1):
-            article = r.article
-            a = r.assessment
-            lines.append(f"## {i}. {article.title}")
-            lines.append("")
-            lines.append(f"- **Evidence level:** {a.evidence_level_label}")
-            if r.clinical_relevance:
-                lines.append(
+        if b2_mode and section_key == "contextual":
+            trend_articles = [
+                r for r in section_articles
+                if r.clinical_relevance and r.clinical_relevance.content_role in {"emerging_mechanism", "research_enabler"}
+            ]
+            standard_articles = [r for r in section_articles if r not in trend_articles]
+            groups = (("Emerging mechanisms and research trends", trend_articles), (section_label, standard_articles))
+        else:
+            groups = ((section_label, section_articles),)
+        for group_label, group_articles in groups:
+            if group_label != section_label and group_articles:
+                lines.append(f"### {group_label}")
+                lines.append("")
+            for i, r in enumerate(group_articles, start=1):
+                article = r.article
+                a = r.assessment
+                lines.append(f"## {i}. {article.title}")
+                lines.append("")
+                lines.append(f"- **Evidence level:** {a.evidence_level_label}")
+                if r.clinical_relevance:
+                    lines.append(
                     f"- **Clinical relevance:** {r.clinical_relevance.relevance_class} "
                     f"({r.clinical_relevance.relevance_score}/100)"
-                )
-            lines.append(f"- **Evidence score:** {a.evidence_score}/100")
-            lines.append(f"- **Relevance score:** {a.relevance_score}/100")
-            lines.append(f"- **Overall score:** {a.overall_score}/100")
-            if article.publication_date_raw:
-                lines.append(
+                    )
+                    lines.append(f"- **Content role:** {r.clinical_relevance.content_role}")
+                    lines.append(f"- **Needs review:** {'yes' if r.clinical_relevance.needs_review else 'no'}")
+                lines.append(f"- **Evidence score:** {a.evidence_score}/100")
+                lines.append(f"- **Relevance score:** {a.relevance_score}/100")
+                lines.append(f"- **Overall score:** {a.overall_score}/100")
+                if article.publication_date_raw:
+                    lines.append(
                     f"- **Publication date as listed by PubMed:** {article.publication_date_raw}"
-                )
-            if article.electronic_publication_date:
-                lines.append(
+                    )
+                if article.electronic_publication_date:
+                    lines.append(
                     f"- **Electronic publication date:** {article.electronic_publication_date.isoformat()}"
-                )
-            if a.is_future_issue_dated:
-                lines.append("- **Status:** Future journal-issue date (scheduled, not yet published)")
-            if a.is_electronic_only:
-                lines.append("- **Status:** Available electronically ahead of print")
-            if article.publication_types:
-                lines.append(f"- **Publication types:** {', '.join(article.publication_types)}")
-            if article.doi:
-                lines.append(f"- **DOI:** {article.doi}")
-            if article.pubmed_url:
-                lines.append(f"- **PubMed:** [Open in PubMed]({article.pubmed_url})")
-            if r.clinical_relevance:
-                lines.append(f"- **Why included:** {r.clinical_relevance.reason}")
-            elif a.reasons:
-                lines.append(f"- **Why included:** {'; '.join(a.reasons)}")
-            if a.limitations:
-                lines.append(f"- **Limitations:** {'; '.join(a.limitations)}")
-            if article.abstract:
+                    )
+                if a.is_future_issue_dated:
+                    lines.append("- **Status:** Future journal-issue date (scheduled, not yet published)")
+                if a.is_electronic_only:
+                    lines.append("- **Status:** Available electronically ahead of print")
+                if article.publication_types:
+                    lines.append(f"- **Publication types:** {', '.join(article.publication_types)}")
+                if article.doi:
+                    lines.append(f"- **DOI:** {article.doi}")
+                if article.pubmed_url:
+                    lines.append(f"- **PubMed:** [Open in PubMed]({article.pubmed_url})")
+                if r.clinical_relevance:
+                    lines.append(f"- **Why included:** {r.clinical_relevance.reason}")
+                elif a.reasons:
+                    lines.append(f"- **Why included:** {'; '.join(a.reasons)}")
+                if a.limitations:
+                    lines.append(f"- **Limitations:** {'; '.join(a.limitations)}")
+                if article.abstract:
+                    lines.append("")
+                    lines.append(f"**Abstract:** {article.abstract}")
+                else:
+                    lines.append("")
+                    lines.append("**Abstract:** Abstract not available in PubMed")
                 lines.append("")
-                lines.append(f"**Abstract:** {article.abstract}")
-            else:
+                lines.append("---")
                 lines.append("")
-                lines.append("**Abstract:** Abstract not available in PubMed")
-            lines.append("")
-            lines.append("---")
-            lines.append("")
 
     return "\n".join(lines)
 
@@ -836,6 +867,10 @@ def build_html_report(
                 meta_items.append(
                     f'<div class="meta-item"><span class="meta-label">Why included:</span> '
                     f'<span class="meta-value">{e(r.clinical_relevance.reason)}</span></div>'
+                )
+                meta_items.append(
+                    f'<div class="meta-item"><span class="meta-label">Content role:</span> '
+                    f'<span class="meta-value">{e(r.clinical_relevance.content_role)}</span></div>'
                 )
             elif a.reasons:
                 reasons_html = "".join(

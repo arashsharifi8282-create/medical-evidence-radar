@@ -38,6 +38,10 @@ class ClinicalTarget:
     condition_labels: tuple[str, ...] = ()
     confirmed_classes: tuple[ConfirmedDrugClass, ...] = ()
     warnings: tuple[str, ...] = ()
+    query_intents: tuple[str, ...] = ()
+    human_clinical_query: bool = True
+    intervention_logic: str = "OR"
+    target_interventions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -49,7 +53,7 @@ class RelevanceSignal:
     normalized_label: str
     concept_id: str
     vocabulary: str
-    source_field: str  # title | mesh_major | mesh | author_keyword | abstract
+    source_field: str  # title | mesh_major | mesh | author_keyword | abstract | abstract_<section>
     weight: int
     relationship_source: str = ""
 
@@ -66,6 +70,14 @@ class ClinicalRelevanceAssessment:
     decision: str
     reason: str
     assessed_at: datetime
+    query_intents: tuple[str, ...] = ()
+    article_intents: tuple[str, ...] = ()
+    article_focus: str = "unknown"
+    coherence_status: str = "unknown"
+    content_role: str = "clinical_evidence"
+    population_scope: str = "unknown"
+    needs_review: bool = False
+    review_reasons: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

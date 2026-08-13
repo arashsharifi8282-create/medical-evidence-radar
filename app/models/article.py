@@ -15,6 +15,14 @@ class MeshDescriptor:
 
 
 @dataclass(frozen=True)
+class AbstractSection:
+    """One labelled PubMed structured-abstract segment, preserved verbatim."""
+
+    label: str
+    text: str
+
+
+@dataclass(frozen=True)
 class Article:
     """A single normalized article record.
 
@@ -43,3 +51,4 @@ class Article:
     mesh_headings: tuple[str, ...] = ()
     keywords: tuple[str, ...] = ()
     mesh_descriptors: tuple[MeshDescriptor, ...] = ()
+    abstract_sections: tuple[AbstractSection, ...] = ()
