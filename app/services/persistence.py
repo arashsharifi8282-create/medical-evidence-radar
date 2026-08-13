@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import unicodedata
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
@@ -28,6 +29,8 @@ from app.models.relevance import (
 )
 from app.models.study import StudyAssessment
 from app.services.evidence import assess_article
+from app.services.clinical_extraction import extract_clinical
+from app.services.report_policy import load_policy, route_report_section
 from app.models.topic_profile import CandidateTerm, TopicProfile
 
 DEFAULT_JSON_DIR = Path("data/raw/pubmed")
@@ -153,6 +156,9 @@ def _ranked_to_dict(r: RankedArticle) -> dict:
     d["ranking_audit"] = _ranking_audit(r)
     if r.clinical_relevance:
         d["clinical_relevance"] = _clinical_relevance_to_dict(r.clinical_relevance)
+    section, visible, reason = route_report_section(r)
+    d["structured_clinical_extraction"] = asdict(extract_clinical(r.article))
+    d["report_placement"] = {"section": section, "visible": visible, "reason": reason}
     return d
 
 
@@ -161,7 +167,7 @@ def _ranking_audit(ranked: RankedArticle) -> dict:
     relevance = ranked.clinical_relevance
     study = ranked.assessment.study_assessment
     return {
-        "policy": "relevance_class > query_intent_match > evidence_tier > study_design > limitation_count > bounded_sample_size > relevance_score > section > overall_score > publication_date > pmid",
+        "policy": "relevance_class > query_intent_match > report_section > evidence_tier > study_design > comparator_suitability > extraction_completeness > bounded_sample_size > recency > pmid",
         "relevance_class": relevance.relevance_class if relevance else None,
         "query_intent_match": bool(relevance and set(relevance.query_intents) & set(relevance.article_intents)),
         "evidence_tier": study.evidence_tier if study else None,
@@ -413,17 +419,21 @@ def build_snapshot(
             payload["clinical_relevance"] = _clinical_relevance_to_dict(candidate.relevance)
             if ranked_item:
                 payload["ranking_audit"] = _ranking_audit(ranked_item)
+                section, visible, reason = route_report_section(ranked_item)
+                payload["structured_clinical_extraction"] = asdict(extract_clinical(candidate.article))
+                payload["report_placement"] = {"section": section, "visible": visible, "reason": reason}
             serialized_articles.append(payload)
     else:
         serialized_articles = [_ranked_to_dict(r) for r in ranked]
     snapshot = {
-        "schema_version": "b2" if candidates is not None else "legacy",
+        "schema_version": "b4" if candidates is not None else "legacy",
         "topic": topic,
         "query": query,
         "fetched_at": fetched_at.isoformat(),
         "articles": serialized_articles,
         "visible_article_pmids": [item.article.pmid for item in ranked],
-        "ranking_policy": "relevance_class > query_intent_match > evidence_tier > study_design > limitation_count > bounded_sample_size > relevance_score > section > overall_score > publication_date > pmid",
+        "ranking_policy": "hard_gates > relevance_class > query_intent_compatibility > report_section > evidence_tier > study_design > comparator_suitability > extraction_completeness > bounded_sample_size > recency > pmid",
+        "active_policy": load_policy(),
     }
     if clinical_target is not None:
         snapshot["clinical_target"] = _target_to_dict(clinical_target)

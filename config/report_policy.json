@@ -1,0 +1,26 @@
+{
+  "policy_id": "clinical_research_priority_v1",
+  "schema_version": "1.0",
+  "policy_version": "1.0.0",
+  "description": "Deterministic abstract/metadata-based clinical evidence report policy.",
+  "scope": "research_support_not_clinical_decision_support",
+  "defaults": {
+    "principal_article_limit": 10,
+    "candidate_limit": 50,
+    "human_query_excludes_preclinical": true,
+    "missing_abstract_needs_review": true
+  },
+  "reserved_official_sources": ["FDA", "EMA", "WHO", "NICE", "authoritative_guidelines"],
+  "approved_class_authorities": ["ATC", "MEDRT"],
+  "approved_class_relationships": ["has_member", "isa", "part_of"],
+  "rules": {
+    "direct_intervention_scope": "Requested-drug evaluation or direct comparison only.",
+    "condition_coherence": "Different primary disease remains contextual unless substantive target-condition results are reported.",
+    "safety_intent": "Drug-specific substantive safety results may be direct; efficacy-only evidence is contextual.",
+    "preclinical_gate": "Preclinical-only evidence is audit-only for implicit human clinical queries.",
+    "safety_signals": "Case reports/series route to Early safety signals and pharmacovigilance routes to Pharmacovigilance signals.",
+    "historical": "Historical placement requires explicit configured metadata or conservative publication context; citation count is not used.",
+    "causality": "Observed events, associations, disproportionality, and causality remain distinct.",
+    "uncertainty": "Missing or ambiguous fields remain not_reported, unclear, or not_extractable."
+  }
+}
