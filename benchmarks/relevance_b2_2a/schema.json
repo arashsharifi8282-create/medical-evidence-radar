@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Medical Evidence Radar B2.2A relevance label",
+  "type": "object",
+  "required": ["schema_version", "benchmark_id", "topic_id", "pmid", "query", "target_interventions", "intervention_logic", "target_conditions", "gold_relevance_class", "matched_interventions", "matched_conditions", "article_focus", "coherence_status", "reason_codes", "human_or_preclinical", "within_class_priority", "reviewer", "second_reviewer", "adjudication_notes", "label_status", "source_snapshot_sha256"],
+  "properties": {
+    "schema_version": {"const": "1.0"}, "benchmark_id": {"const": "relevance_b2_2a"},
+    "topic_id": {"type": "string", "minLength": 1}, "pmid": {"type": "string", "pattern": "^[0-9]+$"}, "query": {"type": "string", "minLength": 1},
+    "target_interventions": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "intervention_logic": {"enum": ["OR", "AND"]}, "target_conditions": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "gold_relevance_class": {"type": ["string", "null"], "enum": ["direct", "class_level", "contextual", "irrelevant", null]}, "matched_interventions": {"type": "array", "items": {"type": "string"}}, "matched_conditions": {"type": "array", "items": {"type": "string"}},
+    "article_focus": {"enum": ["target", "contextual_or_other", "unknown", "not_applicable"]}, "coherence_status": {"enum": ["coherent", "not_sufficient", "unknown", "not_applicable"]},
+    "reason_codes": {"type": "array", "minItems": 1, "items": {"enum": ["CROSS_FIELD_COOCCURRENCE_WITHOUT_COHERENCE", "BACKGROUND_OR_INCIDENTAL_INTERVENTION_MENTION", "COMPARATOR_OR_STANDARD_CARE_ONLY", "AUTHOR_KEYWORD_ONLY_INTERVENTION", "BROAD_MULTI_INTERVENTION_REVIEW", "OTHER_INTERVENTION_PRIMARY_FOCUS", "PRECLINICAL_HUMAN_MISMATCH", "NON_STRUCTURAL_RXCLASS_RELATIONSHIP", "TARGET_SET_COLLAPSED_TO_SINGLE_INTERVENTION", "STRUCTURED_ABSTRACT_PROVENANCE_LOST", "UNRESOLVED_TARGET_NORMALIZATION_NOT_BLOCKING", "MISSING_INTERVENTION", "MISSING_CONDITION", "VERIFIED_CLASS_FOCUS", "DIRECT_TARGET_FOCUS", "AMBIGUOUS_FROM_AVAILABLE_METADATA"]}},
+    "human_or_preclinical": {"enum": ["human", "preclinical", "mixed", "unknown", "not_applicable"]}, "within_class_priority": {"enum": ["high", "medium", "low", "not_assessed", "not_applicable"]}, "reviewer": {"type": "string", "minLength": 1}, "second_reviewer": {"type": ["string", "null"]}, "adjudication_notes": {"type": "string"}, "label_status": {"enum": ["draft", "needs_review", "adjudicated"]}, "source_snapshot_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "allOf": [{"if": {"properties": {"label_status": {"const": "needs_review"}}}, "then": {"properties": {"gold_relevance_class": {"const": null}}}}, {"if": {"properties": {"label_status": {"const": "adjudicated"}}}, "then": {"properties": {"gold_relevance_class": {"enum": ["direct", "class_level", "contextual", "irrelevant"]}}}}]
+}

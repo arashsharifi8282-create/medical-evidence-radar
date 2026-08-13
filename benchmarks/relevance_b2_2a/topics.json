@@ -1,0 +1,78 @@
+{
+  "benchmark_id": "relevance_b2_2a",
+  "schema_version": "1.0",
+  "topics": [
+    {
+      "candidate_pool_source": "data/raw/pubmed/losartan_efficacy_and_safety_in_hypertension_20260811_105332.json",
+      "explicit_conditions": [
+        "hypertension"
+      ],
+      "explicit_interventions": [
+        "losartan"
+      ],
+      "frozen_query": "losartan efficacy and safety in hypertension",
+      "intent": "efficacy_and_safety",
+      "intervention_logic": "OR",
+      "limitation": "Only 10 locally frozen candidates were available; target quota shortfall is intentional.",
+      "retrieval_timestamp": "2026-08-11T07:23:32Z",
+      "sampling_quota": 24,
+      "target_normalization_provenance": {
+        "intervention_rxcui": "52175",
+        "source": "existing B2.1 audit artifact"
+      },
+      "topic_id": "losartan_hypertension"
+    },
+    {
+      "candidate_pool_source": "data/raw/pubmed/masldtitle_abstract_or_mashtitle_abstract_or_metabolic_dysfunction_associated_steatohepatitistitle_abstract_b26293137106.json",
+      "explicit_conditions": [
+        "MASLD",
+        "MASH",
+        "metabolic dysfunction-associated steatohepatitis"
+      ],
+      "explicit_interventions": [
+        "resmetirom",
+        "semaglutide",
+        "tirzepatide",
+        "survodutide",
+        "efruxifermin",
+        "pegozafermin",
+        "lanifibranor",
+        "denifanstat",
+        "FGF21",
+        "thyroid hormone receptor beta",
+        "pan-PPAR",
+        "de novo lipogenesis"
+      ],
+      "frozen_query": "(MASLD[Title/Abstract] OR MASH[Title/Abstract] OR metabolic dysfunction-associated steatohepatitis[Title/Abstract]) AND (resmetirom[Title/Abstract] OR semaglutide[Title/Abstract] OR tirzepatide[Title/Abstract] OR survodutide[Title/Abstract] OR efruxifermin[Title/Abstract] OR pegozafermin[Title/Abstract] OR lanifibranor[Title/Abstract] OR denifanstat[Title/Abstract] OR FGF21[Title/Abstract] OR thyroid hormone receptor beta[Title/Abstract] OR pan-PPAR[Title/Abstract] OR de novo lipogenesis[Title/Abstract])",
+      "intent": "emerging_pharmacotherapy",
+      "intervention_logic": "OR",
+      "retrieval_timestamp": "2026-08-11T10:51:00Z",
+      "sampling_quota": 36,
+      "target_normalization_provenance": {
+        "note": "Historical query is preserved verbatim; complete intervention OR set is not collapsed.",
+        "source": "existing B2.1 audit artifact"
+      },
+      "topic_id": "masld_mash_multi_intervention"
+    },
+    {
+      "candidate_pool_source": "benchmarks/relevance_b2_2a/safety_candidate_pool.jsonl",
+      "explicit_conditions": [
+        "obesity"
+      ],
+      "explicit_interventions": [
+        "semaglutide"
+      ],
+      "frozen_query": "semaglutide AND (safety OR adverse effects OR pharmacovigilance) AND obesity",
+      "intent": "safety_pharmacovigilance",
+      "intervention_logic": "OR",
+      "retrieval_timestamp": "2026-08-12T23:52:08Z",
+      "sampling_quota": 24,
+      "target_normalization_provenance": {
+        "source": "not run; benchmark acquisition only",
+        "status": "unknown"
+      },
+      "topic_id": "semaglutide_obesity_safety",
+      "total_result_count": 1178
+    }
+  ]
+}
