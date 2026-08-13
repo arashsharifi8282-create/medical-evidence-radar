@@ -333,6 +333,12 @@ def main(argv: list[str] | None = None) -> None:
         print(f"DOI: {article.doi}")
         print(f"URL: {article.pubmed_url}")
         print(f"Evidence level: {a.evidence_level_label}")
+        if a.study_assessment:
+            print(f"Study design: {a.study_assessment.design_subtype}")
+            print(f"Evidence strength: {a.study_assessment.evidence_tier}")
+            print(f"Population scope: {a.study_assessment.population_scope}")
+            print(f"Sample size: {a.study_assessment.sample_size if a.study_assessment.sample_size is not None else 'Not reported'}")
+            print(f"Needs review: {'yes' if a.study_assessment.needs_review else 'no'}")
         if relevance:
             print(
                 f"Clinical relevance: {relevance.relevance_class} "

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from app.models.article import Article
 from app.models.relevance import ClinicalRelevanceAssessment
+from app.models.study import StudyAssessment
 
 # Evidence level — a closed set of 6 categories.
 EvidenceLevel = str
@@ -31,6 +32,7 @@ class EvidenceAssessment:
     reasons: tuple[str, ...]
     limitations: tuple[str, ...]
     section: EvidenceSection
+    study_assessment: StudyAssessment | None = None
 
 
 @dataclass(frozen=True)

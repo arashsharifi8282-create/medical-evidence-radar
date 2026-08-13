@@ -1,8 +1,9 @@
 # Medical Evidence Radar
 
 Phase A transparently ranks PubMed evidence, Phase B1 adds explainable concept
-normalization, and Phase B2 deterministically filters a larger recent candidate
-pool for direct clinical relevance before Phase-A ranking.
+normalization, Phase B2 deterministically filters a larger recent candidate
+pool for direct clinical relevance, and Phase B3 adds explainable study-design
+and evidence-strength triage before final ranking.
 
 ## Scope
 
@@ -220,6 +221,23 @@ Phase A uses deterministic, explainable rules—there is no LLM or opaque model:
 - The compact search-quality summary reports PubMed total count when available,
   candidate/inclusion/exclusion counts, class counts, original query, and limits.
 
+### Phase B3 evidence-strength triage
+
+- B3 keeps relevance (`direct`, `class_level`, `contextual`, `irrelevant`) separate
+  from study design, population scope, and evidence strength.
+- `study_assessment` is a typed, source-linked audit object with design subtype,
+  triage tier, three-state method signals, sample size, comparator, follow-up,
+  limitation codes, supporting spans, named rules, and confidence.
+- Tiers are `higher_strength`, `moderate_strength`, `limited_strength`,
+  `signal_only`, `preclinical`, and `not_assessable`. They are conservative
+  abstract/metadata-based triage only, not GRADE, certainty of evidence, or a
+  formal risk-of-bias assessment.
+- Missing values remain `unknown`, `unclear`, or `not_reported`; numbers are not
+  treated as sample sizes unless the abstract connects them to a study population.
+- JSON snapshots retain the full B3 audit and named lexicographic ranking
+  components. Markdown and HTML show a compact study summary and the same scope
+  limitation; technical signals remain in JSON and the HTML audit disclosure.
+
 ### Phase B1 concept normalization
 
 - PubMed MeSH descriptors are accepted only from EFetch source metadata and use
@@ -266,7 +284,9 @@ app/
   models/concept.py           # NormalizedConcept and safe article-link models
   models/retrieval.py         # PubMed count/candidate retrieval metadata
   models/relevance.py         # B2 targets, signals, decisions, and run summary
+  models/study.py             # Typed B3 study-design and triage audit models
   services/evidence.py        # Rule-based evidence classification and ranking
+  services/study_design.py    # Conservative B3 design, tier, and limitation rules
   services/topic_expansion.py # MeSH/keyword discovery and profile persistence
   services/concept_normalization.py # Source-backed MeSH/RxNorm normalization
   services/relevance.py       # Field-weighted clinical filtering before Phase A
@@ -280,6 +300,7 @@ tests/
   test_client.py             # Client tests with fake transport
   test_cli.py                # End-to-end slice test (offline)
   test_evidence.py            # Evidence classification, scoring, and triage
+  test_study_design.py        # B3 taxonomy, extraction, tiers, and ranking tests
   test_topic_expansion.py     # Candidate-term discovery and scoring
   test_topic_profile_storage.py # Topic profile round-trip and merging
   test_persistence.py        # JSON/Markdown/HTML persistence tests (tmp_path, offline)
@@ -292,7 +313,7 @@ tests/
 1. **ESearch** — find PMIDs for the query, sorted by publication date (newest first).
 2. **EFetch** — fetch full records (title, abstract, authors, DOI, dates, publication types) as XML.
 3. **Normalize** — parse XML with `xml.etree.ElementTree` into `Article` records.
-4. **Assess and rank** — apply deterministic evidence-level, relevance, and recency-aware triage rules.
+4. **Assess and rank** — apply deterministic relevance, study-design, evidence-tier, and recency-aware triage rules.
 5. **Expand the topic** — score recurring MeSH headings and author keywords without modifying the original query.
 6. **Normalize concepts** — retain source MeSH UIs and check accepted terms with
    exact-first RxNorm lookup; preserve unconfirmed terms as unresolved.

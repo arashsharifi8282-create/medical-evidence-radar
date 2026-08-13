@@ -5,6 +5,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 from app.models.article import Article
+from app.models.assessment import RankedArticle
 from app.services.persistence import (
     build_html_report,
     build_markdown_report,
@@ -13,6 +14,7 @@ from app.services.persistence import (
     save_markdown_report,
     save_snapshot,
 )
+from app.services.evidence import assess_article
 
 FIXED_DT = datetime(2026, 8, 10, 9, 30, 0)
 
@@ -439,3 +441,27 @@ def test_timestamped_filenames_do_not_overwrite(tmp_path: Path):
     path3 = save_snapshot(snapshot, output_dir=tmp_path, fetched_at=later)
     assert path3.name == "pubmed_20260810_100000.json"
     assert path3 != path1
+
+
+def test_b3_study_assessment_is_present_in_json_markdown_and_html():
+    article = Article(
+        pmid="b3-1",
+        title="A randomized controlled trial in patients",
+        abstract="METHODS: Patients were randomized to placebo. RESULTS: Outcomes were compared.",
+        publication_types=("Randomized Controlled Trial",),
+    )
+    ranked = [RankedArticle(article=article, assessment=assess_article(article, FIXED_DT, topic="patients"))]
+    snapshot = build_snapshot("patients", "patients", FIXED_DT, ranked=ranked)
+    assessment = snapshot["articles"][0]["assessment"]["study_assessment"]
+    assert assessment["design_family"] == "randomized_controlled_trial"
+    assert assessment["evidence_tier"] == "higher_strength"
+    assert snapshot["visible_article_pmids"] == ["b3-1"]
+    assert "evidence_tier" in snapshot["ranking_policy"]
+    assert snapshot["articles"][0]["ranking_audit"]["study_design"] == "randomized_controlled_trial"
+    markdown = build_markdown_report("patients", FIXED_DT, ranked=ranked)
+    assert "**Study design:** randomized_controlled_trial" in markdown
+    assert "**Evidence strength:** higher_strength" in markdown
+    html = build_html_report("patients", FIXED_DT, ranked=ranked)
+    assert "Study design:" in html
+    assert "Evidence strength:" in html
+    assert "Study assessment audit" in html

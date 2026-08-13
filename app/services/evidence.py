@@ -12,6 +12,7 @@ from datetime import date, datetime
 
 from app.models.article import Article
 from app.models.assessment import EvidenceAssessment, RankedArticle
+from app.services.study_design import assess_study_design
 
 # ---------------------------------------------------------------------------
 # Evidence-level classification
@@ -158,6 +159,7 @@ def assess_article(
 ) -> EvidenceAssessment:
     """Build a transparent evidence assessment for a single article."""
     level, label = classify_evidence_level(article.publication_types)
+    study_assessment = assess_study_design(article)
 
     # Future-date handling: distinguish journal-issue date from electronic date.
     fetched_date = fetched_at.date()
@@ -229,6 +231,7 @@ def assess_article(
         reasons=tuple(reasons),
         limitations=tuple(limitations),
         section=section,
+        study_assessment=study_assessment,
     )
 
 
@@ -255,11 +258,21 @@ def rank_articles(
     ]
 
     section_order = {"key_evidence": 0, "important_updates": 1, "exploratory_evidence": 2}
+    tier_order = {
+        "higher_strength": 0,
+        "moderate_strength": 1,
+        "limited_strength": 2,
+        "signal_only": 3,
+        "preclinical": 4,
+        "not_assessable": 5,
+    }
     ranked.sort(
         key=lambda r: (
             section_order.get(r.assessment.section, 3),
+            tier_order.get((r.assessment.study_assessment or None).evidence_tier if r.assessment.study_assessment else "not_assessable", 6),
             -r.assessment.overall_score,
             -(r.article.publication_date or date.min).toordinal(),
+            r.article.pmid,
         )
     )
     return ranked

@@ -156,7 +156,35 @@ def _reason(cls: str, target: ClinicalTarget, focus: str, coherence: str, role: 
     return "Excluded as irrelevant: requested intervention-condition-intent criteria were not jointly satisfied." + (f" Major MeSH identifies {other_major}." if other_major else "")
 def _rank_key(item: RankedArticle) -> tuple:
     r = item.clinical_relevance
-    return (_CLASS_ORDER.get(r.relevance_class if r else "irrelevant", 3), -(r.relevance_score if r else 0), _SECTION_ORDER.get(item.assessment.section, 3), -item.assessment.overall_score, -(item.article.publication_date or date.min).toordinal(), item.article.pmid)
+    study = item.assessment.study_assessment
+    tier_order = {"higher_strength": 0, "moderate_strength": 1, "limited_strength": 2, "signal_only": 3, "preclinical": 4, "not_assessable": 5}
+    design_order = {
+        "systematic_review_meta_analysis": 0,
+        "randomized_controlled_trial": 1,
+        "systematic_review_without_meta_analysis": 2,
+        "prospective_cohort": 3,
+        "retrospective_cohort": 4,
+        "case_control": 5,
+        "cross_sectional": 6,
+        "case_series": 7,
+        "case_report": 8,
+        "pharmacovigilance_disproportionality": 9,
+        "narrative_review": 10,
+    }
+    intent_match = bool(r and set(r.query_intents) & set(r.article_intents))
+    return (
+        _CLASS_ORDER.get(r.relevance_class if r else "irrelevant", 3),
+        -(1 if intent_match else 0),
+        tier_order.get(study.evidence_tier if study else "not_assessable", 6),
+        design_order.get(study.design_family if study else "unknown", 99),
+        len(study.limitation_codes) if study else 99,
+        -(study.sample_size or 0) if study and study.sample_size_status == "reported" else 0,
+        -(r.relevance_score if r else 0),
+        _SECTION_ORDER.get(item.assessment.section, 3),
+        -item.assessment.overall_score,
+        -(item.article.publication_date or date.min).toordinal(),
+        item.article.pmid,
+    )
 def _contains(text: str, label: str) -> bool:
     needle = _normalize(label); return bool(needle and re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", f" {_normalize(text)} "))
 def _normalize(value: str) -> str:

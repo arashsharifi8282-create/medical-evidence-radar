@@ -26,6 +26,7 @@ from app.models.relevance import (
     RelevanceSignal,
     SearchQualitySummary,
 )
+from app.models.study import StudyAssessment
 from app.services.evidence import assess_article
 from app.models.topic_profile import CandidateTerm, TopicProfile
 
@@ -78,7 +79,7 @@ def _article_to_dict(article: Article) -> dict:
 
 def _assessment_to_dict(assessment) -> dict:
     """Convert an :class:`EvidenceAssessment` into a JSON-serializable dict."""
-    return {
+    payload = {
         "evidence_level": assessment.evidence_level,
         "evidence_level_label": assessment.evidence_level_label,
         "relevance_score": assessment.relevance_score,
@@ -91,6 +92,41 @@ def _assessment_to_dict(assessment) -> dict:
         "reasons": list(assessment.reasons),
         "limitations": list(assessment.limitations),
         "section": assessment.section,
+    }
+    study = assessment.study_assessment
+    if study is not None:
+        payload["study_assessment"] = _study_assessment_to_dict(study)
+    return payload
+
+
+def _study_assessment_to_dict(study: StudyAssessment) -> dict:
+    return {
+        "design_family": study.design_family,
+        "design_subtype": study.design_subtype,
+        "population_scope": study.population_scope,
+        "result_status": study.result_status,
+        "evidence_tier": study.evidence_tier,
+        "confidence": study.confidence,
+        "needs_review": study.needs_review,
+        "sample_size": study.sample_size,
+        "sample_size_status": study.sample_size_status,
+        "comparator_status": study.comparator_status,
+        "comparator_text": study.comparator_text,
+        "randomized": study.randomized,
+        "blinded": study.blinded,
+        "prospective": study.prospective,
+        "retrospective": study.retrospective,
+        "multicenter": study.multicenter,
+        "follow_up_text": study.follow_up_text,
+        "data_source_type": study.data_source_type,
+        "limitation_codes": list(study.limitation_codes),
+        "matched_signals": list(study.matched_signals),
+        "supporting_spans": [
+            {"field": span.field, "source_type": span.source_type, "text": span.text, "rule_id": span.rule_id}
+            for span in study.supporting_spans
+        ],
+        "assessment_reasons": list(study.assessment_reasons),
+        "rule_version": study.rule_version,
     }
 
 
@@ -113,9 +149,30 @@ def _ranked_to_dict(r: RankedArticle) -> dict:
     """Convert a :class:`RankedArticle` into a JSON-serializable dict."""
     d = _article_to_dict(r.article)
     d["assessment"] = _assessment_to_dict(r.assessment)
+    d["ranking_audit"] = _ranking_audit(r)
     if r.clinical_relevance:
         d["clinical_relevance"] = _clinical_relevance_to_dict(r.clinical_relevance)
     return d
+
+
+def _ranking_audit(ranked: RankedArticle) -> dict:
+    """Serialize the named lexicographic ranking components for replay."""
+    relevance = ranked.clinical_relevance
+    study = ranked.assessment.study_assessment
+    return {
+        "policy": "relevance_class > query_intent_match > evidence_tier > study_design > limitation_count > bounded_sample_size > relevance_score > section > overall_score > publication_date > pmid",
+        "relevance_class": relevance.relevance_class if relevance else None,
+        "query_intent_match": bool(relevance and set(relevance.query_intents) & set(relevance.article_intents)),
+        "evidence_tier": study.evidence_tier if study else None,
+        "study_design": study.design_family if study else None,
+        "limitation_count": len(study.limitation_codes) if study else None,
+        "bounded_sample_size": min(study.sample_size, 10000) if study and study.sample_size is not None else None,
+        "relevance_score": relevance.relevance_score if relevance else None,
+        "section": ranked.assessment.section,
+        "overall_score": ranked.assessment.overall_score,
+        "publication_date": ranked.article.publication_date.isoformat() if ranked.article.publication_date else None,
+        "pmid": ranked.article.pmid,
+    }
 
 
 def _signal_to_dict(signal: RelevanceSignal) -> dict:
@@ -347,10 +404,14 @@ def build_snapshot(
         for candidate in candidates:
             ranked_item = ranked_by_pmid.get(candidate.article.pmid)
             payload = _article_to_dict(candidate.article)
-            payload["assessment"] = (
-                _assessment_to_dict(ranked_item.assessment) if ranked_item else None
+            payload["assessment"] = _assessment_to_dict(
+                ranked_item.assessment
+                if ranked_item
+                else assess_article(candidate.article, fetched_at, topic)
             )
             payload["clinical_relevance"] = _clinical_relevance_to_dict(candidate.relevance)
+            if ranked_item:
+                payload["ranking_audit"] = _ranking_audit(ranked_item)
             serialized_articles.append(payload)
     else:
         serialized_articles = [_ranked_to_dict(r) for r in ranked]
@@ -360,6 +421,8 @@ def build_snapshot(
         "query": query,
         "fetched_at": fetched_at.isoformat(),
         "articles": serialized_articles,
+        "visible_article_pmids": [item.article.pmid for item in ranked],
+        "ranking_policy": "relevance_class > query_intent_match > evidence_tier > study_design > limitation_count > bounded_sample_size > relevance_score > section > overall_score > publication_date > pmid",
     }
     if clinical_target is not None:
         snapshot["clinical_target"] = _target_to_dict(clinical_target)
@@ -474,6 +537,13 @@ def build_markdown_report(
     lines.append("")
     lines.append(f"**Articles:** {len(ranked)}")
     lines.append("")
+    if any(item.assessment.study_assessment for item in ranked):
+        lines.extend([
+            "**Assessment scope:** Abstract/metadata-based evidence-strength triage from PubMed metadata and abstracts.",
+            "",
+            "This is not full-text appraisal, GRADE, a formal risk-of-bias assessment, or clinical advice.",
+            "",
+        ])
     if search_quality:
         total = (
             search_quality.total_result_count
@@ -577,6 +647,23 @@ def build_markdown_report(
                 lines.append(f"## {i}. {article.title}")
                 lines.append("")
                 lines.append(f"- **Evidence level:** {a.evidence_level_label}")
+                if a.study_assessment:
+                    study = a.study_assessment
+                    lines.append(f"- **Study design:** {study.design_subtype}")
+                    lines.append(f"- **Evidence strength:** {study.evidence_tier}")
+                    lines.append(f"- **Population scope:** {study.population_scope}")
+                    if study.sample_size is not None:
+                        lines.append(f"- **Sample size:** {study.sample_size}")
+                    elif study.sample_size_status != "reported":
+                        lines.append("- **Sample size:** Not reported")
+                    if study.comparator_text:
+                        lines.append(f"- **Comparator:** {study.comparator_text}")
+                    else:
+                        lines.append("- **Comparator:** Not reported")
+                    if study.follow_up_text:
+                        lines.append(f"- **Follow-up:** {study.follow_up_text}")
+                    if study.limitation_codes:
+                        lines.append(f"- **Study limitations:** {', '.join(study.limitation_codes)}")
                 if r.clinical_relevance:
                     lines.append(
                     f"- **Clinical relevance:** {r.clinical_relevance.relevance_class} "
@@ -755,6 +842,7 @@ def build_html_report(
     esc_topic = e(topic)
     esc_fetched_at = e(fetched_at.isoformat())
     article_count = len(ranked)
+    has_b3_assessment = any(item.assessment.study_assessment for item in ranked)
 
     b2_mode = any(item.clinical_relevance for item in ranked)
     sections = (
@@ -814,6 +902,24 @@ def build_html_report(
                 f'<div class="meta-item"><span class="meta-label">Evidence level:</span> '
                 f'<span class="meta-value">{e(a.evidence_level_label)}</span></div>'
             )
+            if a.study_assessment:
+                study = a.study_assessment
+                meta_items.extend([
+                    f'<div class="meta-item"><span class="meta-label">Study design:</span> <span class="meta-value">{e(study.design_subtype)}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Evidence strength:</span> <span class="meta-value">{e(study.evidence_tier)}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Population scope:</span> <span class="meta-value">{e(study.population_scope)}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Sample size:</span> <span class="meta-value">{e(str(study.sample_size) if study.sample_size is not None else "Not reported")}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Comparator:</span> <span class="meta-value">{e(study.comparator_text or "Not reported")}</span></div>',
+                ])
+                if study.follow_up_text:
+                    meta_items.append(
+                        f'<div class="meta-item"><span class="meta-label">Follow-up:</span> <span class="meta-value">{e(study.follow_up_text)}</span></div>'
+                    )
+                if study.needs_review:
+                    meta_items.append(
+                        '<div class="meta-item"><span class="meta-label">Study review:</span> '
+                        '<span class="meta-value status-future">Needs review</span></div>'
+                    )
             meta_items.append(
                 f'<div class="meta-item"><span class="meta-label">Evidence score:</span> '
                 f'<span class="meta-value">{a.evidence_score}/100</span></div>'
@@ -909,6 +1015,7 @@ def build_html_report(
     {chr(10).join(meta_items)}
   </div>
   {abstract_html}
+  {f'<details class="technical-audit"><summary>Study assessment audit</summary><p>Rule version: {e(a.study_assessment.rule_version)}; confidence: {e(a.study_assessment.confidence)}; signals: {e("; ".join(a.study_assessment.matched_signals))}</p></details>' if a.study_assessment else ''}
 </article>"""
             )
 
@@ -1004,6 +1111,12 @@ def build_html_report(
       font-size: 0.75rem;
       letter-spacing: 0.05em;
       opacity: 0.8;
+    }}
+
+    .scope-notice {{
+      margin: 0 0 1rem;
+      font-size: 0.92rem;
+      opacity: 0.94;
     }}
 
     .report-section {{
@@ -1255,6 +1368,7 @@ def build_html_report(
   <div class="container">
     <header class="report-header">
       <h1>PubMed Report: {esc_topic}</h1>
+      {('<p class="scope-notice">Abstract/metadata-based evidence-strength triage from PubMed metadata and abstracts; not full-text appraisal, GRADE, formal risk-of-bias assessment, or clinical advice.</p>' if has_b3_assessment else '')}
       <div class="header-meta">
         <span><span class="label">Fetched</span> {esc_fetched_at}</span>
         <span><span class="label">Articles</span> {article_count}</span>
