@@ -22,6 +22,12 @@ def route_report_section(item: RankedArticle, human_clinical_query: bool = True)
     if family == "pharmacovigilance_disproportionality": return "pharmacovigilance_signals",True,"Pharmacovigilance evidence is a non-causal signal with reporting bias and no incidence estimate."
     if role in {"emerging_mechanism","research_enabler"}: return "emerging_mechanisms_and_research_trends",True,"Mechanism or research-enabling content is contextual, not direct treatment evidence."
     if family == "narrative_review": return "clinical_background_and_overview",True,"Narrative review is limited overview evidence."
-    if relevance and relevance.relevance_class in {"direct","class_level"}: return "key_evidence",True,"Eligible direct or provenance-backed class-level clinical evidence."
+    if relevance and relevance.relevance_class in {"direct","class_level"}:
+        if study and study.sample_size is not None and study.sample_size < 30:
+            return "clinical_background_and_overview",True,"Small studies remain relevant but are not principal evidence by default."
+        intents = set(relevance.query_intents)
+        if "efficacy" in intents and "safety" not in intents and study and study.comparator_status == "not_reported":
+            return "clinical_background_and_overview",True,"Comparative efficacy requires a reported comparator."
+        return "key_evidence",True,"Eligible direct or provenance-backed class-level clinical evidence."
     if relevance and relevance.relevance_class == "contextual": return "clinical_background_and_overview",True,"Contextual evidence retained separately from principal evidence."
     return "audit_only",False,"Does not satisfy the active clinical relevance criteria."

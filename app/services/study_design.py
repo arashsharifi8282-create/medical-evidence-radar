@@ -19,7 +19,7 @@ _METHODS = re.compile(r"\b(?:methods?|methodology|performed|conducted|randomi[sz
 _MIXED_SCOPE = re.compile(r"\b(?:patients?|participants?|humans?)\b.{0,80}\b(?:mice|mouse|rats?|animals?|in\s+vitro|cell\s+line)\b|\b(?:mice|mouse|rats?|animals?|in\s+vitro|cell\s+line)\b.{0,80}\b(?:patients?|participants?|humans?)\b", re.I)
 _NUMBER = r"(?P<n>(?<![\d,])(?:\d{1,3}(?:,\d{3})+|\d{1,6})(?![\d,]))"
 _NUMBER_WORD = r"(?P<w>(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|and|-|\s)+)"
-_POP_DESCRIPTOR = r"(?:(?!(?:study|studies|followed|assessed|treated|included|randomized|enrolled|these|those|the|of|and)\b)[A-Za-z-]+\s+){0,2}"
+_POP_DESCRIPTOR = r"(?:(?!(?:study|studies|followed|assessed|treated|included|randomized|enrolled|these|those|the|of|and|in|at|per|arm|group)\b)[A-Za-z-]+\s+){0,2}"
 
 
 def assess_study_design(article: Article) -> StudyAssessment:
@@ -309,6 +309,8 @@ def _treatment_duration(text: str) -> tuple[str | None, SupportingSpan | None]:
         r"\bcompared\s+with\s+[^.;]{0,120}\bfor\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
         r"\bfor\s+\d+\s*(?:days?|weeks?|months?|years?)\s+of\s+treatment\b",
         r"\bdosing\s+for\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
+        r"\b(?:both|either|each)\b[^.;]{0,180}\bfor\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
+        r"\b(?:treatment|therapy)\s+(?:was\s+)?(?:continued|given|administered)\s+for\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
     ]
     for pattern in patterns:
         match = re.search(pattern, text, re.I)

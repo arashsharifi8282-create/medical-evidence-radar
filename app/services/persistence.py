@@ -40,6 +40,39 @@ DEFAULT_CONCEPT_DIR = Path("data/concepts")
 MAX_QUERY_SLUG_LENGTH = 120
 
 
+def _report_ranked(ranked: list[RankedArticle]) -> list[RankedArticle]:
+    """Apply the active placement policy once for every renderer."""
+    policy = load_policy()
+    principal_limit = int(policy["defaults"]["principal_article_limit"])
+    if not any(item.clinical_relevance for item in ranked):
+        return list(ranked)
+    placed = [(item, route_report_section(item)) for item in ranked]
+    key = [item for item, placement in placed if placement[0] == "key_evidence" and placement[1]]
+    selected_key = {item.article.pmid for item in key[:principal_limit]}
+    return [item for item, placement in placed if placement[1] and (placement[0] != "key_evidence" or item.article.pmid in selected_key)]
+
+
+def _display_value(value, default: str = "Not reported") -> str:
+    if value is None or value == "" or value in {"unknown", "unclear", "not_reported", "not_extractable", "not_applicable"}:
+        return default
+    return str(value).replace("_", " ").capitalize()
+
+
+def _clinical_card_data(item: RankedArticle) -> dict:
+    extraction = extract_clinical(item.article)
+    return {
+        "population": extraction.population.description or _display_value(extraction.population.scope),
+        "intervention": "; ".join(i.source_text for i in extraction.interventions if i.source_text) or "Not reported",
+        "comparator": extraction.comparator.source_text or "Not reported",
+        "outcomes": tuple(o.name for o in extraction.outcomes) or ("Not extractable from abstract",),
+        "effects": tuple(o.effect_value for o in extraction.outcomes if o.effect_value) or ("Not reported",),
+        "safety": tuple(s.event_name for s in extraction.safety_findings) or ("No safety finding extractable from abstract",),
+        "limitations": tuple(item.assessment.study_assessment.limitation_codes if item.assessment.study_assessment else ()) or ("Not reported",),
+        "spans": tuple(p.supporting_span for p in extraction.population.provenance),
+        "abstract": item.article.abstract or "Abstract not available in PubMed.",
+    }
+
+
 def _article_to_dict(article: Article) -> dict:
     """Convert an :class:`Article` into a JSON-serializable dict."""
     return {
@@ -425,13 +458,18 @@ def build_snapshot(
             serialized_articles.append(payload)
     else:
         serialized_articles = [_ranked_to_dict(r) for r in ranked]
+    report_ranked = _report_ranked(ranked)
     snapshot = {
         "schema_version": "b4" if candidates is not None else "legacy",
         "topic": topic,
         "query": query,
         "fetched_at": fetched_at.isoformat(),
         "articles": serialized_articles,
-        "visible_article_pmids": [item.article.pmid for item in ranked],
+        "visible_article_pmids": [item.article.pmid for item in report_ranked],
+        "report_sections": {
+            section: [item.article.pmid for item in report_ranked if route_report_section(item)[0] == section]
+            for section in sorted({route_report_section(item)[0] for item in report_ranked})
+        },
         "ranking_policy": "hard_gates > relevance_class > query_intent_compatibility > report_section > evidence_tier > study_design > comparator_suitability > extraction_completeness > bounded_sample_size > recency > pmid",
         "active_policy": load_policy(),
     }
@@ -541,12 +579,13 @@ def build_markdown_report(
     legacy_articles = ranked is None and articles is not None
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
+    display_ranked = _report_ranked(ranked)
     lines: list[str] = []
     lines.append(f"# PubMed Report: {topic}")
     lines.append("")
     lines.append(f"**Fetch timestamp:** {fetched_at.isoformat()}")
     lines.append("")
-    lines.append(f"**Articles:** {len(ranked)}")
+    lines.append(f"**Articles:** {len(display_ranked)}")
     lines.append("")
     if any(item.assessment.study_assessment for item in ranked):
         lines.extend([
@@ -608,12 +647,14 @@ def build_markdown_report(
             lines.append("")
         return "\n".join(lines)
 
-    b2_mode = any(item.clinical_relevance for item in ranked)
+    b2_mode = any(item.clinical_relevance for item in display_ranked)
     sections = (
         (
-            ("direct", "Key evidence"),
-            ("class_level", "Class-level evidence"),
-            ("contextual", "Background/contextual evidence"),
+            ("key_evidence", "Key evidence"),
+            ("early_safety_signals", "Early safety signals"),
+            ("pharmacovigilance_signals", "Pharmacovigilance signals"),
+            ("clinical_background_and_overview", "Clinical background and overview"),
+            ("emerging_mechanisms_and_research_trends", "Emerging mechanisms and research trends"),
         )
         if b2_mode
         else tuple(
@@ -626,13 +667,7 @@ def build_markdown_report(
     )
     for section_key, section_label in sections:
         section_articles = [
-            r
-            for r in ranked
-            if (
-                r.clinical_relevance.relevance_class == section_key
-                if b2_mode and r.clinical_relevance
-                else r.assessment.section == section_key
-            )
+            r for r in display_ranked if (route_report_section(r)[0] == section_key if b2_mode else r.assessment.section == section_key)
         ]
         if not section_articles:
             continue
@@ -712,12 +747,12 @@ def build_markdown_report(
                     lines.append(f"- **Why included:** {'; '.join(a.reasons)}")
                 if a.limitations:
                     lines.append(f"- **Limitations:** {'; '.join(a.limitations)}")
-                if article.abstract:
-                    lines.append("")
-                    lines.append(f"**Abstract:** {article.abstract}")
-                else:
-                    lines.append("")
-                    lines.append("**Abstract:** Abstract not available in PubMed")
+                card = _clinical_card_data(r)
+                lines.extend(["", "### Clinical evidence card", "", f"- **Population:** {card['population']}", f"- **Intervention:** {card['intervention']}", f"- **Comparator:** {card['comparator']}", f"- **Outcome:** {'; '.join(card['outcomes'])}", f"- **Effect:** {'; '.join(card['effects'])}", f"- **Safety:** {'; '.join(card['safety'])}", f"- **Limitations:** {'; '.join(card['limitations'])}"])
+                if card["spans"]:
+                    lines.extend(["", "<details>", "<summary>Supporting spans</summary>", "", *[f"- {span}" for span in card["spans"]], "", "</details>"])
+                lines.extend(["", "<details>", "<summary>Abstract</summary>", "", card["abstract"], "", "</details>"])
+                lines.extend(["", "<details>", "<summary>Audit details</summary>", "", f"- Placement: `{route_report_section(r)[0]}`", f"- Placement reason: {route_report_section(r)[2]}", f"- Relevance score: {a.relevance_score}/100", f"- Evidence score: {a.evidence_score}/100", f"- Overall score: {a.overall_score}/100", "", "</details>"])
                 lines.append("")
                 lines.append("---")
                 lines.append("")
@@ -852,18 +887,21 @@ def build_html_report(
     """
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
+    display_ranked = _report_ranked(ranked)
     e = html.escape
     esc_topic = e(topic)
     esc_fetched_at = e(fetched_at.isoformat())
-    article_count = len(ranked)
-    has_b3_assessment = any(item.assessment.study_assessment for item in ranked)
+    article_count = len(display_ranked)
+    has_b3_assessment = any(item.assessment.study_assessment for item in display_ranked)
 
-    b2_mode = any(item.clinical_relevance for item in ranked)
+    b2_mode = any(item.clinical_relevance for item in display_ranked)
     sections = (
         {
-            "direct": "Key evidence",
-            "class_level": "Class-level evidence",
-            "contextual": "Background/contextual evidence",
+            "key_evidence": "Key evidence",
+            "early_safety_signals": "Early safety signals",
+            "pharmacovigilance_signals": "Pharmacovigilance signals",
+            "clinical_background_and_overview": "Clinical background and overview",
+            "emerging_mechanisms_and_research_trends": "Emerging mechanisms and research trends",
         }
         if b2_mode
         else {
@@ -877,12 +915,8 @@ def build_html_report(
     for section_key, section_label in sections.items():
         section_articles = [
             r
-            for r in ranked
-            if (
-                r.clinical_relevance.relevance_class == section_key
-                if b2_mode and r.clinical_relevance
-                else r.assessment.section == section_key
-            )
+            for r in display_ranked
+            if (route_report_section(r)[0] == section_key if b2_mode else r.assessment.section == section_key)
         ]
         if not section_articles:
             continue
@@ -920,8 +954,8 @@ def build_html_report(
                 study = a.study_assessment
                 meta_items.extend([
                     f'<div class="meta-item"><span class="meta-label">Study design:</span> <span class="meta-value">{e(study.design_subtype)}</span></div>',
-                    f'<div class="meta-item"><span class="meta-label">Evidence strength:</span> <span class="meta-value">{e(study.evidence_tier)}</span></div>',
-                    f'<div class="meta-item"><span class="meta-label">Population scope:</span> <span class="meta-value">{e(study.population_scope)}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Evidence strength:</span> <span class="meta-value">{e(_display_value(study.evidence_tier))}</span></div>',
+                    f'<div class="meta-item"><span class="meta-label">Population scope:</span> <span class="meta-value">{e(_display_value(study.population_scope))}</span></div>',
                     f'<div class="meta-item"><span class="meta-label">Sample size:</span> <span class="meta-value">{e(str(study.sample_size) if study.sample_size is not None else "Not reported")}</span></div>',
                     f'<div class="meta-item"><span class="meta-label">Comparator:</span> <span class="meta-value">{e(study.comparator_text or "Not reported")}</span></div>',
                     f'<div class="meta-item"><span class="meta-label">Treatment duration:</span> <span class="meta-value">{e(study.treatment_duration_text or "Not reported")}</span></div>',
@@ -1014,10 +1048,22 @@ def build_html_report(
                     f'<ul class="limitation-list">{limitations_html}</ul></div>'
                 )
 
+            card = _clinical_card_data(r)
+            clinical_html = (
+                '<section class="clinical-card"><h3>Clinical evidence card</h3>'
+                f'<dl><dt>Population</dt><dd>{e(card["population"])}</dd>'
+                f'<dt>Intervention</dt><dd>{e(card["intervention"])}</dd>'
+                f'<dt>Comparator</dt><dd>{e(card["comparator"])}</dd>'
+                f'<dt>Outcome</dt><dd>{e("; ".join(card["outcomes"]))}</dd>'
+                f'<dt>Effect</dt><dd>{e("; ".join(card["effects"]))}</dd>'
+                f'<dt>Safety</dt><dd>{e("; ".join(card["safety"]))}</dd>'
+                f'<dt>Limitations</dt><dd>{e("; ".join(card["limitations"]))}</dd></dl>'
+                f'<details><summary>Supporting spans</summary><ul>{"".join(f"<li>{e(span)}</li>" for span in card["spans"]) or "<li>Not extractable</li>"}</ul></details></section>'
+            )
             if esc_abstract:
                 abstract_html = (
-                    f'<div class="abstract"><span class="abstract-label">Abstract:</span> '
-                    f'<p class="abstract-text">{esc_abstract}</p></div>'
+                    f'<details class="abstract"><summary class="abstract-label">Abstract:</summary>'
+                    f'<p class="abstract-text">{esc_abstract}</p></details>'
                 )
             else:
                 abstract_html = (
@@ -1033,6 +1079,7 @@ def build_html_report(
   <div class="card-meta">
     {chr(10).join(meta_items)}
   </div>
+  {clinical_html}
   {abstract_html}
   {f'<details class="technical-audit"><summary>Study assessment audit</summary><p>Rule version: {e(a.study_assessment.rule_version)}; confidence: {e(a.study_assessment.confidence)}; signals: {e("; ".join(a.study_assessment.matched_signals))}</p></details>' if a.study_assessment else ''}
 </article>"""
@@ -1041,7 +1088,7 @@ def build_html_report(
         content = (
             f'<h2 class="section-heading">{e(section_label)}</h2>{"".join(cards)}'
         )
-        if b2_mode and section_key == "contextual":
+        if b2_mode and section_key == "clinical_background_and_overview":
             section_html_parts.append(
                 f'<details class="report-section contextual-evidence" id="{section_key}">'
                 f'<summary>{e(section_label)} ({len(cards)})</summary>{"".join(cards)}</details>'
@@ -1265,6 +1312,14 @@ def build_html_report(
       font-size: 0.95rem;
     }}
 
+    .clinical-card {{ margin: 1rem 0; padding: 1rem 1.25rem; background: #f8fafc;
+      border: 1px solid #dbe4ee; border-radius: 8px; }}
+    .clinical-card h3 {{ color: #1a365d; margin-bottom: .6rem; font-size: 1rem; }}
+    .clinical-card dl {{ display: grid; grid-template-columns: 10rem 1fr; gap: .35rem .8rem; }}
+    .clinical-card dt {{ font-weight: 700; color: #4a5568; }}
+    .clinical-card dd {{ margin: 0; color: #2d3748; }}
+    .clinical-card summary, .abstract summary {{ cursor: pointer; }}
+
     .discovered-terms {{
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -1380,6 +1435,8 @@ def build_html_report(
       header.report-header {{ padding: 1.5rem; }}
       .card {{ padding: 1.25rem 1.5rem; }}
       .header-meta {{ flex-direction: column; gap: 0.5rem; }}
+      .clinical-card dl {{ display: block; }}
+      .clinical-card dt {{ margin-top: .5rem; }}
     }}
   </style>
 </head>

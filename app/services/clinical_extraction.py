@@ -4,6 +4,28 @@ import re
 from app.models.article import Article
 from app.models.clinical import *
 
+
+_DRUG_DOSE = re.compile(
+    r"\b(?P<name>[A-Za-z][A-Za-z-]{2,30})\b\s+"
+    r"(?:(?P<count>\d+)\s*[x×]\s*)?(?P<dose>\d+(?:\.\d+)?)\s*"
+    r"(?P<unit>mg|g|mcg|µg|%)\b"
+    r"(?:\s*\((?P<formulation>[^)]{1,60})\))?"
+    r"(?:\s+(?P<route>oral|intravenous|intravenously|subcutaneous|topical))?"
+    r"(?:\s+(?P<frequency>once daily|twice daily|daily|weekly|per day|five times daily|three times daily))?",
+    re.I,
+)
+
+
+def _sentences(text: str) -> list[str]:
+    return [part.strip() for part in re.split(r"(?<=[.!?])\s+", text or "") if part.strip()]
+
+
+def _content_parts(article: Article) -> list[tuple[str, str]]:
+    """Return sections while keeping background out of treatment fields."""
+    parts = _parts(article)
+    preferred = [(section, text) for section, text in parts if section in {"methods", "patients", "participants", "results", "findings"}]
+    return preferred or parts
+
 def _parts(article: Article) -> list[tuple[str, str]]:
     labelled = [(s.label.casefold() or "abstract", s.text) for s in article.abstract_sections]
     return [("title", article.title), *(labelled or [("abstract", article.abstract)])]
@@ -21,24 +43,29 @@ def _first(article, patterns, preferred=("methods", "results", "conclusions", "t
     return None, None, None
 
 def extract_population(article: Article) -> PopulationExtraction:
-    text, section, rule = _first(article, [(r"\b(?:patients?|participants?|subjects?|volunteers?)\b[^.;]{0,140}", "POPULATION_DESCRIPTION")])
-    scope = "human" if re.search(r"\b(?:patients?|participants?|humans?|volunteers?)\b", " ".join(x[1] for x in _parts(article)), re.I) else "preclinical_only" if re.search(r"\b(?:mice|mouse|rats?|animals?|in vitro|cell line)\b", article.abstract, re.I) else "unclear"
-    special = tuple(x for x in ("children", "pregnan", "older adults", "elderly", "immunocompromised") if re.search(x, article.abstract, re.I))
+    text, section, rule = _first(article, [(r"\b(?:patients?|participants?|subjects?|volunteers?)\b[^.;]{0,180}", "POPULATION_DESCRIPTION")], preferred=("methods", "patients", "participants", "results", "findings", "abstract", "title"))
+    primary = " ".join(text for _, text in _content_parts(article))
+    scope = "human" if re.search(r"\b(?:patients?|participants?|humans?|volunteers?|children|adults)\b", primary, re.I) else "preclinical_only" if re.search(r"\b(?:mice|mouse|rats?|animals?|in vitro|cell line)\b", primary, re.I) else "unclear"
+    special = tuple(x for x in ("children", "pregnancy", "older adults", "elderly", "immunocompromised") if re.search(x, primary, re.I))
     if not text: return PopulationExtraction(scope=scope)
     p = (_prov(article, "population", section, text, rule),)
     return PopulationExtraction(description=text, special_populations=special, scope=scope, provenance=p, status="reported")
 
 def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...]:
     found=[]
-    pattern = r"\b([A-Za-z][A-Za-z-]{2,30})\b[^.;]{0,100}?\b(\d+(?:\.\d+)?)\s*(mg|g|mcg|µg|%)\b(?:\s+(oral|intravenous|intravenously|subcutaneous|topical))?[^.;]{0,50}?\b(once daily|twice daily|daily|weekly|per day)\b"
-    for m in re.finditer(pattern, " ".join(t for _,t in _parts(article) if _ != "title"), re.I):
-        name, value, unit, route, frequency = m.groups()
-        span=m.group(0).strip(); found.append(InterventionExtraction(name, span, value, unit, route, frequency, None, None, None, (_prov(article,"intervention","methods",span,"INTERVENTION_DOSE"),), "reported"))
+    text = " ".join(t for _, t in _content_parts(article))
+    for m in _DRUG_DOSE.finditer(text):
+        name = m.group("name")
+        if name.casefold() in {"patients", "participants", "subjects", "received", "randomly", "oral", "the", "and", "with", "from", "study", "group"}:
+            continue
+        span=m.group(0).strip()
+        duration = _duration_from_sentence(span)
+        found.append(InterventionExtraction(name, span, m.group("dose"), m.group("unit"), m.group("route"), m.group("frequency"), duration, m.group("formulation"), None, (_prov(article,"intervention","methods",span,"INTERVENTION_DOSE"),), "reported"))
     if found: return tuple(found[:8])
     return (InterventionExtraction(status="not_reported"),)
 
 def extract_comparator(article: Article) -> ComparatorExtraction:
-    value, section, rule = _first(article, [(r"\b(placebo|usual care|no treatment|historical control)\b", "COMPARATOR_TYPE"),(r"\b(?:compared with|compared to|versus|vs\.?)\s+[^.;,]{1,80}", "COMPARATOR_EXPLICIT")])
+    value, section, rule = _first(article, [(r"\b(placebo|usual care|no treatment|historical control)\b", "COMPARATOR_TYPE"),(r"\b(?:compared with|compared to|versus|vs\.?)\s+[^.;,]{1,100}", "COMPARATOR_EXPLICIT")], preferred=("methods", "patients", "participants", "results", "findings", "abstract"))
     if not value: return ComparatorExtraction()
     kind = "placebo" if re.search("placebo", value, re.I) else "usual_care" if re.search("usual care", value, re.I) else "no_treatment" if re.search("no treatment", value, re.I) else "active_comparator"
     return ComparatorExtraction(kind, value, (_prov(article,"comparator",section,value,rule),), "reported")
@@ -65,10 +92,31 @@ def extract_safety(article: Article) -> tuple[SafetyExtraction, ...]:
 
 def extract_clinical(article: Article) -> ClinicalExtraction:
     pop=extract_population(article); ints=extract_interventions(article); comp=extract_comparator(article); outs=extract_outcomes(article); safety=extract_safety(article)
-    duration = next((x for x in (article.abstract, *(s.text for s in article.abstract_sections)) if re.search(r"\b(?:treated|therapy|dosing)\b[^.;]{0,100}\bfor\s+\d+\s*(?:days?|weeks?|months?)", x, re.I)), None)
-    follow = next((x for x in (article.abstract, *(s.text for s in article.abstract_sections)) if re.search(r"\bfollow(?:ed|[- ]up)?[^.;]{0,80}\d+\s*(?:days?|weeks?|months?)", x, re.I)), None)
+    duration = _first_duration(article)
+    follow = _first_follow_up(article)
     conclusion = next((s.text for s in article.abstract_sections if s.label.casefold() in {"conclusions","conclusion"}), None)
     if conclusion is None and re.search(r"\b(?:in conclusion|we conclude)", article.abstract, re.I): conclusion=article.abstract
     missing=not bool(article.abstract or article.abstract_sections)
     warnings=("Full text review needed",) if missing else ()
     return ClinicalExtraction(article.pmid,pop,ints,comp,outs,safety,duration,follow,conclusion,confidence="low" if missing else "medium",needs_review=missing or pop.scope=="unclear",warnings=warnings)
+
+
+def _duration_from_sentence(text: str) -> str | None:
+    match = re.search(r"\bfor\s+\d+\s*(?:days?|weeks?|months?|years?)\b", text or "", re.I)
+    return match.group(0) if match else None
+
+
+def _first_duration(article: Article) -> str | None:
+    for section, text in _content_parts(article):
+        for sentence in _sentences(text):
+            if re.search(r"\b(?:treated|received|administered|dosed?|therapy|treatment|compared|versus|vs\.?)\b", sentence, re.I) and _duration_from_sentence(sentence):
+                return sentence.strip()
+    return None
+
+
+def _first_follow_up(article: Article) -> str | None:
+    for section, text in _content_parts(article):
+        for sentence in _sentences(text):
+            if re.search(r"\b(?:follow(?:ed|[- ]up)?|assessed|reviewed|visits?)\b", sentence, re.I) and re.search(r"\b\d+\s*(?:days?|weeks?|months?|years?)\b", sentence, re.I):
+                return sentence.strip()
+    return None
