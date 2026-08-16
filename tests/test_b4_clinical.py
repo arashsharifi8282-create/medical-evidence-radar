@@ -88,6 +88,59 @@ def test_population_extraction_rejects_malformed_event_fragments_and_preserves_e
     assert valid.population.description == "Immunocompromised patients aged 18 years or older were enrolled"
 
 
+def test_intervention_extraction_rejects_control_words_and_keeps_supported_regimens():
+    controls = extract_clinical(article(
+        "METHODS: Patients received versus 2 g, either 1 g, or 3 g, and 4 g, "
+        "compared 5 g, group 6 g, arm 7 g, or treatment 8 g."
+    ))
+    assert controls.interventions[0].status == "not_reported"
+
+    compared = extract_clinical(article(
+        "METHODS: Immunocompetent adults with herpes zoster were assigned to "
+        "acyclovir 800 mg three times daily versus famciclovir 500 mg three times daily."
+    ))
+    assert [item.normalized_name for item in compared.interventions] == ["acyclovir", "famciclovir"]
+
+    either = extract_clinical(article(
+        "METHODS: Participants received either acyclovir 800 mg or famciclovir 500 mg."
+    ))
+    assert [item.normalized_name for item in either.interventions] == ["acyclovir", "famciclovir"]
+
+    source_text = (
+        "METHODS: Immunocompromised patients were randomized to receive oral "
+        "valacyclovir, 1 g TID versus 2 g TID."
+    )
+    source = article(source_text)
+    regimens = extract_clinical(source)
+    assert [(item.normalized_name, item.dose_value, item.dose_unit, item.frequency) for item in regimens.interventions] == [
+        ("valacyclovir", "1", "g", "TID"),
+        ("valacyclovir", "2", "g", "TID"),
+    ]
+    assert source.abstract == source_text
+
+
+def test_population_extraction_rejects_fragmentary_spans_and_keeps_coherent_people():
+    for text in (
+        "METHODS: In patients treated, outcomes were assessed.",
+        "METHODS: While the patients in the red-light group received treatment, outcomes were assessed.",
+        "METHODS: Participants were included.",
+        "METHODS: Patients were randomly assigned.",
+        "METHODS: Patients received treatment.",
+        "RESULTS: Two of the three patients treated for herpes zoster improved.",
+        "RESULTS: Of herpes zoster in immunocompetent patients: results of a randomized trial.",
+    ):
+        population = extract_clinical(article(text)).population
+        assert population.description is None
+        assert population.status == "not_reported"
+
+    for text, expected in (
+        ("METHODS: 54 inpatients with HZ were divided into three groups.", "54 inpatients with HZ were divided"),
+        ("METHODS: 719 newly diagnosed multiple myeloma patients were analyzed.", "719 newly diagnosed multiple myeloma patients were analyzed"),
+        ("METHODS: Children enrolled in the pharmacokinetic study were evaluated.", "Children enrolled in the pharmacokinetic study"),
+    ):
+        assert extract_clinical(article(text)).population.description == expected
+
+
 def test_safety_extraction_keeps_complete_sentence_and_raw_abstract_unchanged():
     source_text = "Background. Grade 1 nausea and emesis, which occurred in five patients was the only valacyclovir-related toxicity."
     extracted = extract_clinical(article(source_text))

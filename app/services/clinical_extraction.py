@@ -7,12 +7,35 @@ from app.services.study_design import comparator_from_sentence, follow_up_from_t
 
 
 _DRUG_DOSE = re.compile(
-    r"\b(?P<name>[A-Za-z][A-Za-z-]{2,30})\b\s+"
+    r"\b(?P<name>[A-Za-z][A-Za-z-]{2,30})\b\s*,?\s+"
     r"(?:(?P<count>\d+)\s*[x×]\s*)?(?P<dose>\d+(?:\.\d+)?)\s*"
     r"(?P<unit>mg|g|mcg|µg|%)\b"
     r"(?:\s*\((?P<formulation>[^)]{1,60})\))?"
     r"(?:\s+(?P<route>oral|intravenous|intravenously|subcutaneous|topical))?"
-    r"(?:\s+(?P<frequency>once daily|twice daily|daily|weekly|per day|five times daily|three times daily))?",
+    r"(?:\s+(?P<frequency>once daily|twice daily|daily|weekly|per day|five times daily|three times daily|TID))?",
+    re.I,
+)
+_DOSE_REGIMEN = re.compile(
+    r"\b(?P<dose>\d+(?:\.\d+)?)\s*(?P<unit>mg|g|mcg|µg|%)\b"
+    r"(?:\s+(?P<frequency>once daily|twice daily|daily|weekly|per day|five times daily|three times daily|TID))?",
+    re.I,
+)
+_THERAPY_REGIMEN_PAIR = re.compile(
+    r"\b(?P<name>[A-Za-z][A-Za-z-]{2,30})\s+(?:therapy|treatment|regimen)\b"
+    r"(?:\s+for\s+\d+\s*(?:days?|weeks?|months?|years?))?\s*,?\s*(?:either\s+)?"
+    r"(?P<first>\d+(?:\.\d+)?\s*(?:mg|g|mcg|µg|%)(?:\s+(?:once daily|twice daily|daily|weekly|per day|five times daily|three times daily|TID))?)"
+    r"\s+(?:versus|vs\.?|or|compared\s+with)\s+"
+    r"(?P<second>\d+(?:\.\d+)?\s*(?:mg|g|mcg|µg|%)(?:\s+(?:once daily|twice daily|daily|weekly|per day|five times daily|three times daily|TID))?)",
+    re.I,
+)
+_CONTROL_INTERVENTION_WORDS = frozenset({
+    "versus", "vs", "either", "or", "and", "compared", "group", "arm", "treatment",
+    "patients", "participants", "subjects", "received", "randomly", "oral", "the", "with",
+    "from", "study",
+})
+_POPULATION_NOUNS = r"inpatients?|outpatients?|patients?|participants?|subjects?|volunteers?|children|adults|individuals?"
+_POPULATION_HEAD = re.compile(
+    rf"\b(?P<head>(?:(?:\d[\d,]*|[A-Za-z][A-Za-z-]*)\s+){{0,6}}(?:{_POPULATION_NOUNS}))\b",
     re.I,
 )
 _MIXED_POPULATION = re.compile(r"\b(?:patients?|participants?|humans?)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b|\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:patients?|participants?|humans?)\b", re.I)
@@ -46,18 +69,13 @@ def _first(article, patterns, preferred=("methods", "results", "conclusions", "t
 
 def extract_population(article: Article) -> PopulationExtraction:
     text = section = rule = None
-    population_pattern = re.compile(
-        r"\b(?:(?:[A-Za-z-]+)\s+){0,5}(?:patients?|participants?|subjects?|volunteers?|children|adults)\b"
-        r"[^.;]{0,160}\b(?:were\s+)?(?:enrolled|included|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received)\b",
-        re.I,
-    )
     for wanted in ("methods", "patients", "participants", "results", "findings", "abstract", "title"):
         for candidate_section, candidate_text in _parts(article):
             if candidate_section != wanted:
                 continue
-            match = population_pattern.search(candidate_text)
-            if match:
-                text, section, rule = match.group(0).strip(), candidate_section, "POPULATION_ENROLLMENT"
+            candidate = _population_description(candidate_text)
+            if candidate:
+                text, section, rule = candidate, candidate_section, "POPULATION_ENROLLMENT"
                 break
         if text:
             break
@@ -70,18 +88,98 @@ def extract_population(article: Article) -> PopulationExtraction:
     p = (_prov(article, "population", section, text, rule),)
     return PopulationExtraction(description=text, special_populations=special, scope=scope, provenance=p, status="reported")
 
+
+def _population_description(text: str) -> str | None:
+    best = None
+    for sentence in _sentences(text):
+        for match in _POPULATION_HEAD.finditer(sentence):
+            head = re.sub(r"^(?:(?:in|of|while|the|a|an)\s+)+", "", match.group("head"), flags=re.I).strip()
+            head = re.sub(r"^(?:(?:[IVX]+)\s+)?trial\s+in\s+", "", head, flags=re.I)
+            counts = list(re.finditer(r"\d[\d,]*", head))
+            if counts:
+                head = head[counts[-1].start():]
+            if re.search(r"\bof\s+(?:these|the)\b", head, re.I):
+                continue
+            noun = re.search(rf"\b(?:{_POPULATION_NOUNS})\b$", head, re.I)
+            if not noun:
+                continue
+            prefix = head[:noun.start()].strip()
+            qualifiers = [word for word in re.findall(r"[A-Za-z][A-Za-z-]*", prefix.casefold()) if word not in {"a", "an", "and", "in", "of", "one", "or", "the", "to", "two", "three", "with"}]
+            remainder = sentence[match.end():]
+            has_count = bool(re.search(r"\d", head))
+            has_enrollment = bool(re.search(r"\b(?:enrolled|included|assigned|treated|studied|analy[sz]ed|received|divided)\b|\b(?:were|was)\s+randomi[sz]ed\b|\bwho\s+will\s+be\s+assigned\b", remainder, re.I))
+            has_detail = bool(re.match(r"\s+(?:aged\b|with\b|who\b|enrolled\s+in\b)", remainder, re.I))
+            unsafe_detail = bool(re.search(r"\b(?:toxicity|adverse|outcome|improved|response)\b|\bp\s*=|\d+\.\d+", remainder, re.I))
+            has_study_context = bool(re.search(r"\b(?:study|trial|randomi[sz]ed|compared|comparison)\b", sentence[:match.start()], re.I))
+            specific_noun = noun.group(0).casefold() in {"children", "adults", "volunteer", "volunteers"}
+            if has_count and not (has_enrollment or (has_detail and not unsafe_detail) or has_study_context):
+                continue
+            if has_detail and unsafe_detail:
+                continue
+            if not (has_count or qualifiers or has_detail or specific_noun):
+                continue
+            if not (has_count or has_enrollment or has_detail) and not re.search(r"\b(?:with|aged|who|from|undergoing|after)\b", remainder, re.I):
+                continue
+            description = _extend_population_description(head, remainder)
+            score = 3 * has_enrollment + 3 * has_count + 2 * has_detail + bool(qualifiers) + bool(specific_noun) + has_study_context
+            candidate = (score, -len(description), description)
+            if best is None or candidate > best:
+                best = candidate
+    return best[2] if best else None
+
+
+def _extend_population_description(head: str, remainder: str) -> str:
+    description = head
+    tail = remainder
+    detail = re.match(r"\s+(?:aged\s+|with\s+)(?P<value>[^.;,]*?)(?=\s+(?:(?:were|was)\s+)?(?:enrolled|included|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received|divided)\b|[.;,]|$)", tail, re.I)
+    if detail:
+        description = f"{description} {detail.group(0).strip()}"
+        tail = tail[detail.end():]
+    enrolled_in = re.match(r"\s+enrolled\s+in\s+(?P<value>[^.;,]*?)(?=\s+(?:were|was)\b|[.;,]|$)", tail, re.I)
+    if enrolled_in:
+        return f"{description} {enrolled_in.group(0).strip()}"
+    action = re.match(r"\s+(?:(?:were|was)\s+)?(?P<action>enrolled|included|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received|divided)\b", tail, re.I)
+    return f"{description} {action.group(0).strip()}" if action else description
+
 def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...]:
     found=[]
-    text = " ".join(t for _, t in _content_parts(article))
-    for m in _DRUG_DOSE.finditer(text):
-        name = m.group("name")
-        if name.casefold() in {"patients", "participants", "subjects", "received", "randomly", "oral", "the", "and", "with", "from", "study", "group"}:
-            continue
-        span=m.group(0).strip()
-        duration = _duration_from_sentence(span)
-        found.append(InterventionExtraction(name, span, m.group("dose"), m.group("unit"), m.group("route"), m.group("frequency"), duration, m.group("formulation"), None, (_prov(article,"intervention","methods",span,"INTERVENTION_DOSE"),), "reported"))
+    seen = set()
+    for section, section_text in _content_parts(article):
+        for sentence in _sentences(section_text):
+            for match in _DRUG_DOSE.finditer(sentence):
+                name = match.group("name")
+                if not _supported_intervention_name(name):
+                    continue
+                _append_intervention(found, seen, article, section, name, match.group(0).strip(), match.group("dose"), match.group("unit"), match.group("route"), match.group("frequency"), match.group("formulation"))
+                linked = re.match(r"\s*(?:versus|vs\.?|or|compared\s+with)\s+(?P<regimen>.+)$", sentence[match.end():], re.I)
+                if linked:
+                    regimen = _DOSE_REGIMEN.match(linked.group("regimen"))
+                    if regimen:
+                        span = f"{name} {regimen.group(0).strip()}"
+                        _append_intervention(found, seen, article, section, name, span, regimen.group("dose"), regimen.group("unit"), None, regimen.group("frequency"), None)
+            for match in _THERAPY_REGIMEN_PAIR.finditer(sentence):
+                name = match.group("name")
+                if not _supported_intervention_name(name):
+                    continue
+                for regimen_name in ("first", "second"):
+                    regimen = _DOSE_REGIMEN.fullmatch(match.group(regimen_name))
+                    if regimen:
+                        span = f"{name} {regimen.group(0).strip()}"
+                        _append_intervention(found, seen, article, section, name, span, regimen.group("dose"), regimen.group("unit"), None, regimen.group("frequency"), None)
     if found: return tuple(found[:8])
     return (InterventionExtraction(status="not_reported"),)
+
+
+def _supported_intervention_name(name: str) -> bool:
+    return bool(re.fullmatch(r"[A-Za-z][A-Za-z-]{2,30}", name or "")) and name.casefold() not in _CONTROL_INTERVENTION_WORDS
+
+
+def _append_intervention(found, seen, article, section, name, span, dose, unit, route, frequency, formulation):
+    key = (name.casefold(), dose, unit.casefold() if unit else None, route, frequency, formulation)
+    if key in seen:
+        return
+    seen.add(key)
+    found.append(InterventionExtraction(name, span, dose, unit, route, frequency, _duration_from_sentence(span), formulation, None, (_prov(article,"intervention",section,span,"INTERVENTION_DOSE"),), "reported"))
 
 def extract_comparator(article: Article) -> ComparatorExtraction:
     for wanted in ("methods", "patients", "participants", "results", "findings", "abstract"):

@@ -613,3 +613,26 @@ def test_follow_up_and_complete_safety_span_persist_without_rewriting_raw_abstra
     assert clinical["safety_findings"][0]["event_name"].startswith("Grade 1 nausea")
     assert record["abstract"] == abstract
     assert "&lt;safe&gt;" in build_html_report("herpes zoster", FIXED_DT, ranked=[ranked])
+
+
+def test_intervention_and_population_hygiene_persist_to_snapshot_and_reports():
+    abstract = (
+        "In this double-blind study, 87 immunocompromised patients with clinical evidence of localized herpes zoster "
+        "were randomized to receive oral valacyclovir therapy, either 1 g TID or 2 g TID."
+    )
+    source = Article("b4-1-5", "Valacyclovir dose trial", abstract, publication_types=("Randomized Controlled Trial",))
+    ranked = RankedArticle(source, assess_article(source, FIXED_DT, "herpes zoster"))
+    record = build_snapshot("herpes zoster", "herpes zoster", FIXED_DT, ranked=[ranked])["articles"][0]
+    clinical = record["structured_clinical_extraction"]
+    intervention = "valacyclovir 1 g TID; valacyclovir 2 g TID"
+    population = "87 immunocompromised patients with clinical evidence of localized herpes zoster were randomized"
+    assert [item["normalized_name"] for item in clinical["interventions"]] == ["valacyclovir", "valacyclovir"]
+    assert "; ".join(item["source_text"] for item in clinical["interventions"]) == intervention
+    assert clinical["population"]["description"] == population
+    markdown = build_markdown_report("herpes zoster", FIXED_DT, ranked=[ranked])
+    html = build_html_report("herpes zoster", FIXED_DT, ranked=[ranked])
+    assert f"- **Intervention:** {intervention}" in markdown
+    assert f"- **Population:** {population}" in markdown
+    assert f"<dt>Intervention</dt><dd>{intervention}</dd>" in html
+    assert f"<dt>Population</dt><dd>{population}</dd>" in html
+    assert record["abstract"] == abstract
