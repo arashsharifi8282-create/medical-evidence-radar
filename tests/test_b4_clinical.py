@@ -40,3 +40,16 @@ def test_pharmacovigilance_is_non_causal_signal():
     x=extract_clinical(article("A FAERS disproportionality study found a reporting odds ratio for adverse events."))
     assert x.safety_findings[0].signal_source_type == "disproportionality_signal"
     assert "incidence cannot be calculated" in x.safety_findings[0].limitations
+
+
+def test_clinical_extraction_rejects_literature_comparisons_and_preserves_mixed_population():
+    for text in (
+        "Results were compared with previous reports.",
+        "Results were compared with prior studies.",
+        "Results were compared with published data.",
+    ):
+        assert extract_clinical(article(text)).comparator.status == "not_reported"
+    mixed = extract_clinical(article("Patients and mice were evaluated in parallel."))
+    assert mixed.population.scope == "mixed_human_preclinical"
+    assert extract_clinical(article("Patients were evaluated. Preclinical background was discussed.")).population.scope == "human"
+    assert extract_clinical(article("Clinical evaluation was conducted.")).population.scope == "unclear"

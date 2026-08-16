@@ -71,6 +71,44 @@ def test_completed_rct_and_protocol_are_distinct():
     assert protocol.evidence_tier == "not_assessable"
 
 
+def test_design_signal_precedence_keeps_weak_review_phrase_from_overriding_rct_metadata():
+    result = assess_study_design(article(
+        title="Randomized trial of treatment",
+        abstract="This trial was compared with a previous systematic review.",
+        types=("Randomized Controlled Trial",),
+    ))
+    assert result.design_family == "randomized_controlled_trial"
+    assert any(span.source_type == "abstract" and "systematic review" in span.text.casefold() for span in result.supporting_spans)
+    assert not any(span.source_type == "publication_type" and "systematic review" in span.text.casefold() for span in result.supporting_spans)
+
+
+def test_credible_incompatible_design_metadata_requires_review_with_provenance():
+    result = assess_study_design(article(
+        title="Conflicting record",
+        abstract="METHODS: Patients were evaluated.",
+        types=("Randomized Controlled Trial", "Systematic Review"),
+    ))
+    assert result.design_family == "unknown"
+    assert result.needs_review is True
+    assert "conflicting_design_signals" in result.limitation_codes
+    assert any("conflict" in reason.casefold() for reason in result.assessment_reasons)
+    assert {span.text for span in result.supporting_spans if span.source_type == "publication_type"} >= {"Randomized Controlled Trial", "Systematic Review"}
+
+
+def test_design_signal_policy_is_stable_and_allows_compatible_reinforcement():
+    record = article(
+        title="Randomized trial",
+        abstract="METHODS: Patients were randomized in a trial.",
+        types=("Randomized Controlled Trial",),
+    )
+    first = assess_study_design(record)
+    second = assess_study_design(record)
+    assert first.design_family == "randomized_controlled_trial"
+    assert first.matched_signals == second.matched_signals
+    assert first.supporting_spans == second.supporting_spans
+    assert first.assessment_reasons == second.assessment_reasons
+
+
 def test_observational_taxonomy_and_boolean_unknowns():
     result = assess_study_design(article(
         title="Retrospective cohort study",
@@ -122,6 +160,26 @@ def test_preclinical_and_mixed_scope_are_not_human_by_default():
     assert in_vitro.design_family == "in_vitro"
 
 
+def test_population_taxonomy_is_word_boundary_aware_and_mixed_when_supported():
+    mice = assess_study_design(article(abstract="Mice received treatment."))
+    preclinical = assess_study_design(article(abstract="Preclinical experiments were conducted."))
+    clinical = assess_study_design(article(abstract="Clinical evaluation was conducted."))
+    mixed_mice = assess_study_design(article(abstract="Patients and mice were evaluated in parallel."))
+    mixed_preclinical = assess_study_design(article(abstract="Patients and preclinical experiments were evaluated in parallel."))
+    incidental = assess_study_design(article(abstract="The clinical protocol was discussed."))
+    substring = assess_study_design(article(abstract="Microclinical samples were evaluated."))
+    background = assess_study_design(article(abstract="Patients were evaluated. Preclinical background was discussed."))
+    assert mice.population_scope == "preclinical_only"
+    assert preclinical.population_scope == "preclinical_only"
+    assert clinical.population_scope == "unclear"
+    assert mixed_mice.population_scope == "mixed"
+    assert mixed_mice.design_family == "mixed_human_preclinical"
+    assert mixed_preclinical.population_scope == "mixed"
+    assert incidental.population_scope == "unclear"
+    assert substring.population_scope == "unclear"
+    assert background.population_scope == "human"
+
+
 def test_narrative_editorial_and_unknown_are_not_overstated():
     narrative = assess_study_design(article(title="Narrative review", abstract="A narrative review of mechanisms.", types=("Review",)))
     editorial = assess_study_design(article(title="Commentary", abstract="Perspective on the field.", types=("Editorial",)))
@@ -145,6 +203,23 @@ def test_sample_size_extraction_rejects_dates_and_multiple_populations():
     assert dates.follow_up_text is not None
 
 
+def test_sample_size_requires_participant_semantics_not_numeric_labels():
+    for text in (
+        "Arm 1 patients received treatment.",
+        "The 2024 patients registry was searched.",
+        "Patients received 10 mg daily.",
+        "Patients were treated for 12 weeks.",
+        "A response rate of 25% was observed in patients.",
+        "Trial registration NCT01234567 included patients.",
+        "Ten centers enrolled patients.",
+        "Group 2 patients received usual care.",
+        "Site 3 patients received usual care.",
+    ):
+        result = assess_study_design(article(abstract=text))
+        assert result.sample_size is None
+        assert result.sample_size_status == "not_reported"
+
+
 def test_comparator_follow_up_and_data_source_are_preserved():
     result = assess_study_design(article(
         abstract="METHODS: Patients were compared with placebo for 12 weeks using an EHR database.",
@@ -154,6 +229,42 @@ def test_comparator_follow_up_and_data_source_are_preserved():
     assert result.treatment_duration_text is not None
     assert result.follow_up_text is None
     assert result.data_source_type == "EHR"
+
+
+def test_comparator_and_follow_up_require_clinical_context():
+    for text in (
+        "Results were compared with previous reports.",
+        "Results were compared with prior studies.",
+        "Results were compared with published data.",
+        "Drug A and drug B were mentioned in previous reports.",
+    ):
+        result = assess_study_design(article(abstract=text))
+        assert result.comparator_status == "not_reported"
+    for text in (
+        "The dose schedule allowed up to 24 weeks.",
+        "Participants aged up to 24 years were eligible.",
+        "Enrollment occurred up to 24 weeks after referral.",
+        "Records from up to 24 years were reviewed.",
+        "Up to 24 weeks were available.",
+    ):
+        result = assess_study_design(article(abstract=text))
+        assert result.follow_up_text is None
+
+
+def test_focused_taxonomy_categories_have_structured_or_narrow_signals():
+    cases = (
+        (article(types=("Scoping Review",)), "scoping_review", "publication_type"),
+        (article(types=("Practice Guideline",)), "guideline_or_consensus", "publication_type"),
+        (article(types=("Diagnostic Accuracy",)), "diagnostic_accuracy", "publication_type"),
+        (article(title="Pharmacokinetic study", abstract="PK sampling was performed."), "pharmacokinetic_pharmacodynamic", "title"),
+        (article(abstract="A nonrandomized intervention was evaluated."), "nonrandomized_interventional_study", "abstract"),
+    )
+    for record, expected, source in cases:
+        result = assess_study_design(record)
+        assert result.design_family == expected
+        assert any(span.source_type == source for span in result.supporting_spans)
+    assert assess_study_design(article(title="Scoping of a review process")).design_family != "scoping_review"
+    assert assess_study_design(article(title="Pharmacokinetically guided discussion")).design_family != "pharmacokinetic_pharmacodynamic"
 
 
 def test_real_world_acyclovir_sample_sizes_and_duration_are_extracted():

@@ -465,3 +465,21 @@ def test_b3_study_assessment_is_present_in_json_markdown_and_html():
     assert "Study design:" in html
     assert "Evidence strength:" in html
     assert "Study assessment audit" in html
+
+
+def test_conflicting_design_assessment_persists_review_state_and_source_order():
+    source = Article(
+        pmid="conflict-1",
+        title="Conflicting record",
+        abstract="METHODS: Patients were evaluated.",
+        publication_types=("Randomized Controlled Trial", "Systematic Review"),
+    )
+    assessed = assess_article(source, datetime(2026, 8, 10), topic="trial")
+    snapshot = build_snapshot("trial", "trial", datetime(2026, 8, 10), [RankedArticle(source, assessed)])
+    study = snapshot["articles"][0]["assessment"]["study_assessment"]
+    assert study["design_family"] == "unknown"
+    assert study["needs_review"] is True
+    assert "conflicting_design_signals" in study["limitation_codes"]
+    assert any("conflict" in reason.casefold() for reason in study["assessment_reasons"])
+    design_sources = [span["source_type"] for span in study["supporting_spans"] if span["field"] == "publication_types"]
+    assert design_sources == ["publication_type", "publication_type"]

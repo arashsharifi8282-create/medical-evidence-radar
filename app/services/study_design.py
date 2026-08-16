@@ -7,25 +7,58 @@ not a full-text appraisal, GRADE assessment, or formal risk-of-bias review.
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 from app.models.article import Article
 from app.models.study import StudyAssessment, SupportingSpan
 
 RULE_VERSION = "b3.1"
-_PRECLINICAL = re.compile(r"\b(?:animal model|animals?|mice|mouse|rats?|murine|zebrafish)\b|\b(?:in\s+vitro|cell\s+line|ex\s+vivo)\b", re.I)
+_PRECLINICAL = re.compile(r"\b(?:animal model|animals?|mice|mouse|rats?|murine|zebrafish|preclinical)\b|\b(?:in\s+vitro|cell\s+line|ex\s+vivo)\b", re.I)
 _HUMAN = re.compile(r"\b(?:human|humans|patients?|participants?|subjects?|volunteers?|cohort|hospitalized|pregnan(?:t|cy)|clinical trial)\b", re.I)
 _RESULTS = re.compile(r"\b(?:results?|findings?|found|demonstrated|observed|concluded|conclusions?)\b", re.I)
 _METHODS = re.compile(r"\b(?:methods?|methodology|performed|conducted|randomi[sz]ed|enrolled|included)\b", re.I)
-_MIXED_SCOPE = re.compile(r"\b(?:patients?|participants?|humans?)\b.{0,80}\b(?:mice|mouse|rats?|animals?|in\s+vitro|cell\s+line)\b|\b(?:mice|mouse|rats?|animals?|in\s+vitro|cell\s+line)\b.{0,80}\b(?:patients?|participants?|humans?)\b", re.I)
+_MIXED_SCOPE = re.compile(r"\b(?:patients?|participants?|humans?)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b|\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:patients?|participants?|humans?)\b", re.I)
 _NUMBER = r"(?P<n>(?<![\d,])(?:\d{1,3}(?:,\d{3})+|\d{1,6})(?![\d,]))"
 _NUMBER_WORD = r"(?P<w>(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|and|-|\s)+)"
 _POP_DESCRIPTOR = r"(?:(?!(?:study|studies|followed|assessed|treated|included|randomized|enrolled|these|those|the|of|and|in|at|per|arm|group)\b)[A-Za-z-]+\s+){0,2}"
 
 
+@dataclass(frozen=True)
+class _DesignSignal:
+    family: str
+    subtype: str
+    source_type: str
+    field: str
+    text: str
+    rule_id: str
+    strength: int
+
+
+# A source's reliability is fixed: curated PubMed publication types and named
+# structured abstract sections outrank title, which outranks free abstract and
+# keyword text.  Only incompatible signals at the winning reliability level
+# are unresolved conflicts; weaker incidental phrases remain auditable.
+_DESIGN_STRENGTH = {
+    "publication_type": 3,
+    "structured_abstract": 3,
+    "title": 2,
+    "abstract": 1,
+    "keyword": 1,
+}
+_DESIGN_ORDER = (
+    "systematic_review_meta_analysis", "scoping_review", "guideline_or_consensus",
+    "protocol", "case_series", "case_report", "pharmacovigilance_disproportionality",
+    "randomized_controlled_trial", "nonrandomized_interventional_study", "diagnostic_accuracy",
+    "case_control", "cross_sectional", "retrospective_cohort", "prospective_cohort",
+    "pharmacokinetic_pharmacodynamic", "mixed_human_preclinical", "in_vitro",
+    "animal_preclinical", "systematic_review_without_meta_analysis", "narrative_review",
+    "editorial_commentary_letter",
+)
+
+
 def assess_study_design(article: Article) -> StudyAssessment:
     """Return a source-linked B3 assessment without inventing missing values."""
     text = _article_text(article)
-    lower = text.casefold()
     spans: list[SupportingSpan] = []
     signals: list[str] = []
 
@@ -33,9 +66,9 @@ def assess_study_design(article: Article) -> StudyAssessment:
         signals.append(f"{source_type}:{phrase}")
         spans.append(SupportingSpan(field, source_type, phrase, rule_id))
 
-    design_family, design_subtype, design_rule = _classify_design(article, lower)
-    if design_rule:
-        signal("publication_type" if design_rule.startswith("PT_") else "text", design_rule, design_rule)
+    design_family, design_subtype, design_signals, design_conflict = _classify_design(article)
+    for design_signal in design_signals:
+        signal(design_signal.source_type, design_signal.text, design_signal.rule_id, design_signal.field)
 
     population_scope = _population_scope(article, design_family)
     if population_scope == "mixed":
@@ -83,11 +116,11 @@ def assess_study_design(article: Article) -> StudyAssessment:
         signals.append(f"evidence_tier:{evidence_rule}")
     limitations = _limitations(
         article, design_family, design_subtype, population_scope, result_status,
-        sample_status, comparator_status, follow_up_text, multicenter, evidence_tier,
+        sample_status, comparator_status, follow_up_text, multicenter, evidence_tier, design_conflict,
     )
     reasons = _reasons(
         design_family, design_subtype, evidence_tier, result_status, population_scope,
-        sample_status, comparator_status, limitations,
+        sample_status, comparator_status, limitations, design_conflict,
     )
     needs_review = (
         design_family == "unknown"
@@ -130,61 +163,100 @@ def _article_text(article: Article) -> str:
     return " ".join(x for x in (article.title, article.abstract, sections, " ".join(article.keywords)) if x)
 
 
-def _pt(article: Article) -> set[str]:
-    return {re.sub(r"[^a-z0-9]+", " ", value.casefold()).strip() for value in article.publication_types}
+def _classify_design(article: Article) -> tuple[str, str, tuple[_DesignSignal, ...], bool]:
+    signals = [*_publication_type_signals(article)]
+    for section in article.abstract_sections:
+        signal = _text_design_signal(section.text, "structured_abstract", "abstract_sections", f"SECTION_{section.label.casefold().replace(' ', '_')}", article)
+        if signal:
+            signals.append(signal)
+    for source_type, field, value, suffix in (
+        ("title", "title", article.title, "TITLE"),
+        ("abstract", "abstract", article.abstract, "ABSTRACT"),
+    ):
+        signal = _text_design_signal(value, source_type, field, suffix, article)
+        if signal:
+            signals.append(signal)
+    for keyword in article.keywords:
+        signal = _text_design_signal(keyword, "keyword", "keywords", "KEYWORD", article)
+        if signal:
+            signals.append(signal)
+    if not signals:
+        return "unknown", "unknown", (), False
+    winning_strength = max(signal.strength for signal in signals)
+    winners = [signal for signal in signals if signal.strength == winning_strength]
+    families = {signal.family for signal in winners}
+    if any(not _compatible_designs(left, right) for left in families for right in families):
+        return "unknown", "unknown", tuple(signals), True
+    winner = min(winners, key=lambda signal: _DESIGN_ORDER.index(signal.family))
+    return winner.family, winner.subtype, tuple(signals), False
 
 
-def _classify_design(article: Article, lower: str) -> tuple[str, str, str]:
-    pts = _pt(article)
-    if _contains_any(pts, "network meta analysis") or re.search(r"\bnetwork meta[- ]analysis\b", lower):
-        return "systematic_review_meta_analysis", "network_meta_analysis", "PT_NETWORK_META_ANALYSIS"
-    if "systematic review" in pts and ("meta analysis" in pts or re.search(r"\bmeta[- ]analysis\b", lower)):
-        return "systematic_review_meta_analysis", "systematic_review_meta_analysis", "PT_SYSTEMATIC_META"
-    if _contains_any(pts, "meta analysis") or re.search(r"\bsystematic review and meta[- ]analysis\b", lower):
-        return "systematic_review_meta_analysis", "systematic_review_meta_analysis", "PT_META_ANALYSIS"
-    if "systematic review" in pts or re.search(r"\bsystematic review\b", lower):
-        return "systematic_review_without_meta_analysis", "systematic_review_without_meta_analysis", "PT_SYSTEMATIC_REVIEW"
-    if "scoping review" in pts or re.search(r"\bscoping review\b", lower):
-        return "scoping_review", "scoping_review", "PT_SCOPING_REVIEW"
-    if "practice guideline" in pts or "guideline" in pts or "consensus development conference" in pts:
-        return "guideline_or_consensus", "guideline_or_consensus", "PT_GUIDELINE"
-    if "protocol" in pts or re.search(r"\b(?:study|trial) protocol\b", lower):
-        return "protocol", "protocol", "PT_PROTOCOL" if "protocol" in pts else "TEXT_PROTOCOL"
-    if "case series" in pts or re.search(r"\bcase series\b", lower):
-        return "case_series", "case_series", "PT_CASE_SERIES" if "case series" in pts else "TEXT_CASE_SERIES"
-    if "case reports" in pts or re.search(r"\bcase report\b", lower):
-        return "case_report", "case_report", "PT_CASE_REPORT" if "case reports" in pts else "TEXT_CASE_REPORT"
-    if "pharmacovigilance" in lower or "faers" in lower or "disproportionality" in lower or "reporting odds ratio" in lower or "spontaneous reports" in lower:
-        return "pharmacovigilance_disproportionality", "pharmacovigilance_disproportionality", "TEXT_PHARMACOVIGILANCE"
-    if "randomized controlled trial" in pts or "randomised controlled trial" in pts or "controlled clinical trial" in pts:
-        return "randomized_controlled_trial", "randomized_controlled_trial", "PT_RCT"
-    if re.search(r"\brandomi[sz]ed\b", lower) and re.search(r"\btrial\b", lower):
-        return "randomized_controlled_trial", "randomized_controlled_trial", "TEXT_RCT"
-    if re.search(r"\bnon[- ]?randomi[sz]ed\b|\bnon[- ]?randomized intervention", lower):
-        return "nonrandomized_interventional_study", "nonrandomized_interventional_study", "TEXT_NONRANDOMIZED_INTERVENTION"
-    if "diagnostic accuracy" in pts or re.search(r"\bdiagnostic accuracy\b", lower):
-        return "diagnostic_accuracy", "diagnostic_accuracy", "PT_DIAGNOSTIC"
-    if "case control studies" in pts or re.search(r"\bcase[- ]control\b", lower):
-        return "case_control", "case_control", "PT_CASE_CONTROL" if "case control studies" in pts else "TEXT_CASE_CONTROL"
-    if "cross sectional studies" in pts or re.search(r"\bcross[- ]sectional\b", lower):
-        return "cross_sectional", "cross_sectional", "PT_CROSS_SECTIONAL" if "cross sectional studies" in pts else "TEXT_CROSS_SECTIONAL"
-    if re.search(r"\bretrospective\s+cohort\b|\bretrospective\b", lower):
-        return "retrospective_cohort", "retrospective_cohort", "TEXT_RETROSPECTIVE_COHORT"
-    if "observational study" in pts or re.search(r"\bobservational study\b", lower):
-        return ("prospective_cohort", "prospective_cohort", "TEXT_PROSPECTIVE_OBSERVATIONAL") if re.search(r"\bprospective\b", lower) else ("nonrandomized_interventional_study", "nonrandomized_interventional_study", "TEXT_OBSERVATIONAL")
-    if "cohort studies" in pts or re.search(r"\bprospective cohort\b", lower):
-        return "prospective_cohort", "prospective_cohort", "PT_OR_TEXT_PROSPECTIVE_COHORT"
-    if re.search(r"\bpharmacokinetic|\bpharmacodynamic|\bpharmacokinetics\b", lower):
-        return "pharmacokinetic_pharmacodynamic", "pharmacokinetic_pharmacodynamic", "TEXT_PKPD"
-    if "animal" in pts or "animals" in pts or "in vitro" in lower or _PRECLINICAL.search(lower):
-        if _explicit_mixed_scope(article):
-            return "mixed_human_preclinical", "mixed_human_preclinical", "TEXT_MIXED_PRECLINICAL"
-        return ("in_vitro", "in_vitro", "TEXT_IN_VITRO") if re.search(r"\bin\s+vitro\b|\bcell line\b", lower) else ("animal_preclinical", "animal_preclinical", "TEXT_ANIMAL")
-    if "review" in pts or re.search(r"\bnarrative review\b|\breview\b", lower):
-        return "narrative_review", "narrative_review", "PT_OR_TEXT_NARRATIVE_REVIEW"
-    if pts.intersection({"editorial", "comment", "letter"}) or re.search(r"\b(?:editorial|commentary|letter)\b", lower):
-        return "editorial_commentary_letter", "editorial_commentary_letter", "PT_OR_TEXT_EDITORIAL"
-    return "unknown", "unknown", "TEXT_UNKNOWN"
+def _publication_type_signals(article: Article) -> list[_DesignSignal]:
+    signals: list[_DesignSignal] = []
+    for publication_type in article.publication_types:
+        normalized = re.sub(r"[^a-z0-9]+", " ", publication_type.casefold()).strip()
+        family = subtype = rule = None
+        if "network meta analysis" in normalized:
+            family, subtype, rule = "systematic_review_meta_analysis", "network_meta_analysis", "PT_NETWORK_META_ANALYSIS"
+        elif "meta analysis" in normalized:
+            family = subtype = "systematic_review_meta_analysis"; rule = "PT_META_ANALYSIS"
+        elif "systematic review" in normalized:
+            family = subtype = "systematic_review_without_meta_analysis"; rule = "PT_SYSTEMATIC_REVIEW"
+        elif "scoping review" in normalized:
+            family = subtype = "scoping_review"; rule = "PT_SCOPING_REVIEW"
+        elif normalized in {"practice guideline", "guideline", "consensus development conference"}:
+            family = subtype = "guideline_or_consensus"; rule = "PT_GUIDELINE"
+        elif normalized == "protocol": family = subtype = "protocol"; rule = "PT_PROTOCOL"
+        elif normalized == "case series": family = subtype = "case_series"; rule = "PT_CASE_SERIES"
+        elif normalized == "case reports": family = subtype = "case_report"; rule = "PT_CASE_REPORT"
+        elif normalized in {"randomized controlled trial", "randomised controlled trial", "controlled clinical trial"}:
+            family = subtype = "randomized_controlled_trial"; rule = "PT_RCT"
+        elif normalized == "diagnostic accuracy": family = subtype = "diagnostic_accuracy"; rule = "PT_DIAGNOSTIC"
+        elif normalized == "case control studies": family = subtype = "case_control"; rule = "PT_CASE_CONTROL"
+        elif normalized == "cross sectional studies": family = subtype = "cross_sectional"; rule = "PT_CROSS_SECTIONAL"
+        elif normalized == "observational study": family = subtype = "prospective_cohort"; rule = "PT_COHORT"
+        elif normalized in {"animal", "animals"}: family = subtype = "animal_preclinical"; rule = "PT_ANIMAL"
+        elif normalized == "review": family = subtype = "narrative_review"; rule = "PT_NARRATIVE_REVIEW"
+        elif normalized in {"editorial", "comment", "letter"}: family = subtype = "editorial_commentary_letter"; rule = "PT_EDITORIAL"
+        if family:
+            signals.append(_DesignSignal(family, subtype, "publication_type", "publication_types", publication_type, rule, _DESIGN_STRENGTH["publication_type"]))
+    return signals
+
+
+def _text_design_signal(value: str, source_type: str, field: str, suffix: str, article: Article) -> _DesignSignal | None:
+    lower = value.casefold()
+    checks = (
+        ("systematic_review_meta_analysis", "systematic_review_meta_analysis", r"\b(?:network )?meta[- ]analysis\b|\bsystematic review and meta[- ]analysis\b", "META_ANALYSIS"),
+        ("systematic_review_without_meta_analysis", "systematic_review_without_meta_analysis", r"\bsystematic review\b", "SYSTEMATIC_REVIEW"),
+        ("scoping_review", "scoping_review", r"\bscoping review\b", "SCOPING_REVIEW"),
+        ("protocol", "protocol", r"\b(?:study|trial) protocol\b", "PROTOCOL"),
+        ("case_series", "case_series", r"\bcase series\b", "CASE_SERIES"),
+        ("case_report", "case_report", r"\bcase report\b", "CASE_REPORT"),
+        ("pharmacovigilance_disproportionality", "pharmacovigilance_disproportionality", r"\b(?:pharmacovigilance|faers|disproportionality|reporting odds ratio|spontaneous reports)\b", "PHARMACOVIGILANCE"),
+        ("randomized_controlled_trial", "randomized_controlled_trial", r"\brandomi[sz]ed\b(?=[^.]{0,80}\btrial\b)|\btrial\b(?=[^.]{0,80}\brandomi[sz]ed\b)", "RCT"),
+        ("nonrandomized_interventional_study", "nonrandomized_interventional_study", r"\bnon[- ]?randomi[sz]ed\b|\bnon[- ]?randomized intervention\b", "NONRANDOMIZED_INTERVENTION"),
+        ("diagnostic_accuracy", "diagnostic_accuracy", r"\bdiagnostic accuracy\b", "DIAGNOSTIC"),
+        ("case_control", "case_control", r"\bcase[- ]control\b", "CASE_CONTROL"),
+        ("cross_sectional", "cross_sectional", r"\bcross[- ]sectional\b", "CROSS_SECTIONAL"),
+        ("retrospective_cohort", "retrospective_cohort", r"\bretrospective(?:\s+cohort)?\b", "RETROSPECTIVE_COHORT"),
+        ("prospective_cohort", "prospective_cohort", r"\bprospective cohort\b", "PROSPECTIVE_COHORT"),
+        ("nonrandomized_interventional_study", "nonrandomized_interventional_study", r"\bobservational study\b", "OBSERVATIONAL"),
+        ("pharmacokinetic_pharmacodynamic", "pharmacokinetic_pharmacodynamic", r"\b(?:pharmacokinetic(?:s)?|pharmacodynamic(?:s)?)\b", "PKPD"),
+        ("mixed_human_preclinical", "mixed_human_preclinical", _MIXED_SCOPE.pattern, "MIXED_PRECLINICAL"),
+        ("in_vitro", "in_vitro", r"\bin\s+vitro\b|\bcell line\b", "IN_VITRO"),
+        ("animal_preclinical", "animal_preclinical", _PRECLINICAL.pattern, "ANIMAL"),
+        ("narrative_review", "narrative_review", r"\bnarrative review\b|\breview\b", "NARRATIVE_REVIEW"),
+        ("editorial_commentary_letter", "editorial_commentary_letter", r"\b(?:editorial|commentary|letter)\b", "EDITORIAL"),
+    )
+    for family, subtype, pattern, rule in checks:
+        match = re.search(pattern, lower, re.I)
+        if match:
+            return _DesignSignal(family, subtype, source_type, field, match.group(0), f"TEXT_{rule}_{suffix}", _DESIGN_STRENGTH[source_type])
+    return None
+
+
+def _compatible_designs(left: str, right: str) -> bool:
+    return left == right or {left, right} == {"systematic_review_meta_analysis", "systematic_review_without_meta_analysis"}
 
 
 def _population_scope(article: Article, design_family: str) -> str:
@@ -210,7 +282,7 @@ def _population_scope(article: Article, design_family: str) -> str:
         if primary_pre:
             return "preclinical_only"
     if pre and human:
-        return "mixed"
+        return "mixed" if _MIXED_SCOPE.search(text) else "human"
     if pre:
         return "preclinical_only"
     if human:
@@ -279,12 +351,18 @@ def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan
 
 
 def _comparator(text: str) -> tuple[str, str | None, SupportingSpan | None]:
-    match = re.search(r"\b(?:placebo|usual care|active comparator|historical control|no comparator)\b|\b(?:compared with|compared to|versus|vs\.?)[^.;,]{0,80}", text, re.I)
-    if not match:
-        return "not_reported", None, None
-    value = match.group(0).strip()
-    status = "not_applicable" if re.search(r"no comparator", value, re.I) else "reported"
-    return status, value, SupportingSpan("abstract", "comparator", value, "COMPARATOR_EXPLICIT")
+    for sentence in re.split(r"(?<=[.;])\s+", text):
+        if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
+            continue
+        control = re.search(r"\b(?:placebo|usual care|active comparator|historical control|no comparator)\b", sentence, re.I)
+        comparison = re.search(r"\b(?:compared with|compared to|versus|vs\.?)\s+((?!previous\b|prior\b|published\b|literature\b)[^.;,]{1,80})", sentence, re.I)
+        match = control or comparison
+        if not match:
+            continue
+        value = match.group(0).strip()
+        status = "not_applicable" if re.search(r"no comparator", value, re.I) else "reported"
+        return status, value, SupportingSpan("abstract", "comparator", value, "COMPARATOR_EXPLICIT")
+    return "not_reported", None, None
 
 
 def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
@@ -293,7 +371,6 @@ def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
         r"\bfollow(?:ed|[- ]up)?\s+(?:for|through|until)\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
         r"\bassessed\s+up\s+to\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
         r"\bat\s+\d+\s*(?:days?|weeks?|months?|years?)\s+follow[- ]up\b",
-        r"\bup\s+to\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
     ]
     for pattern in patterns:
         match = re.search(pattern, text, re.I)
@@ -363,7 +440,7 @@ def _evidence_tier(design_family: str, subtype: str, result_status: str, populat
     return "not_assessable", "UNKNOWN_DESIGN"
 
 
-def _limitations(article: Article, family: str, subtype: str, population: str, result_status: str, sample_status: str, comparator_status: str, follow_up: str | None, multicenter: str, tier: str) -> list[str]:
+def _limitations(article: Article, family: str, subtype: str, population: str, result_status: str, sample_status: str, comparator_status: str, follow_up: str | None, multicenter: str, tier: str, design_conflict: bool) -> list[str]:
     values: list[str] = []
     if not article.abstract and not article.abstract_sections:
         values.append("abstract_missing")
@@ -395,6 +472,8 @@ def _limitations(article: Article, family: str, subtype: str, population: str, r
         values.append("uncontrolled_study")
     if family == "unknown":
         values.append("design_unclear")
+    if design_conflict:
+        values.append("conflicting_design_signals")
     if result_status == "unclear":
         values.append("methods_not_reported")
     if sample_status == "ambiguous":
@@ -402,7 +481,7 @@ def _limitations(article: Article, family: str, subtype: str, population: str, r
     return list(dict.fromkeys(values))
 
 
-def _reasons(family: str, subtype: str, tier: str, result_status: str, population: str, sample_status: str, comparator_status: str, limitations: list[str]) -> list[str]:
+def _reasons(family: str, subtype: str, tier: str, result_status: str, population: str, sample_status: str, comparator_status: str, limitations: list[str], design_conflict: bool) -> list[str]:
     reasons = [f"Design classified as {subtype} from prioritized PubMed metadata and explicit abstract signals.", f"Evidence tier {tier} is an abstract/metadata-based triage, not a formal quality assessment."]
     if result_status != "reported":
         reasons.append("Results were not sufficiently reported in the available abstract.")
@@ -412,16 +491,9 @@ def _reasons(family: str, subtype: str, tier: str, result_status: str, populatio
         reasons.append("Sample size was not assigned unless the text connected a number to a study population.")
     if comparator_status == "not_reported":
         reasons.append("Comparator was not reported in the available abstract.")
+    if design_conflict:
+        reasons.append("Credible design signals from equally reliable sources conflict; classification requires review.")
     return reasons
-
-
-def _contains_any(values: set[str], needle: str) -> bool:
-    return any(needle in value for value in values)
-
-
-def _explicit_mixed_scope(article: Article) -> bool:
-    texts = [article.title, article.abstract, *(section.text for section in article.abstract_sections)]
-    return any(_MIXED_SCOPE.search(text or "") for text in texts)
 
 
 def _parse_int(value: str) -> int:
@@ -435,6 +507,8 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
         for match in re.finditer(pattern, text, re.I):
             value = _parse_int(match.group("n"))
             snippet = match.group(0)
+            if _numeric_label_not_sample(text[max(0, match.start() - 24):match.end() + 32]):
+                continue
             if role in {"enrolled", "randomized", "included"} and re.search(r"\band\b.{0,20}\b(?:patients?|participants?|subjects?|children|adults|individuals|cases?)\b", snippet, re.I):
                 continue
             key = (role, value)
@@ -457,6 +531,8 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             if value is None:
                 continue
             snippet = match.group(0)
+            if _numeric_label_not_sample(text[max(0, match.start() - 24):match.end() + 32]):
+                continue
             if role in {"enrolled", "randomized", "included"} and re.search(r"\band\b.{0,20}\b(?:patients?|participants?|subjects?|children|adults|individuals|cases?)\b", snippet, re.I):
                 continue
             key = (role, value)
@@ -474,6 +550,16 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             }[role]
             items.append((role, value, snippet, rule))
     return items
+
+
+def _numeric_label_not_sample(snippet: str) -> bool:
+    """Reject numeric arm/group labels and non-sample uses near population words."""
+    return bool(re.search(
+        r"\b(?:arm|group|site)\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:patients?|participants?|subjects?|children|adults|individuals)\b"
+        r"|\b\d+\s+(?:patients?|participants?|subjects?|individuals)\s+(?:registry|database|records?)\b",
+        snippet,
+        re.I,
+    ))
 
 
 def _parse_number_phrase(value: str) -> int | None:

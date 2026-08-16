@@ -14,6 +14,7 @@ _DRUG_DOSE = re.compile(
     r"(?:\s+(?P<frequency>once daily|twice daily|daily|weekly|per day|five times daily|three times daily))?",
     re.I,
 )
+_MIXED_POPULATION = re.compile(r"\b(?:patients?|participants?|humans?)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b|\b(?:mice|mouse|rats?|animals?|preclinical|in\s+vitro|cell\s+line)\b\s+(?:and|with|alongside|as\s+well\s+as)\s+\b(?:patients?|participants?|humans?)\b", re.I)
 
 
 def _sentences(text: str) -> list[str]:
@@ -45,7 +46,9 @@ def _first(article, patterns, preferred=("methods", "results", "conclusions", "t
 def extract_population(article: Article) -> PopulationExtraction:
     text, section, rule = _first(article, [(r"\b(?:patients?|participants?|subjects?|volunteers?)\b[^.;]{0,180}", "POPULATION_DESCRIPTION")], preferred=("methods", "patients", "participants", "results", "findings", "abstract", "title"))
     primary = " ".join(text for _, text in _content_parts(article))
-    scope = "human" if re.search(r"\b(?:patients?|participants?|humans?|volunteers?|children|adults)\b", primary, re.I) else "preclinical_only" if re.search(r"\b(?:mice|mouse|rats?|animals?|in vitro|cell line)\b", primary, re.I) else "unclear"
+    human = bool(re.search(r"\b(?:patients?|participants?|humans?|volunteers?|children|adults)\b", primary, re.I))
+    preclinical = bool(re.search(r"\b(?:mice|mouse|rats?|animals?|preclinical|in vitro|cell line)\b", primary, re.I))
+    scope = "mixed_human_preclinical" if human and preclinical and _MIXED_POPULATION.search(primary) else "human" if human else "preclinical_only" if preclinical else "unclear"
     special = tuple(x for x in ("children", "pregnancy", "older adults", "elderly", "immunocompromised") if re.search(x, primary, re.I))
     if not text: return PopulationExtraction(scope=scope)
     p = (_prov(article, "population", section, text, rule),)
@@ -65,10 +68,24 @@ def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...
     return (InterventionExtraction(status="not_reported"),)
 
 def extract_comparator(article: Article) -> ComparatorExtraction:
-    value, section, rule = _first(article, [(r"\b(placebo|usual care|no treatment|historical control)\b", "COMPARATOR_TYPE"),(r"\b(?:compared with|compared to|versus|vs\.?)\s+[^.;,]{1,100}", "COMPARATOR_EXPLICIT")], preferred=("methods", "patients", "participants", "results", "findings", "abstract"))
-    if not value: return ComparatorExtraction()
-    kind = "placebo" if re.search("placebo", value, re.I) else "usual_care" if re.search("usual care", value, re.I) else "no_treatment" if re.search("no treatment", value, re.I) else "active_comparator"
-    return ComparatorExtraction(kind, value, (_prov(article,"comparator",section,value,rule),), "reported")
+    for wanted in ("methods", "patients", "participants", "results", "findings", "abstract"):
+        for section, text in _parts(article):
+            if section != wanted:
+                continue
+            for sentence in _sentences(text):
+                if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
+                    continue
+                match = re.search(r"\b(?:placebo|usual care|no treatment|historical control)\b", sentence, re.I)
+                rule = "COMPARATOR_TYPE"
+                if not match:
+                    match = re.search(r"\b(?:compared with|compared to|versus|vs\.?)\s+((?!previous\b|prior\b|published\b|literature\b)[^.;,]{1,100})", sentence, re.I)
+                    rule = "COMPARATOR_EXPLICIT"
+                if not match:
+                    continue
+                value = match.group(0).strip()
+                kind = "placebo" if re.search("placebo", value, re.I) else "usual_care" if re.search("usual care", value, re.I) else "no_treatment" if re.search("no treatment", value, re.I) else "active_comparator"
+                return ComparatorExtraction(kind, value, (_prov(article,"comparator",section,value,rule),), "reported")
+    return ComparatorExtraction()
 
 def extract_outcomes(article: Article) -> tuple[OutcomeExtraction, ...]:
     out=[]
