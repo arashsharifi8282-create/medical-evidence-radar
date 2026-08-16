@@ -399,6 +399,40 @@ def test_study_and_clinical_comparators_agree_on_explicit_primary_comparison():
         assert extract_clinical(article(abstract=text)).comparator.status == "not_reported"
 
 
+def test_live_smoke_explicit_cohort_totals_outrank_event_and_arm_counts():
+    cases = (
+        ("We retrospectively analyzed herpes zoster incidence in 719 newly-diagnosed patients receiving prophylaxis. Infection occurred in 96 patients.", 719),
+        ("We analyzed 88 patients with a clinical outcome.", 88),
+        ("We prospectively enrolled 85 participants for follow-up.", 85),
+        ("54 inpatients with herpes zoster were divided into three groups, with 18 cases in each group.", 54),
+        ("120 cases of herpes zoster were randomly divided into two groups, with 60 cases in each group.", 120),
+    )
+    for text, expected in cases:
+        result = assess_study_design(article(abstract=text))
+        assert result.sample_size == expected
+        assert result.sample_size_status == "reported"
+        assert any(span.source_type == "sample_size" and str(expected) in span.text for span in result.supporting_spans)
+    for text in (
+        "Infection occurred in 96 patients.",
+        "Toxicity occurred in five patients.",
+        "18 cases in each group were analyzed.",
+        "60 responders were observed.",
+    ):
+        result = assess_study_design(article(abstract=text))
+        assert result.sample_size is None
+        assert result.sample_size_status == "not_reported"
+    enrolled = assess_study_design(article(abstract="100 patients were enrolled; 27 patients completed treatment."))
+    assert enrolled.sample_size == 100
+
+
+def test_study_and_clinical_follow_up_share_the_same_canonical_value():
+    record = article(abstract="Patients were seen and assessed for cutaneous healing and pain, up to 24 weeks.")
+    study = assess_study_design(record)
+    clinical = extract_clinical(record)
+    assert study.follow_up_text == "Patients were seen and assessed for cutaneous healing and pain, up to 24 weeks"
+    assert clinical.follow_up == study.follow_up_text
+
+
 def test_frozen_acyclovir_fixture_replays_key_study_design_failures():
     network = assess_study_design(frozen_article("37535772"))
     famciclovir = assess_study_design(frozen_article("29746903"))

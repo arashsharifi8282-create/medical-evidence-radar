@@ -334,10 +334,11 @@ def _result_status(article: Article, text: str, design_family: str) -> str:
 def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan]]:
     text = _article_text(article)
     total_patterns = [
+        ("total", rf"\b(?:retrospectively|prospectively)\s+analy[sz]ed\b[^.;]{{0,180}}\bin\s+{_NUMBER}\s+(?:(?:[A-Za-z-]+\s+){{0,6}})?(?:patients?|participants?|subjects?|individuals)\b"),
         ("total", rf"\b(?:a\s+)?total\s+of\s+{_NUMBER}\s+(?:(?:[A-Za-z-]+\s+){{0,3}})?(?:patients?|participants?|subjects?|children|adults|individuals|cases?|inpatients?)\s+(?:participated|were\s+(?:enrolled|randomi[sz]ed|included|divided))\b"),
         ("total", rf"\b(?:a\s+)?total\s+of\s+{_NUMBER}\b[^.;]{{0,60}}\bwere\s+randomi[sz]ed\b"),
-        ("total", rf"\b{_NUMBER}\s+cases?\s+(?:were\s+)?randomly\s+divided\b"),
-        ("total", rf"\b{_NUMBER}\s+inpatients?\s+(?:were\s+)?divided\b"),
+        ("total", rf"\b{_NUMBER}\s+cases?\b[^.;]{{0,120}}\b(?:were\s+)?randomly\s+divided\b"),
+        ("total", rf"\b{_NUMBER}\s+(?:inpatients?|patients?|participants?)\b[^.;]{{0,120}}\bwere\s+divided\b"),
     ]
     primary_patterns = [
         ("enrolled", rf"\b{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\s+were\s+enrolled\b"),
@@ -419,11 +420,13 @@ def _comparator(text: str) -> tuple[str, str | None, SupportingSpan | None]:
     return "not_reported", None, None
 
 
-def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
+def follow_up_from_text(text: str) -> str | None:
+    """Return the canonical, context-anchored follow-up phrase from text."""
     duration = r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*(?:days?|weeks?|months?|years?)"
     patterns = [
         rf"\bfollowed\s+(?:patients?|participants?|subjects?)\s+for\s+{duration}\b",
         rf"\bfollow(?:ed|[- ]up)?\s+(?:for|through|until)\s+{duration}\b",
+        rf"\b(?:patients?|participants?|subjects?)\s+were\s+seen\s+and\s+assessed[^.;]{{0,180}}\bup\s+to\s+{duration}\b",
         rf"\b(?:seen\s+and\s+)?assessed\s+up\s+to\s+{duration}\b",
         rf"\brecurrence[^.;]{{0,80}}\bfollowed\s+up\s+for\s+{duration}\b",
         rf"\bevaluated\s+at\s+the\s+end\s+of\s+each\s+week\s+up\s+to\s+{duration}\b",
@@ -432,8 +435,14 @@ def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
     for pattern in patterns:
         match = re.search(pattern, text, re.I)
         if match:
-            value = match.group(0).strip()
-            return value, SupportingSpan("abstract", "follow_up", value, "FOLLOW_UP_EXPLICIT")
+            return match.group(0).strip()
+    return None
+
+
+def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
+    value = follow_up_from_text(text)
+    if value:
+        return value, SupportingSpan("abstract", "follow_up", value, "FOLLOW_UP_EXPLICIT")
     return None, None
 
 
@@ -620,7 +629,7 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
 def _is_event_count(context: str) -> bool:
     return bool(re.search(
         r"\b(?:occurred\s+in|events?\s+in|adverse\s+events?\s+in|"
-        r"developed|experienced|had)\s+\d+\s+(?:patients?|participants?|subjects?|cases?)\b",
+        r"developed|experienced|had)\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:patients?|participants?|subjects?|cases?)\b",
         context,
         re.I,
     ))
@@ -630,6 +639,7 @@ def _numeric_label_not_sample(snippet: str) -> bool:
     """Reject numeric arm/group labels and non-sample uses near population words."""
     return bool(re.search(
         r"\b(?:arm|group|site)\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten)\s+(?:patients?|participants?|subjects?|children|adults|individuals)\b"
+        r"|\b\d+\s+cases?\s+in\s+each\s+group\b"
         r"|\b\d+\s+(?:patients?|participants?|subjects?|individuals)\s+(?:registry|database|records?)\b",
         snippet,
         re.I,

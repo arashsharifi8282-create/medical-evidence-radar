@@ -597,3 +597,19 @@ def test_real_report_extraction_corrections_persist_consistently_and_escape_html
     html = build_html_report("herpes zoster", FIXED_DT, ranked=[ranked])
     assert "**Effect:** Not reported" in markdown
     assert "&lt;safe&gt;" in html
+
+
+def test_follow_up_and_complete_safety_span_persist_without_rewriting_raw_abstract():
+    abstract = (
+        "Patients were seen and assessed for cutaneous healing and pain, up to 24 weeks. "
+        "Grade 1 nausea and emesis, which occurred in five patients was the only valacyclovir-related toxicity."
+    )
+    source = Article("b4-1-4", "Trial <safe>", abstract, publication_types=("Randomized Controlled Trial",))
+    ranked = RankedArticle(source, assess_article(source, FIXED_DT, "herpes zoster"))
+    record = build_snapshot("herpes zoster", "herpes zoster", FIXED_DT, ranked=[ranked])["articles"][0]
+    study = record["assessment"]["study_assessment"]
+    clinical = record["structured_clinical_extraction"]
+    assert study["follow_up_text"] == clinical["follow_up"]
+    assert clinical["safety_findings"][0]["event_name"].startswith("Grade 1 nausea")
+    assert record["abstract"] == abstract
+    assert "&lt;safe&gt;" in build_html_report("herpes zoster", FIXED_DT, ranked=[ranked])

@@ -1,12 +1,14 @@
 """End-to-end slice test: ESearch -> EFetch -> normalize -> rank, no network."""
 
 import json
+import io
+import os
 from datetime import datetime
 from pathlib import Path
 from xml.sax.saxutils import escape
 
 from app.services.persistence import build_html_report, build_markdown_report, build_snapshot
-from app.sources.pubmed.cli import fetch_top_recent, run_relevance_pipeline, save_results
+from app.sources.pubmed.cli import _console_print, fetch_top_recent, run_relevance_pipeline, save_results
 from app.sources.pubmed.client import PubMedClient
 from app.sources.rxnorm.client import RxNormClient
 from app.sources.rxnorm.client import RxNormMatch
@@ -467,3 +469,22 @@ def test_multi_intervention_or_target_remains_complete_through_pipeline(tmp_path
     assert run.target.intervention_labels == ("semaglutide", "tirzepatide")
     assert run.target.target_interventions == ("semaglutide", "tirzepatide")
     assert run.candidates[0].relevance.relevance_class == "direct"
+
+
+def test_console_print_replaces_unencodable_console_characters_without_swallowing_errors():
+    message = "Retained source text\u2003remains Unicode"
+    byte_stream = io.BytesIO()
+    cp1252 = io.TextIOWrapper(byte_stream, encoding="cp1252", errors="strict")
+    _console_print(message, stream=cp1252)
+    cp1252.flush()
+    assert byte_stream.getvalue().decode("cp1252") == "Retained source text\\u2003remains Unicode" + os.linesep
+    assert message == "Retained source text\u2003remains Unicode"
+    unicode_stream = io.StringIO()
+    _console_print(message, stream=unicode_stream)
+    assert unicode_stream.getvalue() == message + "\n"
+    class BrokenStream:
+        encoding = "cp1252"
+        def write(self, value): raise RuntimeError("stream failure")
+    import pytest
+    with pytest.raises(RuntimeError, match="stream failure"):
+        _console_print(message, stream=BrokenStream())

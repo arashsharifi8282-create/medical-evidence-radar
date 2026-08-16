@@ -86,3 +86,13 @@ def test_population_extraction_rejects_malformed_event_fragments_and_preserves_e
         assert population.scope in {"human", "unclear"}
     valid = extract_clinical(article("METHODS: Immunocompromised patients aged 18 years or older were enrolled."))
     assert valid.population.description == "Immunocompromised patients aged 18 years or older were enrolled"
+
+
+def test_safety_extraction_keeps_complete_sentence_and_raw_abstract_unchanged():
+    source_text = "Background. Grade 1 nausea and emesis, which occurred in five patients was the only valacyclovir-related toxicity."
+    extracted = extract_clinical(article(source_text))
+    assert extracted.safety_findings[0].event_name == "Grade 1 nausea and emesis, which occurred in five patients was the only valacyclovir-related toxicity."
+    assert extracted.safety_findings[0].provenance[0].supporting_span == extracted.safety_findings[0].event_name
+    assert article(source_text).abstract == source_text
+    assert extract_clinical(article("No adverse events were described.")).safety_findings
+    assert not extract_clinical(article("No safety statement was available.")).safety_findings

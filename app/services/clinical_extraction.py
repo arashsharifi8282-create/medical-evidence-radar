@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from app.models.article import Article
 from app.models.clinical import *
-from app.services.study_design import comparator_from_sentence
+from app.services.study_design import comparator_from_sentence, follow_up_from_text
 
 
 _DRUG_DOSE = re.compile(
@@ -134,8 +134,12 @@ def extract_safety(article: Article) -> tuple[SafetyExtraction, ...]:
     if re.search(r"\bFAERS\b|disproportionality|reporting odds ratio|spontaneous reports", text, re.I):
         span=next((m.group(0) for m in re.finditer(r"[^.;]{0,100}(?:FAERS|disproportionality|reporting odds ratio|spontaneous reports)[^.;]{0,120}", text, re.I)), "pharmacovigilance signal")
         out.append(SafetyExtraction("reported adverse events", signal_source_type="disproportionality_signal", limitations=("reporting bias expected", "incidence cannot be calculated", "disproportionality does not establish causality"), provenance=(_prov(article,"safety", "results", span,"PHARMACOVIGILANCE_SIGNAL"),)))
-    for m in re.finditer(r"([^.;]{0,80}(?:adverse events?|side effects?|toxicit(?:y|ies))[^.;]{0,100})", text, re.I):
-        out.append(SafetyExtraction(m.group(0).strip(), signal_source_type="observed_event", provenance=(_prov(article,"safety","results",m.group(0).strip(),"ADVERSE_EVENT"),)))
+    for section, section_text in _content_parts(article):
+        for sentence in _sentences(section_text):
+            if not re.search(r"\b(?:adverse events?|side effects?|toxicit(?:y|ies)|nausea|emesis)\b", sentence, re.I):
+                continue
+            value = sentence.strip()
+            out.append(SafetyExtraction(value, signal_source_type="observed_event", provenance=(_prov(article,"safety",section,value,"ADVERSE_EVENT"),)))
     return tuple(out[:12])
 
 def extract_clinical(article: Article) -> ClinicalExtraction:
@@ -164,7 +168,7 @@ def _first_duration(article: Article) -> str | None:
 
 def _first_follow_up(article: Article) -> str | None:
     for section, text in _content_parts(article):
-        for sentence in _sentences(text):
-            if re.search(r"\b(?:follow(?:ed|[- ]up)?|assessed|reviewed|visits?)\b", sentence, re.I) and re.search(r"\b\d+\s*(?:days?|weeks?|months?|years?)\b", sentence, re.I):
-                return sentence.strip()
+        value = follow_up_from_text(text)
+        if value:
+            return value
     return None

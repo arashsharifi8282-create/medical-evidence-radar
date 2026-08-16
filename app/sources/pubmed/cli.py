@@ -11,6 +11,7 @@ HTML report, and a topic profile JSON.
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -65,6 +66,17 @@ DEFAULT_QUERY = "GLP-1-based therapies"
 DEFAULT_RETMAX = 10
 DEFAULT_CANDIDATE_LIMIT = 50
 DEFAULT_REPORT_LIMIT = 10
+
+
+def _console_print(value: str, *, stream=None) -> None:
+    """Print safely when the active console cannot encode retrieved Unicode."""
+    stream = stream or sys.stdout
+    try:
+        print(value, file=stream)
+    except UnicodeEncodeError:
+        encoding = getattr(stream, "encoding", None) or "utf-8"
+        fallback = value.encode(encoding, errors="backslashreplace").decode(encoding)
+        print(fallback, file=stream)
 
 
 def fetch_top_recent(
@@ -296,6 +308,7 @@ def main(argv: list[str] | None = None) -> None:
         help=f"Maximum articles in the visible report (default: {DEFAULT_REPORT_LIMIT}).",
     )
     args = parser.parse_args(argv)
+    emit = _console_print
 
     topic = args.topic
 
@@ -313,8 +326,8 @@ def main(argv: list[str] | None = None) -> None:
     ranked = list(run.ranked)
     quality = run.search_quality
     total = quality.total_result_count if quality.total_result_count is not None else "unknown"
-    print(f"PubMed results: {total}; fetched unique candidates: {quality.fetched_candidate_count}")
-    print(
+    emit(f"PubMed results: {total}; fetched unique candidates: {quality.fetched_candidate_count}")
+    emit(
         f"Included: {quality.included_count}; excluded: {quality.excluded_count}; "
         f"direct/class/contextual/irrelevant: {quality.direct_count}/"
         f"{quality.class_level_count}/{quality.contextual_count}/{quality.irrelevant_count}\n"
@@ -324,32 +337,32 @@ def main(argv: list[str] | None = None) -> None:
         article = r.article
         a = r.assessment
         relevance = r.clinical_relevance
-        print(f"PMID: {article.pmid}")
-        print(f"Title: {article.title}")
-        print(f"Journal: {article.journal}")
-        print(f"Date (raw): {article.publication_date_raw!r} -> {article.publication_date}")
-        print(f"Authors: {', '.join(article.authors)}")
-        print(f"Types: {', '.join(article.publication_types)}")
-        print(f"DOI: {article.doi}")
-        print(f"URL: {article.pubmed_url}")
-        print(f"Evidence level: {a.evidence_level_label}")
+        emit(f"PMID: {article.pmid}")
+        emit(f"Title: {article.title}")
+        emit(f"Journal: {article.journal}")
+        emit(f"Date (raw): {article.publication_date_raw!r} -> {article.publication_date}")
+        emit(f"Authors: {', '.join(article.authors)}")
+        emit(f"Types: {', '.join(article.publication_types)}")
+        emit(f"DOI: {article.doi}")
+        emit(f"URL: {article.pubmed_url}")
+        emit(f"Evidence level: {a.evidence_level_label}")
         if a.study_assessment:
-            print(f"Study design: {a.study_assessment.design_subtype}")
-            print(f"Evidence strength: {a.study_assessment.evidence_tier}")
-            print(f"Population scope: {a.study_assessment.population_scope}")
-            print(f"Sample size: {a.study_assessment.sample_size if a.study_assessment.sample_size is not None else 'Not reported'}")
-            print(f"Needs review: {'yes' if a.study_assessment.needs_review else 'no'}")
+            emit(f"Study design: {a.study_assessment.design_subtype}")
+            emit(f"Evidence strength: {a.study_assessment.evidence_tier}")
+            emit(f"Population scope: {a.study_assessment.population_scope}")
+            emit(f"Sample size: {a.study_assessment.sample_size if a.study_assessment.sample_size is not None else 'Not reported'}")
+            emit(f"Needs review: {'yes' if a.study_assessment.needs_review else 'no'}")
         if relevance:
-            print(
+            emit(
                 f"Clinical relevance: {relevance.relevance_class} "
                 f"({relevance.relevance_score}/100)"
             )
-            print(f"Why: {relevance.reason}")
-        print(f"Scores: evidence {a.evidence_score}/100, relevance {a.relevance_score}/100, overall {a.overall_score}/100")
-        print(f"Section: {a.section}")
+            emit(f"Why: {relevance.reason}")
+        emit(f"Scores: evidence {a.evidence_score}/100, relevance {a.relevance_score}/100, overall {a.overall_score}/100")
+        emit(f"Section: {a.section}")
         abstract_preview = article.abstract[:200] if article.abstract else "Abstract not available in PubMed"
-        print(f"Abstract: {abstract_preview}{'...' if len(article.abstract) > 200 else ''}")
-        print("-" * 80)
+        emit(f"Abstract: {abstract_preview}{'...' if len(article.abstract) > 200 else ''}")
+        emit("-" * 80)
 
     if args.save:
         # Build the topic profile, merging with any existing profile.
@@ -371,15 +384,15 @@ def main(argv: list[str] | None = None) -> None:
             clinical_target=run.target,
             search_quality=run.search_quality,
         )
-        print(f"\nSaved JSON snapshot: {json_path}")
-        print(f"Saved Markdown report: {md_path}")
-        print(f"Saved HTML report: {html_path}")
-        print(f"Saved topic profile: {profile_path}")
-        print(f"Saved concept file: {concept_path_for_topic(topic)}")
+        emit(f"\nSaved JSON snapshot: {json_path}")
+        emit(f"Saved Markdown report: {md_path}")
+        emit(f"Saved HTML report: {html_path}")
+        emit(f"Saved topic profile: {profile_path}")
+        emit(f"Saved concept file: {concept_path_for_topic(topic)}")
         for warning in concept_result.warnings:
-            print(f"Warning: {warning}")
+            emit(f"Warning: {warning}")
         for warning in run.target.warnings:
-            print(f"Warning: {warning}")
+            emit(f"Warning: {warning}")
 
 
 def _positive_int(value: str) -> int:
