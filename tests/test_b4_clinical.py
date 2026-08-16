@@ -53,3 +53,36 @@ def test_clinical_extraction_rejects_literature_comparisons_and_preserves_mixed_
     assert mixed.population.scope == "mixed_human_preclinical"
     assert extract_clinical(article("Patients were evaluated. Preclinical background was discussed.")).population.scope == "human"
     assert extract_clinical(article("Clinical evaluation was conducted.")).population.scope == "unclear"
+
+
+def test_outcome_and_effect_extraction_reject_unsafe_fragments_and_keep_named_measures():
+    for text in (
+        "RESULTS: 13,; 93,; 0.3,; p=0.05.",
+        "RESULTS: patients >=18 years were eligible, or 1 g versus 2 g was administered.",
+        "RESULTS: The result was p=0.03; OR = 2.",
+    ):
+        extracted = extract_clinical(article(text))
+        assert not extracted.outcomes
+    valid = extract_clinical(article("RESULTS: Pain severity at day 7 improved (OR = 0.25, 95% CI 0.10-0.60)."))
+    assert valid.outcomes[0].name == "Pain severity at day 7 improved"
+    assert valid.outcomes[0].effect_measure_type == "or"
+    assert valid.outcomes[0].effect_value == "OR = 0.25"
+    risk = extract_clinical(article("RESULTS: Lesion healing by day 14 improved (risk ratio = 1.25, 95% CI 1.01-1.54)."))
+    assert risk.outcomes[0].effect_measure_type == "risk ratio"
+    assert risk.outcomes[0].effect_value == "risk ratio = 1.25"
+    mixed = extract_clinical(article("METHODS: Patients received 1 g versus 2 g. RESULTS: Pain severity improved (OR = 0.25)."))
+    assert mixed.outcomes[0].name == "Pain severity improved"
+    assert mixed.outcomes[0].effect_value == "OR = 0.25"
+
+
+def test_population_extraction_rejects_malformed_event_fragments_and_preserves_enrolled_people():
+    for text in (
+        "In 13 patients, toxicity was the only valacyclovir-related toxicity.",
+        "RESULTS: patients (13, p=0.03) improved.",
+        "RESULTS: patients with antivirals monotherapy and 0.3 had an outcome.",
+    ):
+        population = extract_clinical(article(text)).population
+        assert population.description is None
+        assert population.scope in {"human", "unclear"}
+    valid = extract_clinical(article("METHODS: Immunocompromised patients aged 18 years or older were enrolled."))
+    assert valid.population.description == "Immunocompromised patients aged 18 years or older were enrolled"

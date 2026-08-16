@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from app.models.article import Article
 from app.models.clinical import *
+from app.services.study_design import comparator_from_sentence
 
 
 _DRUG_DOSE = re.compile(
@@ -44,7 +45,22 @@ def _first(article, patterns, preferred=("methods", "results", "conclusions", "t
     return None, None, None
 
 def extract_population(article: Article) -> PopulationExtraction:
-    text, section, rule = _first(article, [(r"\b(?:patients?|participants?|subjects?|volunteers?)\b[^.;]{0,180}", "POPULATION_DESCRIPTION")], preferred=("methods", "patients", "participants", "results", "findings", "abstract", "title"))
+    text = section = rule = None
+    population_pattern = re.compile(
+        r"\b(?:(?:[A-Za-z-]+)\s+){0,5}(?:patients?|participants?|subjects?|volunteers?|children|adults)\b"
+        r"[^.;]{0,160}\b(?:were\s+)?(?:enrolled|included|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received)\b",
+        re.I,
+    )
+    for wanted in ("methods", "patients", "participants", "results", "findings", "abstract", "title"):
+        for candidate_section, candidate_text in _parts(article):
+            if candidate_section != wanted:
+                continue
+            match = population_pattern.search(candidate_text)
+            if match:
+                text, section, rule = match.group(0).strip(), candidate_section, "POPULATION_ENROLLMENT"
+                break
+        if text:
+            break
     primary = " ".join(text for _, text in _content_parts(article))
     human = bool(re.search(r"\b(?:patients?|participants?|humans?|volunteers?|children|adults)\b", primary, re.I))
     preclinical = bool(re.search(r"\b(?:mice|mouse|rats?|animals?|preclinical|in vitro|cell line)\b", primary, re.I))
@@ -73,16 +89,11 @@ def extract_comparator(article: Article) -> ComparatorExtraction:
             if section != wanted:
                 continue
             for sentence in _sentences(text):
-                if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
+                extracted = comparator_from_sentence(sentence)
+                if not extracted:
                     continue
-                match = re.search(r"\b(?:placebo|usual care|no treatment|historical control)\b", sentence, re.I)
-                rule = "COMPARATOR_TYPE"
-                if not match:
-                    match = re.search(r"\b(?:compared with|compared to|versus|vs\.?)\s+((?!previous\b|prior\b|published\b|literature\b)[^.;,]{1,100})", sentence, re.I)
-                    rule = "COMPARATOR_EXPLICIT"
-                if not match:
-                    continue
-                value = match.group(0).strip()
+                _, value = extracted
+                rule = "COMPARATOR_EXPLICIT"
                 kind = "placebo" if re.search("placebo", value, re.I) else "usual_care" if re.search("usual care", value, re.I) else "no_treatment" if re.search("no treatment", value, re.I) else "active_comparator"
                 return ComparatorExtraction(kind, value, (_prov(article,"comparator",section,value,rule),), "reported")
     return ComparatorExtraction()
@@ -91,12 +102,32 @@ def extract_outcomes(article: Article) -> tuple[OutcomeExtraction, ...]:
     out=[]
     for section, text in _parts(article):
         if section not in {"results", "findings", "conclusions", "abstract"}: continue
-        for m in re.finditer(r"([^.;]{3,140}?)\b((?:RR|OR|HR|risk ratio|odds ratio|hazard ratio)\s*[=:]?\s*\d+(?:\.\d+)?|p\s*[<=>]\s*0?\.\d+|\d+(?:\.\d+)?%\s*(?:vs\.?|versus)\s*\d+(?:\.\d+)?%)", text, re.I):
-            name, result = m.groups(); span=m.group(0).strip(); effect=re.search(r"\b(RR|OR|HR|risk ratio|odds ratio|hazard ratio)\b", result, re.I)
-            sentence = text[max(0, m.start()-1):min(len(text), m.end()+80)]
+        for sentence in _sentences(text):
+            effect = re.search(r"\b(?:OR|RR|HR)\b\s*(?:[=:]\s*|\s+)\d+(?:\.\d+)?|(?i:\b(?:odds|risk|hazard) ratio\b)\s*(?:[=:]\s*|\s+)\d+(?:\.\d+)?", sentence)
+            if not effect:
+                continue
+            name = _safe_outcome_name(sentence[:effect.start()])
+            if not name:
+                continue
+            span = sentence.strip()
+            label = re.search(r"\b(?:OR|RR|HR)\b|(?i:\b(?:odds|risk|hazard) ratio\b)", effect.group(0))
             pval=re.search(r"\bp\s*[<=>]\s*0?\.\d+", sentence, re.I)
-            out.append(OutcomeExtraction(name.strip(), "unspecified", effect_measure_type=effect.group(1).lower() if effect else None, effect_value=result if effect else None, p_value=pval.group(0) if pval else None, statistical_significance="reported" if pval else "unclear", provenance=(_prov(article,"outcome",section,span,"OUTCOME_RESULT"),)))
+            out.append(OutcomeExtraction(name, "unspecified", effect_measure_type=label.group(0).lower() if label else None, effect_value=effect.group(0), p_value=pval.group(0) if pval else None, statistical_significance="reported" if pval else "unclear", provenance=(_prov(article,"outcome",section,span,"OUTCOME_RESULT"),)))
     return tuple(out[:12])
+
+
+def _safe_outcome_name(value: str) -> str | None:
+    cleaned = re.sub(r"^\s*(?:results?|findings?)\s*:\s*", "", value, flags=re.I).strip(" \t,;:()[]")
+    if not cleaned or not re.search(r"[A-Za-z]", cleaned):
+        return None
+    if re.search(r"\b(?:p\s*[<=>]|results?\s+(?:was|were)|result\s+was)\b", cleaned, re.I):
+        return None
+    if re.search(r"(?:^|\s)(?:or|and)\s*\d+(?:\.\d+)?\s*(?:mg|g|mcg)\b", cleaned, re.I):
+        return None
+    lexical = re.findall(r"[A-Za-z][A-Za-z-]*", cleaned)
+    if len(lexical) < 2:
+        return None
+    return cleaned
 
 def extract_safety(article: Article) -> tuple[SafetyExtraction, ...]:
     text=" ".join(t for _,t in _parts(article)); out=[]

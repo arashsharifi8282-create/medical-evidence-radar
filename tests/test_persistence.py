@@ -566,3 +566,34 @@ def test_report_limit_exclusion_has_no_fabricated_rank_or_assessment():
     assert record["assessment"] is None
     assert record["report_placement"]["section"] == "excluded_report_limit"
     assert record["report_placement"]["visible"] is False
+
+
+def test_real_report_extraction_corrections_persist_consistently_and_escape_html():
+    source = Article(
+        pmid="b4-1-3",
+        title="Randomized trial <safe>",
+        abstract=(
+            "METHODS: A total of 55 immunocompromised patients aged 18 years or older were randomized "
+            "to famciclovir-plus-placebo versus acyclovir-plus-placebo. "
+            "RESULTS: Pain severity at day 7 improved (OR = 0.25). "
+            "Patients were seen and assessed up to 24 weeks."
+        ),
+        publication_types=("Randomized Controlled Trial",),
+    )
+    ranked = RankedArticle(source, assess_article(source, FIXED_DT, "herpes zoster"))
+    snapshot = build_snapshot("herpes zoster", "herpes zoster", FIXED_DT, ranked=[ranked])
+    record = snapshot["articles"][0]
+    study = record["assessment"]["study_assessment"]
+    clinical = record["structured_clinical_extraction"]
+    assert study["design_family"] == "randomized_controlled_trial"
+    assert "conflicting_design_signals" not in study["limitation_codes"]
+    assert study["sample_size"] == 55
+    assert any(span["source_type"] == "sample_size" and "55" in span["text"] for span in study["supporting_spans"])
+    assert study["comparator_text"] == clinical["comparator"]["source_text"]
+    assert study["follow_up_text"] is not None
+    unsafe = Article("b4-1-3-unsafe", "Unsafe", "RESULTS: patients >=18 years were eligible, or 1 g versus 2 g was administered.")
+    unsafe_ranked = RankedArticle(unsafe, assess_article(unsafe, FIXED_DT, "herpes zoster"))
+    markdown = build_markdown_report("herpes zoster", FIXED_DT, ranked=[unsafe_ranked])
+    html = build_html_report("herpes zoster", FIXED_DT, ranked=[ranked])
+    assert "**Effect:** Not reported" in markdown
+    assert "&lt;safe&gt;" in html

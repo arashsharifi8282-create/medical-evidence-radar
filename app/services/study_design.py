@@ -86,7 +86,8 @@ def assess_study_design(article: Article) -> StudyAssessment:
     elif sample_status == "ambiguous":
         signals.append("sample_size:ambiguous")
 
-    comparator_status, comparator_text, comparator_span = _comparator(text)
+    comparator_source = " ".join(section.text for section in article.abstract_sections) or article.abstract
+    comparator_status, comparator_text, comparator_span = _comparator(comparator_source)
     if comparator_span:
         spans.append(comparator_span)
         signals.append("comparator:reported")
@@ -251,8 +252,38 @@ def _text_design_signal(value: str, source_type: str, field: str, suffix: str, a
     for family, subtype, pattern, rule in checks:
         match = re.search(pattern, lower, re.I)
         if match:
+            if rule == "PROTOCOL" and not _is_protocol_publication(value, source_type, match):
+                continue
+            if rule == "IN_VITRO" and not _is_in_vitro_study_context(value, match):
+                continue
+            if rule == "ANIMAL" and re.search(r"\b(?:in\s+vitro|cell\s+line)\b", match.group(0), re.I) and not _is_in_vitro_study_context(value, match):
+                continue
             return _DesignSignal(family, subtype, source_type, field, match.group(0), f"TEXT_{rule}_{suffix}", _DESIGN_STRENGTH[source_type])
     return None
+
+
+def _is_protocol_publication(value: str, source_type: str, match: re.Match[str]) -> bool:
+    """Require publication/planning context, not protocol-adherence language."""
+    if source_type == "title":
+        return True
+    context = value[max(0, match.start() - 80):match.end() + 160]
+    return bool(re.search(
+        r"\b(?:planned|future|will\s+(?:enrol|enroll|randomi[sz]e)|aims?\s+to|"
+        r"describes?\s+(?:a\s+)?planned|recruit(?:ment)?|enrollment)\b",
+        context,
+        re.I,
+    ))
+
+
+def _is_in_vitro_study_context(value: str, match: re.Match[str]) -> bool:
+    """Keep mechanistic mentions from masquerading as the study design."""
+    context = value[max(0, match.start() - 100):match.end() + 120]
+    return bool(re.search(
+        r"\b(?:methods?|experiment(?:s)?|assay(?:s)?|cell(?:s)?\s+(?:were\s+)?"
+        r"(?:cultured|incubated|treated)|cultured|incubat(?:ed|ion)|performed)\b",
+        context,
+        re.I,
+    ))
 
 
 def _compatible_designs(left: str, right: str) -> bool:
@@ -302,6 +333,12 @@ def _result_status(article: Article, text: str, design_family: str) -> str:
 
 def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan]]:
     text = _article_text(article)
+    total_patterns = [
+        ("total", rf"\b(?:a\s+)?total\s+of\s+{_NUMBER}\s+(?:(?:[A-Za-z-]+\s+){{0,3}})?(?:patients?|participants?|subjects?|children|adults|individuals|cases?|inpatients?)\s+(?:participated|were\s+(?:enrolled|randomi[sz]ed|included|divided))\b"),
+        ("total", rf"\b(?:a\s+)?total\s+of\s+{_NUMBER}\b[^.;]{{0,60}}\bwere\s+randomi[sz]ed\b"),
+        ("total", rf"\b{_NUMBER}\s+cases?\s+(?:were\s+)?randomly\s+divided\b"),
+        ("total", rf"\b{_NUMBER}\s+inpatients?\s+(?:were\s+)?divided\b"),
+    ]
     primary_patterns = [
         ("enrolled", rf"\b{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\s+were\s+enrolled\b"),
         ("enrolled", rf"\b{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\s+enrolled\b"),
@@ -324,9 +361,14 @@ def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan
         ("pk_data", rf"\bPK data\b[^.;]{{0,40}}\bfor\s+{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\b"),
         ("pk_data", rf"\bpharmacokinetic data\b[^.;]{{0,40}}\bfor\s+{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\b"),
     ]
-    primary = _collect_population_counts(text, primary_patterns)
     secondary = _collect_population_counts(text, secondary_patterns)
     spans = [SupportingSpan("abstract", kind, snippet, rule) for kind, _, snippet, rule in secondary]
+    totals = _collect_population_counts(text, total_patterns)
+    totals = [item for item in totals if not re.search(r"\b(?:stud(?:y|ies)|trials?)\b", item[2], re.I)]
+    if totals:
+        value, snippet, rule = totals[0][1:]
+        return value, "reported", [SupportingSpan("abstract", "sample_size", snippet, rule), *spans]
+    primary = _collect_population_counts(text, primary_patterns)
     if primary:
         roles = ("enrolled", "randomized", "included", "participants")
         for role in roles:
@@ -350,27 +392,42 @@ def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan
     return None, "not_reported", []
 
 
+def comparator_from_sentence(sentence: str) -> tuple[str, str] | None:
+    """Return the primary clinical comparison from one eligible sentence."""
+    if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
+        return None
+    if re.search(r"\b(?:previous|prior|published|literature|reports?|historical)\b", sentence, re.I):
+        return None
+    if re.search(r"\b\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b[^.;]{0,60}\b(?:versus|vs\.?)\s+\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b", sentence, re.I):
+        return None
+    if re.search(r"\b(?:compared with|compared to|versus|vs\.?)\b", sentence, re.I):
+        return "reported", sentence.strip()
+    if re.search(r"\b(?:randomi[sz]ed|assigned|allocated)\b[^.;]{0,120}\b(?:and|or)\b[^.;]{1,80}", sentence, re.I):
+        return "reported", sentence.strip()
+    if re.search(r"\b(?:placebo|usual care|active comparator|no comparator)\b", sentence, re.I):
+        return "not_applicable" if re.search(r"\bno comparator\b", sentence, re.I) else "reported", sentence.strip()
+    return None
+
+
 def _comparator(text: str) -> tuple[str, str | None, SupportingSpan | None]:
     for sentence in re.split(r"(?<=[.;])\s+", text):
-        if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
+        extracted = comparator_from_sentence(sentence)
+        if not extracted:
             continue
-        control = re.search(r"\b(?:placebo|usual care|active comparator|historical control|no comparator)\b", sentence, re.I)
-        comparison = re.search(r"\b(?:compared with|compared to|versus|vs\.?)\s+((?!previous\b|prior\b|published\b|literature\b)[^.;,]{1,80})", sentence, re.I)
-        match = control or comparison
-        if not match:
-            continue
-        value = match.group(0).strip()
-        status = "not_applicable" if re.search(r"no comparator", value, re.I) else "reported"
+        status, value = extracted
         return status, value, SupportingSpan("abstract", "comparator", value, "COMPARATOR_EXPLICIT")
     return "not_reported", None, None
 
 
 def _follow_up(text: str) -> tuple[str | None, SupportingSpan | None]:
+    duration = r"(?:\d+|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s*(?:days?|weeks?|months?|years?)"
     patterns = [
-        r"\bfollowed\s+(?:patients?|participants?|subjects?)\s+for\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
-        r"\bfollow(?:ed|[- ]up)?\s+(?:for|through|until)\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
-        r"\bassessed\s+up\s+to\s+\d+\s*(?:days?|weeks?|months?|years?)\b",
-        r"\bat\s+\d+\s*(?:days?|weeks?|months?|years?)\s+follow[- ]up\b",
+        rf"\bfollowed\s+(?:patients?|participants?|subjects?)\s+for\s+{duration}\b",
+        rf"\bfollow(?:ed|[- ]up)?\s+(?:for|through|until)\s+{duration}\b",
+        rf"\b(?:seen\s+and\s+)?assessed\s+up\s+to\s+{duration}\b",
+        rf"\brecurrence[^.;]{{0,80}}\bfollowed\s+up\s+for\s+{duration}\b",
+        rf"\bevaluated\s+at\s+the\s+end\s+of\s+each\s+week\s+up\s+to\s+{duration}\b",
+        rf"\bat\s+{duration}\s+follow[- ]up\b",
     ]
     for pattern in patterns:
         match = re.search(pattern, text, re.I)
@@ -507,7 +564,10 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
         for match in re.finditer(pattern, text, re.I):
             value = _parse_int(match.group("n"))
             snippet = match.group(0)
+            context = text[max(0, match.start() - 80):match.end() + 60]
             if _numeric_label_not_sample(text[max(0, match.start() - 24):match.end() + 32]):
+                continue
+            if role == "participants" and _is_event_count(context):
                 continue
             if role in {"enrolled", "randomized", "included"} and re.search(r"\band\b.{0,20}\b(?:patients?|participants?|subjects?|children|adults|individuals|cases?)\b", snippet, re.I):
                 continue
@@ -517,6 +577,7 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             seen.add(key)
             rule = {
                 "enrolled": "SAMPLE_ENROLLED",
+                "total": "SAMPLE_TOTAL",
                 "randomized": "SAMPLE_RANDOMIZED",
                 "included": "SAMPLE_INCLUDED",
                 "participants": "SAMPLE_PARTICIPANT_COUNT",
@@ -531,7 +592,10 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             if value is None:
                 continue
             snippet = match.group(0)
+            context = text[max(0, match.start() - 80):match.end() + 60]
             if _numeric_label_not_sample(text[max(0, match.start() - 24):match.end() + 32]):
+                continue
+            if role == "participants" and _is_event_count(context):
                 continue
             if role in {"enrolled", "randomized", "included"} and re.search(r"\band\b.{0,20}\b(?:patients?|participants?|subjects?|children|adults|individuals|cases?)\b", snippet, re.I):
                 continue
@@ -541,6 +605,7 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             seen.add(key)
             rule = {
                 "enrolled": "SAMPLE_ENROLLED",
+                "total": "SAMPLE_TOTAL",
                 "randomized": "SAMPLE_RANDOMIZED",
                 "included": "SAMPLE_INCLUDED",
                 "participants": "SAMPLE_PARTICIPANT_COUNT",
@@ -550,6 +615,15 @@ def _collect_population_counts(text: str, patterns: list[tuple[str, str]]) -> li
             }[role]
             items.append((role, value, snippet, rule))
     return items
+
+
+def _is_event_count(context: str) -> bool:
+    return bool(re.search(
+        r"\b(?:occurred\s+in|events?\s+in|adverse\s+events?\s+in|"
+        r"developed|experienced|had)\s+\d+\s+(?:patients?|participants?|subjects?|cases?)\b",
+        context,
+        re.I,
+    ))
 
 
 def _numeric_label_not_sample(snippet: str) -> bool:

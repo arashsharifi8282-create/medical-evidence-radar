@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.models.article import AbstractSection, Article
 from app.services.evidence import assess_article, rank_articles
+from app.services.clinical_extraction import extract_clinical
 from app.services.study_design import assess_study_design
 
 
@@ -316,6 +317,86 @@ def test_human_rct_with_in_vitro_background_remains_human():
     assert result.design_family == "randomized_controlled_trial"
     assert result.population_scope == "human"
     assert result.evidence_tier == "higher_strength"
+
+
+def test_incidental_structured_in_vitro_and_protocol_do_not_conflict_with_completed_rct():
+    vitro = assess_study_design(article(
+        title="Randomized double-blind multicenter trial",
+        abstract="",
+        sections=(
+            ("METHODS", "A total of 1,227 patients were randomized."),
+            ("RESULTS", "Clinical outcomes were reported."),
+            ("CONCLUSIONS", "Greater in vitro antiviral activity may explain the findings."),
+        ),
+        types=("Randomized Controlled Trial",),
+    ))
+    protocol = assess_study_design(article(
+        title="Double-blind randomized parallel-group trial",
+        abstract="",
+        sections=(
+            ("METHODS", "Patients were randomized to treatment."),
+            ("RESULTS", "Some participants did not complete the study protocol after a protocol deviation."),
+        ),
+        types=("Randomized Controlled Trial",),
+    ))
+    for result in (vitro, protocol):
+        assert result.design_family == "randomized_controlled_trial"
+        assert result.evidence_tier == "higher_strength"
+        assert "conflicting_design_signals" not in result.limitation_codes
+    genuine_vitro = assess_study_design(article(
+        title="Cell culture experiment",
+        abstract="METHODS: In vitro cell line experiments were performed. RESULTS: Viral replication was measured.",
+    ))
+    genuine_protocol = assess_study_design(article(
+        title="Study protocol for a planned trial",
+        abstract="METHODS: This protocol describes planned enrollment; participants will be randomized."
+    ))
+    assert genuine_vitro.design_family == "in_vitro"
+    assert genuine_protocol.design_family == "protocol"
+    assert genuine_protocol.result_status == "not_reported"
+
+
+def test_explicit_total_sample_precedence_and_contextual_follow_up():
+    cases = (
+        ("A total of 55 patients participated in this trial.", 55),
+        ("A total of 100 patients were randomized. RESULTS: 12 patients had an event.", 100),
+        ("120 cases were randomly divided into two groups.", 120),
+        ("54 inpatients were divided into three groups, with 18 cases in each group.", 54),
+        ("719 patients were enrolled. Varicella-zoster virus infection occurred in 96 patients.", 719),
+    )
+    for text, expected in cases:
+        result = assess_study_design(article(abstract=text))
+        assert result.sample_size == expected
+        assert result.sample_size_status == "reported"
+        assert any(span.source_type == "sample_size" and str(expected) in span.text for span in result.supporting_spans)
+    for text in (
+        "Patients were seen and assessed up to 24 weeks.",
+        "The recurrence of disease was followed up for 1 month.",
+        "Patients were evaluated at the end of each week up to six weeks.",
+        "Outcomes were assessed at 30 days follow-up.",
+    ):
+        assert assess_study_design(article(abstract=text)).follow_up_text is not None
+
+
+def test_study_and_clinical_comparators_agree_on_explicit_primary_comparison():
+    for text, expected in (
+        ("Patients were randomized to famciclovir versus acyclovir.", "famciclovir versus acyclovir"),
+        ("Patients were randomized to brivudin and acyclovir.", "brivudin and acyclovir"),
+        ("Patients were assigned to famciclovir-plus-placebo versus acyclovir-plus-placebo.", "famciclovir-plus-placebo versus acyclovir-plus-placebo"),
+        ("Patients were randomized to drug versus placebo.", "drug versus placebo"),
+    ):
+        record = article(abstract=text)
+        study = assess_study_design(record)
+        clinical = extract_clinical(record)
+        assert expected in (study.comparator_text or "").casefold()
+        assert study.comparator_text == clinical.comparator.source_text
+    for text in (
+        "Results were compared with previous reports of acyclovir.",
+        "Acyclovir and famciclovir were mentioned in background literature.",
+        "Patients were compared with historical controls.",
+        "Patients received acyclovir and famciclovir during routine care.",
+    ):
+        assert extract_clinical(article(abstract=text)).comparator.status == "not_reported"
 
 
 def test_frozen_acyclovir_fixture_replays_key_study_design_failures():
