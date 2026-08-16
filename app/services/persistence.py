@@ -12,7 +12,7 @@ import hashlib
 import json
 import re
 import unicodedata
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
 
@@ -31,6 +31,13 @@ from app.models.study import StudyAssessment
 from app.services.evidence import assess_article
 from app.services.clinical_extraction import extract_clinical
 from app.services.report_policy import load_policy, route_report_section
+from app.services.relevance import (
+    RANKING_COMPONENT_DIRECTIONS,
+    RANKING_POLICY,
+    RANKING_POLICY_VERSION,
+    ranking_components,
+    ranking_sort_key_from_components,
+)
 from app.models.topic_profile import CandidateTerm, TopicProfile
 
 DEFAULT_JSON_DIR = Path("data/raw/pubmed")
@@ -40,16 +47,82 @@ DEFAULT_CONCEPT_DIR = Path("data/concepts")
 MAX_QUERY_SLUG_LENGTH = 120
 
 
+@dataclass(frozen=True)
+class EffectivePlacement:
+    """The final, renderer-shared display state for one ranked article."""
+
+    section: str
+    visible: bool
+    display_mode: str
+    reason: str
+    policy_section: str
+    policy_reason: str
+
+
+def _effective_placements(ranked: list[RankedArticle]) -> dict[str, EffectivePlacement]:
+    """Apply B4 routing and the presentation cap exactly once per article."""
+    if not any(item.clinical_relevance for item in ranked):
+        placements: dict[str, EffectivePlacement] = {}
+        for item in ranked:
+            section, visible, reason = route_report_section(item)
+            placements[item.article.pmid] = EffectivePlacement(
+                section, visible, "primary", reason, section, reason,
+            )
+        return placements
+    principal_limit = int(load_policy()["defaults"]["principal_article_limit"])
+    key_count = 0
+    placements: dict[str, EffectivePlacement] = {}
+    for item in ranked:
+        policy_section, policy_visible, policy_reason = route_report_section(item)
+        if policy_section == "key_evidence" and policy_visible:
+            key_count += 1
+            if key_count > principal_limit:
+                reason = (
+                    f"{policy_reason} Collapsed after principal article limit "
+                    f"{principal_limit} was reached."
+                )
+                placements[item.article.pmid] = EffectivePlacement(
+                    "additional_selected_evidence", True, "collapsed", reason,
+                    policy_section, policy_reason,
+                )
+                continue
+        display_mode = "primary" if policy_visible else "audit_only"
+        placements[item.article.pmid] = EffectivePlacement(
+            policy_section, policy_visible, display_mode, policy_reason,
+            policy_section, policy_reason,
+        )
+    return placements
+
+
+def _placement_to_dict(placement: EffectivePlacement) -> dict:
+    return {
+        "section": placement.section,
+        "visible": placement.visible,
+        "display_mode": placement.display_mode,
+        "reason": placement.reason,
+        "policy_section": placement.policy_section,
+        "policy_reason": placement.policy_reason,
+    }
+
+
+def _excluded_candidate_placement(decision: str, reason: str) -> dict:
+    section = "excluded_report_limit" if decision == "excluded_report_limit" else "excluded_b2"
+    return {
+        "section": section,
+        "visible": False,
+        "display_mode": "excluded",
+        "reason": reason,
+        "policy_section": None,
+        "policy_reason": None,
+    }
+
+
 def _report_ranked(ranked: list[RankedArticle]) -> list[RankedArticle]:
     """Apply the active placement policy once for every renderer."""
-    policy = load_policy()
-    principal_limit = int(policy["defaults"]["principal_article_limit"])
     if not any(item.clinical_relevance for item in ranked):
         return list(ranked)
-    placed = [(item, route_report_section(item)) for item in ranked]
-    key = [item for item, placement in placed if placement[0] == "key_evidence" and placement[1]]
-    selected_key = {item.article.pmid for item in key[:principal_limit]}
-    return [item for item, placement in placed if placement[1] and (placement[0] != "key_evidence" or item.article.pmid in selected_key)]
+    placements = _effective_placements(ranked)
+    return [item for item in ranked if placements[item.article.pmid].visible]
 
 
 def _display_value(value, default: str = "Not reported") -> str:
@@ -182,36 +255,50 @@ def _candidate_to_dict(c: CandidateTerm) -> dict:
     }
 
 
-def _ranked_to_dict(r: RankedArticle) -> dict:
+def _ranked_to_dict(
+    r: RankedArticle,
+    final_evidence_rank: int,
+    placement: EffectivePlacement,
+) -> dict:
     """Convert a :class:`RankedArticle` into a JSON-serializable dict."""
     d = _article_to_dict(r.article)
     d["assessment"] = _assessment_to_dict(r.assessment)
-    d["ranking_audit"] = _ranking_audit(r)
+    d["final_evidence_rank"] = final_evidence_rank
+    d["ranking_audit"] = _ranking_audit(r, final_evidence_rank)
     if r.clinical_relevance:
         d["clinical_relevance"] = _clinical_relevance_to_dict(r.clinical_relevance)
-    section, visible, reason = route_report_section(r)
     d["structured_clinical_extraction"] = asdict(extract_clinical(r.article))
-    d["report_placement"] = {"section": section, "visible": visible, "reason": reason}
+    d["report_placement"] = _placement_to_dict(placement)
     return d
 
 
-def _ranking_audit(ranked: RankedArticle) -> dict:
+def _ranking_audit(ranked: RankedArticle, final_evidence_rank: int) -> dict:
     """Serialize the named lexicographic ranking components for replay."""
-    relevance = ranked.clinical_relevance
-    study = ranked.assessment.study_assessment
+    components = ranking_components(ranked)
+    sort_key = ranking_sort_key_from_components(components)
     return {
-        "policy": "relevance_class > query_intent_match > report_section > evidence_tier > study_design > comparator_suitability > extraction_completeness > bounded_sample_size > recency > pmid",
-        "relevance_class": relevance.relevance_class if relevance else None,
-        "query_intent_match": bool(relevance and set(relevance.query_intents) & set(relevance.article_intents)),
-        "evidence_tier": study.evidence_tier if study else None,
-        "study_design": study.design_family if study else None,
-        "limitation_count": len(study.limitation_codes) if study else None,
-        "bounded_sample_size": min(study.sample_size, 10000) if study and study.sample_size is not None else None,
-        "relevance_score": relevance.relevance_score if relevance else None,
-        "section": ranked.assessment.section,
-        "overall_score": ranked.assessment.overall_score,
-        "publication_date": ranked.article.publication_date.isoformat() if ranked.article.publication_date else None,
-        "pmid": ranked.article.pmid,
+        "policy": RANKING_POLICY,
+        "policy_version": RANKING_POLICY_VERSION,
+        "sort_directions": RANKING_COMPONENT_DIRECTIONS,
+        "final_evidence_rank": final_evidence_rank,
+        "components": components,
+        "sort_key": list(sort_key),
+        # Retained flat fields preserve the existing audit shape for callers.
+        "relevance_class": components["relevance_class"],
+        "query_intent_match": components["query_intent_match"],
+        "evidence_tier": components["evidence_tier"],
+        "study_design": components["study_design"],
+        "limitation_count": components["limitation_count"],
+        "bounded_sample_size": components["sample_size_ranking_value"],
+        "reported_sample_size_raw": components["reported_sample_size_raw"],
+        "sample_size_ranking_value": components["sample_size_ranking_value"],
+        "sample_size_ranking_cap": components["sample_size_ranking_cap"],
+        "relevance_score": components["b2_relevance_score"],
+        "section": components["evidence_assessment_section"],
+        "evidence_assessment_section": components["evidence_assessment_section"],
+        "overall_score": components["overall_evidence_score"],
+        "publication_date": components["publication_date"],
+        "pmid": components["pmid_tie_break"],
     }
 
 
@@ -439,38 +526,67 @@ def build_snapshot(
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
     ranked_by_pmid = {item.article.pmid: item for item in ranked}
+    rank_by_pmid = {item.article.pmid: position for position, item in enumerate(ranked, start=1)}
+    placements = _effective_placements(ranked)
     if candidates is not None:
         serialized_articles = []
         for candidate in candidates:
             ranked_item = ranked_by_pmid.get(candidate.article.pmid)
             payload = _article_to_dict(candidate.article)
-            payload["assessment"] = _assessment_to_dict(
-                ranked_item.assessment
-                if ranked_item
-                else assess_article(candidate.article, fetched_at, topic)
-            )
             payload["clinical_relevance"] = _clinical_relevance_to_dict(candidate.relevance)
             if ranked_item:
-                payload["ranking_audit"] = _ranking_audit(ranked_item)
-                section, visible, reason = route_report_section(ranked_item)
+                payload["assessment"] = _assessment_to_dict(ranked_item.assessment)
+                payload["final_evidence_rank"] = rank_by_pmid[candidate.article.pmid]
+                payload["ranking_audit"] = _ranking_audit(ranked_item, rank_by_pmid[candidate.article.pmid])
                 payload["structured_clinical_extraction"] = asdict(extract_clinical(candidate.article))
-                payload["report_placement"] = {"section": section, "visible": visible, "reason": reason}
+                payload["report_placement"] = _placement_to_dict(placements[candidate.article.pmid])
+            else:
+                # Excluded candidates retain their B2 decision without a
+                # fabricated B3/B4 assessment, rank, or placement route.
+                payload["assessment"] = None
+                payload["final_evidence_rank"] = None
+                payload["ranking_audit"] = None
+                payload["report_placement"] = _excluded_candidate_placement(
+                    candidate.relevance.decision, candidate.relevance.reason,
+                )
             serialized_articles.append(payload)
     else:
-        serialized_articles = [_ranked_to_dict(r) for r in ranked]
+        serialized_articles = [
+            _ranked_to_dict(r, rank_by_pmid[r.article.pmid], placements[r.article.pmid])
+            for r in ranked
+        ]
     report_ranked = _report_ranked(ranked)
+    primary_article_pmids = [
+        item.article.pmid for item in ranked
+        if placements[item.article.pmid].display_mode == "primary" and placements[item.article.pmid].visible
+    ]
+    collapsed_article_pmids = [
+        item.article.pmid for item in ranked
+        if placements[item.article.pmid].display_mode == "collapsed"
+    ]
+    audit_only_article_pmids = [
+        item.article.pmid for item in ranked
+        if placements[item.article.pmid].display_mode == "audit_only"
+    ]
+    represented_article_pmids = [item.article.pmid for item in report_ranked]
     snapshot = {
         "schema_version": "b4" if candidates is not None else "legacy",
         "topic": topic,
         "query": query,
         "fetched_at": fetched_at.isoformat(),
         "articles": serialized_articles,
-        "visible_article_pmids": [item.article.pmid for item in report_ranked],
+        "visible_article_pmids": represented_article_pmids,
+        "primary_article_pmids": primary_article_pmids,
+        "collapsed_article_pmids": collapsed_article_pmids,
+        "audit_only_article_pmids": audit_only_article_pmids,
+        "represented_article_pmids": represented_article_pmids,
+        "b2_selected_article_pmids": [item.article.pmid for item in ranked if item.clinical_relevance],
         "report_sections": {
-            section: [item.article.pmid for item in report_ranked if route_report_section(item)[0] == section]
-            for section in sorted({route_report_section(item)[0] for item in report_ranked})
+            section: [item.article.pmid for item in report_ranked if placements[item.article.pmid].section == section]
+            for section in sorted({placements[item.article.pmid].section for item in report_ranked})
         },
-        "ranking_policy": "hard_gates > relevance_class > query_intent_compatibility > report_section > evidence_tier > study_design > comparator_suitability > extraction_completeness > bounded_sample_size > recency > pmid",
+        "ranking_policy": RANKING_POLICY,
+        "ranking_policy_version": RANKING_POLICY_VERSION,
         "active_policy": load_policy(),
     }
     if clinical_target is not None:
@@ -579,6 +695,7 @@ def build_markdown_report(
     legacy_articles = ranked is None and articles is not None
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
+    placements = _effective_placements(ranked)
     display_ranked = _report_ranked(ranked)
     lines: list[str] = []
     lines.append(f"# PubMed Report: {topic}")
@@ -647,10 +764,11 @@ def build_markdown_report(
             lines.append("")
         return "\n".join(lines)
 
-    b2_mode = any(item.clinical_relevance for item in display_ranked)
+    b2_mode = any(item.clinical_relevance for item in ranked)
     sections = (
         (
             ("key_evidence", "Key evidence"),
+            ("additional_selected_evidence", "Additional selected evidence"),
             ("early_safety_signals", "Early safety signals"),
             ("pharmacovigilance_signals", "Pharmacovigilance signals"),
             ("clinical_background_and_overview", "Clinical background and overview"),
@@ -667,12 +785,25 @@ def build_markdown_report(
     )
     for section_key, section_label in sections:
         section_articles = [
-            r for r in display_ranked if (route_report_section(r)[0] == section_key if b2_mode else r.assessment.section == section_key)
+            r for r in display_ranked if (placements[r.article.pmid].section == section_key if b2_mode else r.assessment.section == section_key)
         ]
         if not section_articles:
             continue
         lines.append(f"## {section_label}")
         lines.append("")
+
+        if b2_mode and section_key == "additional_selected_evidence":
+            for r in section_articles:
+                article = r.article
+                relevance = r.clinical_relevance
+                source = f"[PMID {article.pmid}]({article.pubmed_url})" if article.pubmed_url else f"PMID {article.pmid}"
+                details = f"; DOI: {article.doi}" if article.doi else ""
+                lines.append(
+                    f"- {article.title} — {source}; clinical relevance: "
+                    f"{relevance.relevance_class if relevance else 'not reported'}{details}"
+                )
+            lines.append("")
+            continue
 
         if b2_mode and section_key == "contextual":
             trend_articles = [
@@ -752,7 +883,8 @@ def build_markdown_report(
                 if card["spans"]:
                     lines.extend(["", "<details>", "<summary>Supporting spans</summary>", "", *[f"- {span}" for span in card["spans"]], "", "</details>"])
                 lines.extend(["", "<details>", "<summary>Abstract</summary>", "", card["abstract"], "", "</details>"])
-                lines.extend(["", "<details>", "<summary>Audit details</summary>", "", f"- Placement: `{route_report_section(r)[0]}`", f"- Placement reason: {route_report_section(r)[2]}", f"- Relevance score: {a.relevance_score}/100", f"- Evidence score: {a.evidence_score}/100", f"- Overall score: {a.overall_score}/100", "", "</details>"])
+                placement = placements[r.article.pmid]
+                lines.extend(["", "<details>", "<summary>Audit details</summary>", "", f"- Placement: `{placement.section}`", f"- Placement reason: {placement.reason}", f"- Relevance score: {a.relevance_score}/100", f"- Evidence score: {a.evidence_score}/100", f"- Overall score: {a.overall_score}/100", "", "</details>"])
                 lines.append("")
                 lines.append("---")
                 lines.append("")
@@ -887,6 +1019,7 @@ def build_html_report(
     """
     if ranked is None:
         ranked = [RankedArticle(a, assess_article(a, fetched_at, topic)) for a in (articles or [])]
+    placements = _effective_placements(ranked)
     display_ranked = _report_ranked(ranked)
     e = html.escape
     esc_topic = e(topic)
@@ -894,10 +1027,11 @@ def build_html_report(
     article_count = len(display_ranked)
     has_b3_assessment = any(item.assessment.study_assessment for item in display_ranked)
 
-    b2_mode = any(item.clinical_relevance for item in display_ranked)
+    b2_mode = any(item.clinical_relevance for item in ranked)
     sections = (
         {
             "key_evidence": "Key evidence",
+            "additional_selected_evidence": "Additional selected evidence",
             "early_safety_signals": "Early safety signals",
             "pharmacovigilance_signals": "Pharmacovigilance signals",
             "clinical_background_and_overview": "Clinical background and overview",
@@ -916,9 +1050,24 @@ def build_html_report(
         section_articles = [
             r
             for r in display_ranked
-            if (route_report_section(r)[0] == section_key if b2_mode else r.assessment.section == section_key)
+            if (placements[r.article.pmid].section == section_key if b2_mode else r.assessment.section == section_key)
         ]
         if not section_articles:
+            continue
+
+        if b2_mode and section_key == "additional_selected_evidence":
+            sources = []
+            for r in section_articles:
+                article = r.article
+                pmid = e(article.pmid)
+                title = e(article.title)
+                pmid_link = f'<a class="meta-link" href="{e(article.pubmed_url)}" target="_blank" rel="noopener noreferrer">PMID {pmid}</a>' if article.pubmed_url else f"PMID {pmid}"
+                doi_link = f' · <a class="meta-link" href="https://doi.org/{e(article.doi)}" target="_blank" rel="noopener noreferrer">DOI {e(article.doi)}</a>' if article.doi else ""
+                sources.append(f"<li>{title} — {pmid_link}{doi_link}</li>")
+            section_html_parts.append(
+                f'<details class="report-section additional-selected-evidence" id="{section_key}">'
+                f'<summary>{e(section_label)} ({len(sources)})</summary><ul>{"".join(sources)}</ul></details>'
+            )
             continue
 
         cards: list[str] = []

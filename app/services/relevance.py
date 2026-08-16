@@ -15,6 +15,40 @@ from app.services.evidence import rank_articles
 SOURCE_WEIGHTS = {"title": 30, "mesh_major": 30, "mesh": 20, "author_keyword": 18, "abstract": 10}
 _CLASS_ORDER = {"direct": 0, "class_level": 1, "contextual": 2, "irrelevant": 3}
 _SECTION_ORDER = {"key_evidence": 0, "important_updates": 1, "exploratory_evidence": 2}
+RANKING_POLICY_VERSION = "b4.1.2"
+RANKING_SAMPLE_SIZE_CAP = 10_000
+RANKING_POLICY = (
+    "relevance_class > query_intent_match > evidence_tier > study_design > "
+    "limitation_count > bounded_reported_sample_size > b2_relevance_score > "
+    "evidence_assessment_section > overall_evidence_score > recency > pmid"
+)
+RANKING_COMPONENT_DIRECTIONS = {
+    "relevance_class_order": "ascending; direct=0, class_level=1, contextual=2, irrelevant=3",
+    "query_intent_match_order": "ascending; matching intent=-1 before non-matching=0",
+    "evidence_tier_order": "ascending; stronger tiers have lower values",
+    "study_design_order": "ascending; stronger designs have lower values",
+    "limitation_count": "ascending; fewer limitations first",
+    "sample_size_sort_order": "ascending; negative bounded reported sample size ranks larger samples first",
+    "b2_relevance_score_order": "ascending; negative B2 score ranks higher scores first",
+    "evidence_assessment_section_order": "ascending; key=0, important=1, exploratory=2",
+    "overall_evidence_score_order": "ascending; negative score ranks higher scores first",
+    "recency_sort_order": "ascending; negative ordinal ranks newer dates first",
+    "pmid_tie_break": "ascending lexical PMID tie-break",
+}
+_TIER_ORDER = {"higher_strength": 0, "moderate_strength": 1, "limited_strength": 2, "signal_only": 3, "preclinical": 4, "not_assessable": 5}
+_DESIGN_ORDER = {
+    "systematic_review_meta_analysis": 0,
+    "randomized_controlled_trial": 1,
+    "systematic_review_without_meta_analysis": 2,
+    "prospective_cohort": 3,
+    "retrospective_cohort": 4,
+    "case_control": 5,
+    "cross_sectional": 6,
+    "case_series": 7,
+    "case_report": 8,
+    "pharmacovigilance_disproportionality": 9,
+    "narrative_review": 10,
+}
 _INTENT_SUFFIX = re.compile(r"\b(?:efficacy|effectiveness|safety|treatment|therapy|management|outcomes?|evidence)\b.*$", re.I)
 _INTENTS = {
     "safety": ("safety", "adverse", "side effect", "tolerability", "pharmacovigilance", "faers", "toxicity", "complication"),
@@ -186,37 +220,60 @@ def _reason(cls: str, target: ClinicalTarget, focus: str, coherence: str, role: 
     if cls == "contextual": return f"Included as contextual evidence in {'Emerging mechanisms and research trends' if role in {'emerging_mechanism', 'research_enabler'} else 'Background/contextual evidence'}: focus={focus}; requested intervention is not substantively evaluated."
     other_major = next((d.text for d in article.mesh_descriptors if d.major_topic and _normalize(d.text) not in {_normalize(x) for x in (*target.intervention_labels, *target.condition_labels)}), "")
     return "Excluded as irrelevant: requested intervention-condition-intent criteria were not jointly satisfied." + (f" Major MeSH identifies {other_major}." if other_major else "")
-def _rank_key(item: RankedArticle) -> tuple:
+def ranking_components(item: RankedArticle) -> dict[str, object]:
+    """Return the named, normalized values used by the final ranking tuple."""
     r = item.clinical_relevance
     study = item.assessment.study_assessment
-    tier_order = {"higher_strength": 0, "moderate_strength": 1, "limited_strength": 2, "signal_only": 3, "preclinical": 4, "not_assessable": 5}
-    design_order = {
-        "systematic_review_meta_analysis": 0,
-        "randomized_controlled_trial": 1,
-        "systematic_review_without_meta_analysis": 2,
-        "prospective_cohort": 3,
-        "retrospective_cohort": 4,
-        "case_control": 5,
-        "cross_sectional": 6,
-        "case_series": 7,
-        "case_report": 8,
-        "pharmacovigilance_disproportionality": 9,
-        "narrative_review": 10,
-    }
     intent_match = bool(r and set(r.query_intents) & set(r.article_intents))
+    raw_sample_size = study.sample_size if study and study.sample_size_status == "reported" and study.sample_size is not None and study.sample_size > 0 else None
+    sample_size_ranking_value = min(raw_sample_size, RANKING_SAMPLE_SIZE_CAP) if raw_sample_size is not None else 0
+    publication_date = item.article.publication_date
+    return {
+        "relevance_class": r.relevance_class if r else "irrelevant",
+        "relevance_class_order": _CLASS_ORDER.get(r.relevance_class if r else "irrelevant", 3),
+        "query_intent_match": intent_match,
+        "query_intent_match_order": -int(intent_match),
+        "evidence_tier": study.evidence_tier if study else "not_assessable",
+        "evidence_tier_order": _TIER_ORDER.get(study.evidence_tier if study else "not_assessable", 6),
+        "study_design": study.design_family if study else "unknown",
+        "study_design_order": _DESIGN_ORDER.get(study.design_family if study else "unknown", 99),
+        "limitation_count": len(study.limitation_codes) if study else 99,
+        "reported_sample_size_raw": raw_sample_size,
+        "sample_size_ranking_cap": RANKING_SAMPLE_SIZE_CAP,
+        "sample_size_ranking_value": sample_size_ranking_value,
+        "sample_size_sort_order": -sample_size_ranking_value,
+        "b2_relevance_score": r.relevance_score if r else 0,
+        "b2_relevance_score_order": -(r.relevance_score if r else 0),
+        "evidence_assessment_section": item.assessment.section,
+        "evidence_assessment_section_order": _SECTION_ORDER.get(item.assessment.section, 3),
+        "overall_evidence_score": item.assessment.overall_score,
+        "overall_evidence_score_order": -item.assessment.overall_score,
+        "publication_date": publication_date.isoformat() if publication_date else None,
+        "publication_date_ordinal": (publication_date or date.min).toordinal(),
+        "recency_sort_order": -(publication_date or date.min).toordinal(),
+        "pmid_tie_break": item.article.pmid,
+    }
+
+
+def ranking_sort_key_from_components(components: dict[str, object]) -> tuple:
+    """Build the production lexicographic key from named canonical components."""
     return (
-        _CLASS_ORDER.get(r.relevance_class if r else "irrelevant", 3),
-        -(1 if intent_match else 0),
-        tier_order.get(study.evidence_tier if study else "not_assessable", 6),
-        design_order.get(study.design_family if study else "unknown", 99),
-        len(study.limitation_codes) if study else 99,
-        -(study.sample_size or 0) if study and study.sample_size_status == "reported" else 0,
-        -(r.relevance_score if r else 0),
-        _SECTION_ORDER.get(item.assessment.section, 3),
-        -item.assessment.overall_score,
-        -(item.article.publication_date or date.min).toordinal(),
-        item.article.pmid,
+        components["relevance_class_order"],
+        components["query_intent_match_order"],
+        components["evidence_tier_order"],
+        components["study_design_order"],
+        components["limitation_count"],
+        components["sample_size_sort_order"],
+        components["b2_relevance_score_order"],
+        components["evidence_assessment_section_order"],
+        components["overall_evidence_score_order"],
+        components["recency_sort_order"],
+        components["pmid_tie_break"],
     )
+
+
+def _rank_key(item: RankedArticle) -> tuple:
+    return ranking_sort_key_from_components(ranking_components(item))
 def _contains(text: str, label: str) -> bool:
     needle = _normalize(label); return bool(needle and re.search(rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])", f" {_normalize(text)} "))
 def _normalize(value: str) -> str:

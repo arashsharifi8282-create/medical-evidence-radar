@@ -6,16 +6,22 @@ import json
 from pathlib import Path
 
 from app.models.article import AbstractSection, Article, MeshDescriptor
-from app.models.relevance import AssessedCandidate, ConfirmedDrugClass
+from app.models.relevance import AssessedCandidate, ClinicalRelevanceAssessment, ConfirmedDrugClass
 from app.models.retrieval import RetrievalBatch
 from app.services.persistence import build_html_report, build_markdown_report, build_snapshot
 from app.services.relevance import (
+    RANKING_SAMPLE_SIZE_CAP,
+    _rank_key,
     assess_candidate,
     build_clinical_target,
     build_search_quality_summary,
     deduplicate_articles,
+    ranking_components,
+    ranking_sort_key_from_components,
     rank_and_select_candidates,
 )
+from app.services.evidence import assess_article
+from app.models.assessment import RankedArticle
 
 NOW = datetime(2026, 8, 11, 9, 0)
 
@@ -185,6 +191,33 @@ def test_deduplication_empty_fewer_than_limit_and_collapsed_html_background():
     assert all(item.relevance.decision.startswith("included_") for item in audited)
     html = build_html_report("topic", NOW, selected)
     assert '<details class="report-section contextual-evidence"' in html
+
+
+def test_ranking_components_bound_sample_size_and_reconstruct_the_sort_key():
+    samples = (None, 9999, 10000, 20000)
+    expected = (0, 9999, 10000, RANKING_SAMPLE_SIZE_CAP)
+    for index, (sample, sample_value) in enumerate(zip(samples, expected, strict=True), start=1):
+        size_text = "Patients were randomized compared with placebo." if sample is None else f"{sample:,} patients were randomized compared with placebo."
+        source = article(str(index), f"Losartan trial {index}", abstract=f"METHODS: {size_text} RESULTS: Outcomes were reported.", types=("Randomized Controlled Trial",))
+        relevance = ClinicalRelevanceAssessment(str(index), "direct", 100, (), (), "included_direct", "fixture", NOW, ("efficacy",), ("efficacy",))
+        ranked = RankedArticle(source, assess_article(source, NOW, "losartan"), relevance)
+        components = ranking_components(ranked)
+        assert components["reported_sample_size_raw"] == sample
+        assert components["sample_size_ranking_value"] == sample_value
+        assert ranking_sort_key_from_components(components) == _rank_key(ranked)
+
+
+def test_permuted_unique_input_has_identical_rank_order_and_positions():
+    articles = [
+        article(str(index), f"Losartan for hypertension trial {index}", abstract="Losartan efficacy outcomes were reported.", types=("Randomized Controlled Trial",))
+        for index in range(1, 5)
+    ]
+    assessments = [AssessedCandidate(item, assess_candidate(item, target(), NOW)) for item in articles]
+    expected = [item.article.pmid for item in rank_and_select_candidates(assessments, NOW, "losartan efficacy and safety in hypertension", 10)[0]]
+    for permutation in (list(reversed(assessments)), [assessments[2], assessments[0], assessments[3], assessments[1]]):
+        actual = rank_and_select_candidates(permutation, NOW, "losartan efficacy and safety in hypertension", 10)[0]
+        assert [item.article.pmid for item in actual] == expected
+        assert [position for position, _ in enumerate(actual, start=1)] == list(range(1, len(actual) + 1))
 
 
 def test_b2_2b_intent_focus_population_section_and_audit_rules():

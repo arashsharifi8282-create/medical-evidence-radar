@@ -6,6 +6,7 @@ from pathlib import Path
 
 from app.models.article import Article
 from app.models.assessment import RankedArticle
+from app.models.relevance import AssessedCandidate, ClinicalRelevanceAssessment
 from app.services.persistence import (
     build_html_report,
     build_markdown_report,
@@ -15,6 +16,7 @@ from app.services.persistence import (
     save_snapshot,
 )
 from app.services.evidence import assess_article
+from app.services.relevance import ranking_sort_key_from_components
 
 FIXED_DT = datetime(2026, 8, 10, 9, 30, 0)
 
@@ -483,3 +485,84 @@ def test_conflicting_design_assessment_persists_review_state_and_source_order():
     assert any("conflict" in reason.casefold() for reason in study["assessment_reasons"])
     design_sources = [span["source_type"] for span in study["supporting_spans"] if span["field"] == "publication_types"]
     assert design_sources == ["publication_type", "publication_type"]
+
+
+def test_snapshot_audit_reconstructs_sort_key_and_final_rank():
+    source = Article(
+        pmid="rank-20000",
+        title="Losartan randomized trial",
+        abstract="METHODS: 20,000 patients were randomized compared with placebo. RESULTS: Outcomes were reported.",
+        publication_types=("Randomized Controlled Trial",),
+    )
+    relevance = ClinicalRelevanceAssessment("rank-20000", "direct", 100, (), (), "included_direct", "fixture", FIXED_DT, ("efficacy",), ("efficacy",))
+    ranked = RankedArticle(source, assess_article(source, FIXED_DT, "losartan"), relevance)
+    snapshot = build_snapshot("losartan", "losartan", FIXED_DT, ranked=[ranked])
+    record = snapshot["articles"][0]
+    audit = record["ranking_audit"]
+    assert record["final_evidence_rank"] == 1
+    assert audit["reported_sample_size_raw"] == 20000
+    assert audit["sample_size_ranking_value"] == 10000
+    assert "sample_size_sort_order" in audit["sort_directions"]
+    assert ranking_sort_key_from_components(audit["components"]) == tuple(audit["sort_key"])
+
+
+def test_effective_placement_keeps_key_evidence_overflow_discoverable_once():
+    ranked = []
+    for number in range(1, 12):
+        source = Article(
+            pmid=f"overflow-{number:02d}",
+            title=f"Losartan randomized trial {number}",
+            abstract="METHODS: 100 patients were randomized compared with placebo. RESULTS: Outcomes were reported.",
+            publication_types=("Randomized Controlled Trial",),
+        )
+        relevance = ClinicalRelevanceAssessment(source.pmid, "direct", 100, (), (), "included_direct", "fixture", FIXED_DT, ("efficacy",), ("efficacy",))
+        ranked.append(RankedArticle(source, assess_article(source, FIXED_DT, "losartan"), relevance))
+    snapshot = build_snapshot("losartan", "losartan", FIXED_DT, ranked=ranked)
+    markdown = build_markdown_report("losartan", FIXED_DT, ranked=ranked)
+    html = build_html_report("losartan", FIXED_DT, ranked=ranked)
+    overflow = next(item for item in snapshot["articles"] if item["pmid"] == "overflow-11")
+    assert snapshot["primary_article_pmids"] == [f"overflow-{number:02d}" for number in range(1, 11)]
+    assert snapshot["collapsed_article_pmids"] == ["overflow-11"]
+    assert snapshot["visible_article_pmids"] == [f"overflow-{number:02d}" for number in range(1, 12)]
+    assert overflow["report_placement"]["section"] == "additional_selected_evidence"
+    assert overflow["report_placement"]["display_mode"] == "collapsed"
+    assert overflow["report_placement"]["visible"] is True
+    assert markdown.count("Losartan randomized trial 11") == 1
+    assert "## Additional selected evidence" in markdown
+    assert 'class="report-section additional-selected-evidence"' in html
+    assert html.count("Losartan randomized trial 11") == 1
+
+
+def test_audit_only_placement_is_not_promoted_or_collapsed():
+    source = Article(
+        pmid="audit-only",
+        title="Losartan study in mice",
+        abstract="METHODS: Mice received losartan. RESULTS: Outcomes were reported.",
+        publication_types=("Journal Article",),
+    )
+    relevance = ClinicalRelevanceAssessment("audit-only", "direct", 100, (), (), "included_direct", "fixture", FIXED_DT, ("efficacy",), ("efficacy",))
+    ranked = RankedArticle(source, assess_article(source, FIXED_DT, "losartan"), relevance)
+    snapshot = build_snapshot("losartan", "losartan", FIXED_DT, ranked=[ranked])
+    placement = snapshot["articles"][0]["report_placement"]
+    assert placement["section"] == "audit_only"
+    assert placement["display_mode"] == "audit_only"
+    assert placement["visible"] is False
+    assert snapshot["audit_only_article_pmids"] == ["audit-only"]
+    assert snapshot["visible_article_pmids"] == []
+
+
+def test_report_limit_exclusion_has_no_fabricated_rank_or_assessment():
+    source = Article("selected", "Losartan trial", "METHODS: Patients were randomized compared with placebo.", publication_types=("Randomized Controlled Trial",))
+    excluded = Article("excluded", "Losartan trial later", "METHODS: Patients were randomized compared with placebo.", publication_types=("Randomized Controlled Trial",))
+    selected_relevance = ClinicalRelevanceAssessment("selected", "direct", 100, (), (), "included_direct", "fixture", FIXED_DT, ("efficacy",), ("efficacy",))
+    excluded_relevance = ClinicalRelevanceAssessment("excluded", "direct", 100, (), (), "excluded_report_limit", "report limit", FIXED_DT, ("efficacy",), ("efficacy",))
+    selected = RankedArticle(source, assess_article(source, FIXED_DT, "losartan"), selected_relevance)
+    snapshot = build_snapshot("losartan", "losartan", FIXED_DT, ranked=[selected], candidates=(
+        AssessedCandidate(source, selected_relevance),
+        AssessedCandidate(excluded, excluded_relevance),
+    ))
+    record = next(item for item in snapshot["articles"] if item["pmid"] == "excluded")
+    assert record["final_evidence_rank"] is None
+    assert record["assessment"] is None
+    assert record["report_placement"]["section"] == "excluded_report_limit"
+    assert record["report_placement"]["visible"] is False
