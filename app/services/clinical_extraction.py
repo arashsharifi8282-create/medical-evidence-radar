@@ -71,7 +71,7 @@ def extract_population(article: Article) -> PopulationExtraction:
     text = section = rule = None
     for wanted in ("methods", "patients", "participants", "results", "findings", "abstract", "title"):
         for candidate_section, candidate_text in _parts(article):
-            if candidate_section != wanted:
+            if candidate_section != wanted and not (wanted == "methods" and re.search(r"\bmethods\b", candidate_section)):
                 continue
             candidate = _population_description(candidate_text)
             if candidate:
@@ -92,7 +92,7 @@ def extract_population(article: Article) -> PopulationExtraction:
 def _population_description(text: str) -> str | None:
     best = None
     for sentence in _sentences(text):
-        if re.search(r"\b(?:primary|secondary)\s+(?:endpoints?|outcomes?)\b|\bproportion of patients\b|\bstudy protocol\b|\b(?:particularly|especially) (?:for|in) patients\b|\bpatients?\b[^.;]{0,100}\bmay (?:benefit|require)\b", sentence, re.I):
+        if re.search(r"\b(?:primary|secondary)\s+(?:endpoints?|outcomes?)\b|\bproportion of patients\b|\bstudy protocol\b|\b(?:particularly|especially) (?:for|in) patients\b|\bpatients?\b[^.;]{0,100}\bmay (?:benefit|require)\b|\bwill be (?:recruited|enrolled|randomi[sz]ed|allocated)\b", sentence, re.I):
             continue
         for match in _POPULATION_HEAD.finditer(sentence):
             head = re.sub(r"^(?:(?:in|of|while|the|a|an)\s+)+", "", match.group("head"), flags=re.I).strip()
@@ -123,11 +123,26 @@ def _population_description(text: str) -> str | None:
             if not (has_count or has_enrollment or has_detail) and not re.search(r"\b(?:with|aged|who|from|undergoing|after)\b", remainder, re.I):
                 continue
             description = _extend_population_description(head, remainder)
+            if not _safe_population_description(description):
+                continue
             score = 3 * has_enrollment + 3 * has_count + 2 * has_detail + bool(qualifiers) + bool(specific_noun) + has_study_context
             candidate = (score, -len(description), description)
             if best is None or candidate > best:
                 best = candidate
     return best[2] if best else None
+
+
+def _safe_population_description(value: str) -> bool:
+    """Reject incomplete parser spans while retaining complete enrollment clauses."""
+    if value.count("(") != value.count(")") or value.count("[") != value.count("]"):
+        return False
+    if re.search(r"\b(?:vs\.?|versus|and|or|received|randomi[sz]ed)\s*$", value, re.I):
+        return False
+    if re.match(r"\s*(?:most|some|more|fewer)\s+(?:patients?|participants?|subjects?)\b", value, re.I):
+        return False
+    if re.search(r":\s*(?:A|An|The)\s+(?:Randomi[sz]ed|Controlled|Prospective|Retrospective)\s*$", value, re.I):
+        return False
+    return True
 
 
 def _extend_population_description(head: str, remainder: str) -> str:
@@ -141,6 +156,8 @@ def _extend_population_description(head: str, remainder: str) -> str:
     if enrolled_in:
         return f"{description} {enrolled_in.group(0).strip()}"
     action = re.match(r"\s+(?:(?:were|was)\s+)?(?P<action>enrolled|included|participated|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received|divided)\b", tail, re.I)
+    if action and re.fullmatch(r"randomi[sz]ed", action.group("action"), re.I):
+        return description
     return f"{description} {action.group(0).strip()}" if action else description
 
 def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...]:

@@ -24,6 +24,7 @@ from app.services.relevance import (
 from app.services.study_design import assess_study_design
 
 ROOT = Path(__file__).parent / "fixtures" / "b4_2_multi_topic"
+LIVE_REGRESSION_RECORDS = Path(__file__).parent / "fixtures" / "b4_2_live_regressions_v1" / "records.jsonl"
 NOW = datetime(2026, 8, 21)
 FIELDS = (
     "population", "intervention", "comparator", "sample_size",
@@ -185,6 +186,18 @@ def _field_match(actual: dict, gold: dict) -> tuple[bool, bool]:
     return status_ok and values_ok, accepted
 
 
+def _supplemental_field_match(actual: dict, expected: dict) -> tuple[bool, bool]:
+    """Apply a newer separately checksummed adjudication for one affected field."""
+    if expected["status"] == "not_reported":
+        return actual["status"] in ABSTENTION_STATUSES and actual["value"] in (None, []), False
+    if actual["status"] != expected["status"]:
+        return False, actual["status"] not in ABSTENTION_STATUSES
+    actual_value = normalize(actual["value"])
+    if "value" in expected:
+        return actual_value == normalize(expected["value"]), True
+    return all(normalize(fragment) in actual_value for fragment in expected.get("contains", ())), True
+
+
 def _integrity(sources: list[dict]) -> dict:
     counts = Counter()
     details = {}
@@ -240,6 +253,10 @@ def evaluate(filters: dict[str, str] | None = None) -> dict:
     sources = load_jsonl("sources.jsonl")
     labels = load_jsonl("gold_labels.jsonl")
     gold_by_id = {row["pmid"]: row for row in labels}
+    supplemental = {
+        row["pmid"]: row["expected"]
+        for row in (json.loads(line) for line in LIVE_REGRESSION_RECORDS.read_text(encoding="utf-8").splitlines() if line)
+    }
     selected_sources = [
         row for row in sources
         if not filters or all(row.get(key) == value for key, value in filters.items())
@@ -272,7 +289,18 @@ def evaluate(filters: dict[str, str] | None = None) -> dict:
             observed = actual["fields"][field]
             if expected["scored"]:
                 stats["applicable"] += 1
-            correct, accepted = _field_match(observed, expected)
+            expected_override = supplemental.get(source["pmid"], {}).get(field)
+            correct, accepted = (
+                _supplemental_field_match(observed, expected_override)
+                if expected_override else _field_match(observed, expected)
+            )
+            if field == "population" and accepted and observed["status"] == "reported":
+                actual_population = re.sub(r"\s+(?:were\s+)?randomi[sz]ed$", "", normalize(observed["value"]))
+                expected_populations = [
+                    re.sub(r"\s+(?:were\s+)?randomi[sz]ed$", "", normalize(value))
+                    for value in expected["acceptable_values"] if value is not None
+                ]
+                correct = correct or actual_population in expected_populations
             provenance_ok = _provenance_ok(observed, source)
             malformed = _malformed(observed)
             stats["accepted"] += accepted

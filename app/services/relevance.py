@@ -194,6 +194,10 @@ def _focus(article: Article, drug: list[RelevanceSignal], classes: list[Relevanc
     drug_title = any(x.source_field == "title" for x in drug)
     class_title = any(x.source_field == "title" for x in classes)
     structured_substantive = any(x.source_field in {"abstract_results", "abstract_conclusions", "abstract_conclusion", "abstract_methods", "abstract_objectives"} for x in drug)
+    review_comparator_only = _is_review_like(article) and _requested_intervention_role(
+        article,
+        tuple(signal.normalized_label for signal in drug if signal.normalized_label),
+    )[0] == "active_comparator"
     text = _normalize(_text(article))
     drug_substantive = any(
         re.search(rf"{re.escape(_normalize(signal.normalized_label))}.{{0,100}}(?:compared|reference|versus|adverse|efficacy|trial)|(?:compared|reference|versus).{{0,100}}{re.escape(_normalize(signal.normalized_label))}", text)
@@ -202,11 +206,19 @@ def _focus(article: Article, drug: list[RelevanceSignal], classes: list[Relevanc
     repeated_drug = any(len(re.findall(rf"(?<![a-z0-9]){re.escape(_normalize(signal.normalized_label))}(?![a-z0-9])", text)) >= 2 for signal in drug if _normalize(signal.normalized_label))
     if drug_title:
         return "target_intervention_primary"
-    if structured_substantive and repeated_drug:
+    if structured_substantive and repeated_drug and not review_comparator_only:
         return "target_intervention_primary"
     if repeated_drug and drug_substantive and not _is_review_like(article):
         return "target_intervention_primary"
-    all_exposed = any(re.search(rf"\ball\b.{{0,160}}{re.escape(_normalize(signal.normalized_label))}", text) for signal in drug if _normalize(signal.normalized_label))
+    all_exposed = any(
+        re.search(
+            rf"\ball\s+(?:patients?|participants?|subjects?|volunteers?)\b.{{0,120}}{re.escape(_normalize(signal.normalized_label))}"
+            rf"|\ball\b[^.;]{{0,120}}\b(?:using|receiving|treated\s+with|administered)\b[^.;]{{0,80}}{re.escape(_normalize(signal.normalized_label))}"
+            rf"|{re.escape(_normalize(signal.normalized_label))}.{{0,120}}\b(?:administered|given)\s+to\s+all\b",
+            text,
+        )
+        for signal in drug if _normalize(signal.normalized_label)
+    )
     if all_exposed: return "target_intervention_primary"
     if class_title or (any(x.source_field == "mesh_major" for x in classes) and any(_contains(text, term) for term in ("adverse", "complication", "risk", "safety"))):
         return "target_class_primary"

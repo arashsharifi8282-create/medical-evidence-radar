@@ -1,0 +1,17 @@
+{
+  "fixture_name": "b4_2_live_regressions_v1",
+  "schema_version": "1.0",
+  "expected_label_version": "1.0",
+  "creation_date": "2026-08-21",
+  "record_count": 8,
+  "topics": ["acyclovir", "losartan"],
+  "adjudication_notes": "Read-only replay records copied from retained post-B4.2 live PubMed snapshots. Only the named affected field or relevance label is adjudicated.",
+  "ambiguity_policy": "Prefer an explicit abstention over a malformed, incomplete, or unsupported structured value.",
+  "source_provenance": {
+    "acyclovir": "Local retained PubMed snapshot fetched 2026-08-21 at 21:59:37",
+    "losartan": "Local retained PubMed snapshot fetched 2026-08-21 at 22:01:08"
+  },
+  "checksums": {
+    "records.jsonl": "92c5b1ddb2a87b93f8da515de7310cc27ce47bb0249e9b68d9c628009492b4c4"
+  }
+}

@@ -150,7 +150,7 @@ def test_span_fields_are_source_grounded_and_persisted_without_raw_rewrite():
     extraction = extract_clinical(article)
     assert article.abstract == abstract
     assert extraction.interventions[0].normalized_name == "drug"
-    assert extraction.population.description == "80 patients with condition were randomized"
+    assert extraction.population.description == "80 patients with condition"
     ranked = RankedArticle(article, assess_article(article, NOW, "drug condition"), assess_candidate(article, build_clinical_target("drug efficacy in condition", intervention="drug", condition="condition", query_intents=("efficacy",)), NOW))
     record = build_snapshot("drug condition", "drug condition", NOW, ranked=[ranked])["articles"][0]
     assert record["clinical_relevance"]["requested_intervention_role"] == "primary_intervention"

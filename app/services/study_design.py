@@ -349,6 +349,9 @@ def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan
         ("total", rf"\b(?:a\s+)?total\s+of\s+{_NUMBER}\b[^.;]{{0,60}}\bwere\s+randomi[sz]ed\b"),
         ("total", rf"\b{_NUMBER}\s+cases?\b[^.;]{{0,120}}\b(?:were\s+)?randomly\s+divided\b"),
         ("total", rf"\b{_NUMBER}\s+(?:inpatients?|patients?|participants?)\b[^.;]{{0,120}}\bwere\s+divided\b"),
+        ("total", rf"\b{_NUMBER}\s+(?:patients?|participants?|subjects?|volunteers?)\s*\([^)]{{1,160}}\)\s+were\s+(?:enrolled|included|randomi[sz]ed)\b"),
+        ("total", rf"\b(?:regimens?|treatments?|therapies|drugs?|agents?)(?:\s*,?\s*(?:and|or)\s+[A-Za-z-]+)*\s+were\s+administered\s+to\s+{_NUMBER}\s+(?:(?:healthy|adult|male|female)\s+){{0,4}}(?:participants?|subjects?|volunteers?)(?![^.;]{{0,40}}\b(?:each|per)\s+(?:arm|group)\b)"),
+        ("total", rf"\bwere\s+administered\s+to\s+{_NUMBER}\s+(?:(?:healthy|adult|male|female)\s+){{0,4}}(?:participants?|subjects?|volunteers?)\s+during\s+(?:separate\s+)?(?:treatment\s+)?periods?\b"),
     ]
     primary_patterns = [
         ("enrolled", rf"\b{_NUMBER}\s+{_POP_DESCRIPTOR}(?:patients?|participants?|subjects?|children|adults|individuals)\s+were\s+enrolled\b"),
@@ -413,8 +416,22 @@ def comparator_from_sentence(sentence: str) -> tuple[str, str] | None:
         return None
     if re.search(r"\b(?:placebo )?run-in\b", sentence, re.I) and not re.search(r"\b(?:compared with|compared to|versus|vs\.?)\b", sentence, re.I):
         return None
+    if (
+        sentence.count("(") != sentence.count(")")
+        or sentence.count("[") != sentence.count("]")
+        or re.search(r"\b(?:compared\s+(?:with|to)|versus|vs\.?|and|or)\s*$", sentence, re.I)
+    ):
+        return None
     if re.search(r"\b\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b[^.;]{0,60}\b(?:versus|vs\.?)\s+\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b", sentence, re.I):
         return None
+    if re.search(
+        r"\bcompared\b[^.;]{0,80}\b(?:efficacy|safety)\b[^.;]{0,80}\bof\b"
+        r"[^.;]{0,100}\b[A-Za-z][A-Za-z-]*\s+(?:\d+\s*[xÃ—]\s*)?\d+(?:\.\d+)?\s*(?:mg|g|mcg|Ã‚Âµg)\b"
+        r"[^.;]{0,80}\band\b[^.;]{0,80}\b[A-Za-z][A-Za-z-]*\s+(?:\d+\s*[xÃ—]\s*)?\d+(?:\.\d+)?\s*(?:mg|g|mcg|Ã‚Âµg)\b",
+        sentence,
+        re.I,
+    ):
+        return "reported", sentence.strip()
     if re.search(r"\b(?:compared with|compared to|versus|vs\.?)\b", sentence, re.I):
         return "reported", sentence.strip()
     if re.search(r"\b(?:randomi[sz]ed|assigned|allocated)\b[^.;]{0,80}\b(?:to(?: receive)?|into|between)\b[^.;]{0,100}\b(?:and|or|either)\b[^.;]{1,80}", sentence, re.I):

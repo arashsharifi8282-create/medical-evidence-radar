@@ -625,7 +625,7 @@ def test_intervention_and_population_hygiene_persist_to_snapshot_and_reports():
     record = build_snapshot("herpes zoster", "herpes zoster", FIXED_DT, ranked=[ranked])["articles"][0]
     clinical = record["structured_clinical_extraction"]
     intervention = "valacyclovir 1 g TID; valacyclovir 2 g TID"
-    population = "87 immunocompromised patients with clinical evidence of localized herpes zoster were randomized"
+    population = "87 immunocompromised patients with clinical evidence of localized herpes zoster"
     assert [item["normalized_name"] for item in clinical["interventions"]] == ["valacyclovir", "valacyclovir"]
     assert "; ".join(item["source_text"] for item in clinical["interventions"]) == intervention
     assert clinical["population"]["description"] == population
