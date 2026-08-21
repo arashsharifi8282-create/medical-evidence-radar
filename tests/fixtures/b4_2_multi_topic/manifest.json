@@ -1,0 +1,20 @@
+{
+  "benchmark_name": "b4_2_multi_topic_validation",
+  "schema_version": "1.0",
+  "expected_label_version": "1.0",
+  "creation_date": "2026-08-21",
+  "record_count": 24,
+  "topics": ["acyclovir_herpes_zoster", "losartan_hypertension"],
+  "adjudication_notes": "Offline source-PMID registry; fields without a safe abstract-supported value are intentionally abstained.",
+  "ambiguity_policy": "Prefer not_reported or not_extractable over unsupported output.",
+  "excluded_from_scoring": ["free-text summaries", "inferred clinical significance"],
+  "source_provenance": {
+    "acyclovir_herpes_zoster": "Local retained PubMed snapshot fetched 2026-08-21",
+    "losartan_hypertension": "Local retained PubMed snapshot fetched 2026-08-14"
+  },
+  "checksums": {
+    "records.jsonl": "2720dd8c99ce1e7bc706a0fbdb89cf953009eeee1e7646d0f4f92747cd6f27c7",
+    "sources.jsonl": "45b7db1f26e604051c8a3a1eccfca4a0268a4a0bf4119e2861d9cb3b2056e5ee",
+    "gold_labels.jsonl": "ce01bab3f69eb70c34f464bfdc65b53726b3c402dfd3a942274f1ac0ae3294b2"
+  }
+}

@@ -336,6 +336,9 @@ def _clinical_relevance_to_dict(assessment: ClinicalRelevanceAssessment) -> dict
         "population_scope": assessment.population_scope,
         "needs_review": assessment.needs_review,
         "review_reasons": list(assessment.review_reasons),
+        "requested_intervention_role": assessment.requested_intervention_role,
+        "role_rule_id": assessment.role_rule_id,
+        "role_supporting_span": assessment.role_supporting_span,
         "assessed_at": assessment.assessed_at.isoformat(),
     }
 
@@ -846,9 +849,10 @@ def build_markdown_report(
                         lines.append(f"- **Study limitations:** {', '.join(study.limitation_codes)}")
                 if r.clinical_relevance:
                     lines.append(
-                    f"- **Clinical relevance:** {r.clinical_relevance.relevance_class} "
-                    f"({r.clinical_relevance.relevance_score}/100)"
+                        f"- **Clinical relevance:** {r.clinical_relevance.relevance_class} "
+                        f"({r.clinical_relevance.relevance_score}/100)"
                     )
+                    lines.append(f"- **Requested-intervention role:** {r.clinical_relevance.requested_intervention_role}")
                     lines.append(f"- **Content role:** {r.clinical_relevance.content_role}")
                     lines.append(f"- **Needs review:** {'yes' if r.clinical_relevance.needs_review else 'no'}")
                 lines.append(f"- **Evidence score:** {a.evidence_score}/100")
@@ -1175,6 +1179,10 @@ def build_html_report(
                 meta_items.append(
                     f'<div class="meta-item"><span class="meta-label">Why included:</span> '
                     f'<span class="meta-value">{e(r.clinical_relevance.reason)}</span></div>'
+                )
+                meta_items.append(
+                    f'<div class="meta-item"><span class="meta-label">Requested-intervention role:</span> '
+                    f'<span class="meta-value">{e(r.clinical_relevance.requested_intervention_role)}</span></div>'
                 )
                 meta_items.append(
                     f'<div class="meta-item"><span class="meta-label">Content role:</span> '

@@ -183,6 +183,9 @@ def _classify_design(article: Article) -> tuple[str, str, tuple[_DesignSignal, .
             signals.append(signal)
     if not signals:
         return "unknown", "unknown", (), False
+    explicit_protocol = next((signal for signal in signals if signal.rule_id == "PT_PROTOCOL"), None)
+    if explicit_protocol:
+        return "protocol", "protocol", tuple(signals), False
     winning_strength = max(signal.strength for signal in signals)
     winners = [signal for signal in signals if signal.strength == winning_strength]
     families = {signal.family for signal in winners}
@@ -207,7 +210,7 @@ def _publication_type_signals(article: Article) -> list[_DesignSignal]:
             family = subtype = "scoping_review"; rule = "PT_SCOPING_REVIEW"
         elif normalized in {"practice guideline", "guideline", "consensus development conference"}:
             family = subtype = "guideline_or_consensus"; rule = "PT_GUIDELINE"
-        elif normalized == "protocol": family = subtype = "protocol"; rule = "PT_PROTOCOL"
+        elif "protocol" in normalized: family = subtype = "protocol"; rule = "PT_PROTOCOL"
         elif normalized == "case series": family = subtype = "case_series"; rule = "PT_CASE_SERIES"
         elif normalized == "case reports": family = subtype = "case_report"; rule = "PT_CASE_REPORT"
         elif normalized in {"randomized controlled trial", "randomised controlled trial", "controlled clinical trial"}:
@@ -230,7 +233,7 @@ def _text_design_signal(value: str, source_type: str, field: str, suffix: str, a
         ("systematic_review_meta_analysis", "systematic_review_meta_analysis", r"\b(?:network )?meta[- ]analysis\b|\bsystematic review and meta[- ]analysis\b", "META_ANALYSIS"),
         ("systematic_review_without_meta_analysis", "systematic_review_without_meta_analysis", r"\bsystematic review\b", "SYSTEMATIC_REVIEW"),
         ("scoping_review", "scoping_review", r"\bscoping review\b", "SCOPING_REVIEW"),
-        ("protocol", "protocol", r"\b(?:study|trial) protocol\b", "PROTOCOL"),
+        ("protocol", "protocol", r"\b(?:study|trial) protocol\b|\b(?:we\s+)?propos(?:e|ed)\b[^.;]{0,80}\b(?:phase\s+[iIvV/]+\s+)?trial\b", "PROTOCOL"),
         ("case_series", "case_series", r"\bcase series\b", "CASE_SERIES"),
         ("case_report", "case_report", r"\bcase report\b", "CASE_REPORT"),
         ("pharmacovigilance_disproportionality", "pharmacovigilance_disproportionality", r"\b(?:pharmacovigilance|faers|disproportionality|reporting odds ratio|spontaneous reports)\b", "PHARMACOVIGILANCE"),
@@ -240,7 +243,7 @@ def _text_design_signal(value: str, source_type: str, field: str, suffix: str, a
         ("case_control", "case_control", r"\bcase[- ]control\b", "CASE_CONTROL"),
         ("cross_sectional", "cross_sectional", r"\bcross[- ]sectional\b", "CROSS_SECTIONAL"),
         ("retrospective_cohort", "retrospective_cohort", r"\bretrospective(?:\s+cohort)?\b", "RETROSPECTIVE_COHORT"),
-        ("prospective_cohort", "prospective_cohort", r"\bprospective cohort\b", "PROSPECTIVE_COHORT"),
+        ("prospective_cohort", "prospective_cohort", r"\bprospective\b[^.;]{0,50}\bobservational study\b|\bprospective cohort\b", "PROSPECTIVE_COHORT"),
         ("nonrandomized_interventional_study", "nonrandomized_interventional_study", r"\bobservational study\b", "OBSERVATIONAL"),
         ("pharmacokinetic_pharmacodynamic", "pharmacokinetic_pharmacodynamic", r"\b(?:pharmacokinetic(?:s)?|pharmacodynamic(?:s)?)\b", "PKPD"),
         ("mixed_human_preclinical", "mixed_human_preclinical", _MIXED_SCOPE.pattern, "MIXED_PRECLINICAL"),
@@ -268,7 +271,7 @@ def _is_protocol_publication(value: str, source_type: str, match: re.Match[str])
         return True
     context = value[max(0, match.start() - 80):match.end() + 160]
     return bool(re.search(
-        r"\b(?:planned|future|will\s+(?:enrol|enroll|randomi[sz]e)|aims?\s+to|"
+        r"\b(?:planned|future|propos(?:e|ed)|will\s+(?:be\s+assigned|enrol|enroll|randomi[sz]e)|aims?\s+to|"
         r"describes?\s+(?:a\s+)?planned|recruit(?:ment)?|enrollment)\b",
         context,
         re.I,
@@ -287,7 +290,11 @@ def _is_in_vitro_study_context(value: str, match: re.Match[str]) -> bool:
 
 
 def _compatible_designs(left: str, right: str) -> bool:
-    return left == right or {left, right} == {"systematic_review_meta_analysis", "systematic_review_without_meta_analysis"}
+    return left == right or {left, right} in (
+        {"systematic_review_meta_analysis", "systematic_review_without_meta_analysis"},
+        {"prospective_cohort", "nonrandomized_interventional_study"},
+        {"protocol", "randomized_controlled_trial"},
+    )
 
 
 def _population_scope(article: Article, design_family: str) -> str:
@@ -324,8 +331,11 @@ def _population_scope(article: Article, design_family: str) -> str:
 def _result_status(article: Article, text: str, design_family: str) -> str:
     if not article.abstract and not article.abstract_sections:
         return "not_reported"
-    if design_family == "protocol" and not re.search(r"\bresults?\b", text, re.I):
-        return "not_reported"
+    if design_family == "protocol":
+        if re.search(r"\b(?:we\s+)?propos(?:e|ed)\b|\bwill\s+(?:be\s+assigned|enrol|enroll|randomi[sz]e)\b", text, re.I):
+            return "not_reported"
+        if not re.search(r"\bresults?\b", text, re.I):
+            return "not_reported"
     if article.abstract_sections and any(s.label.casefold() in {"results", "conclusions", "findings"} for s in article.abstract_sections):
         return "reported"
     return "reported" if _RESULTS.search(text) else "unclear"
@@ -395,15 +405,19 @@ def _sample_size(article: Article) -> tuple[int | None, str, list[SupportingSpan
 
 def comparator_from_sentence(sentence: str) -> tuple[str, str] | None:
     """Return the primary clinical comparison from one eligible sentence."""
+    if re.search(r"\b(?:pubmed|medline|embase|cochrane|search(?:ed| strategy)?|eligib(?:le|ility)|included\s+(?:trials?|studies)|cohort studies|publication dates?)\b", sentence, re.I):
+        return None
     if not re.search(r"\b(?:patients?|participants?|subjects?|trial|randomi[sz]ed|assigned|allocated|received|treated|treatment)\b", sentence, re.I):
         return None
     if re.search(r"\b(?:previous|prior|published|literature|reports?|historical)\b", sentence, re.I):
+        return None
+    if re.search(r"\b(?:placebo )?run-in\b", sentence, re.I) and not re.search(r"\b(?:compared with|compared to|versus|vs\.?)\b", sentence, re.I):
         return None
     if re.search(r"\b\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b[^.;]{0,60}\b(?:versus|vs\.?)\s+\d+(?:\.\d+)?\s*(?:mg|g|mcg|Âµg)\b", sentence, re.I):
         return None
     if re.search(r"\b(?:compared with|compared to|versus|vs\.?)\b", sentence, re.I):
         return "reported", sentence.strip()
-    if re.search(r"\b(?:randomi[sz]ed|assigned|allocated)\b[^.;]{0,120}\b(?:and|or)\b[^.;]{1,80}", sentence, re.I):
+    if re.search(r"\b(?:randomi[sz]ed|assigned|allocated)\b[^.;]{0,80}\b(?:to(?: receive)?|into|between)\b[^.;]{0,100}\b(?:and|or|either)\b[^.;]{1,80}", sentence, re.I):
         return "reported", sentence.strip()
     if re.search(r"\b(?:placebo|usual care|active comparator|no comparator)\b", sentence, re.I):
         return "not_applicable" if re.search(r"\bno comparator\b", sentence, re.I) else "reported", sentence.strip()

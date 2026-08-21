@@ -78,6 +78,9 @@ class ClinicalRelevanceAssessment:
     population_scope: str = "unknown"
     needs_review: bool = False
     review_reasons: tuple[str, ...] = ()
+    requested_intervention_role: str = "unresolved"
+    role_rule_id: str = "ROLE_UNRESOLVED"
+    role_supporting_span: str | None = None
 
 
 @dataclass(frozen=True)

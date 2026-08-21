@@ -107,6 +107,9 @@ def assess_candidate(article: Article, target: ClinicalTarget, assessed_at: date
     coherent_condition = _substantive_condition(condition)
     coherence = "coherent" if condition and focus == "target_intervention_primary" else ("coherent" if coherent_condition and focus == "target_class_primary" else ("background_only" if condition else "not_established"))
     role = _role(article, intervention, focus)
+    intervention_role, role_rule, role_span = _requested_intervention_role(article, target.intervention_labels)
+    if focus == "target_intervention_primary" and intervention_role in {"incidental_mention", "unresolved"}:
+        intervention_role, role_rule, role_span = "primary_intervention", "ROLE_PRIMARY_FOCUS", article.title or None
     intent_match = bool(set(target.query_intents) & set(intents))
     review = []
     if not target.intervention_term or not target.condition_term: review.append("ambiguous_target")
@@ -114,12 +117,12 @@ def assess_candidate(article: Article, target: ClinicalTarget, assessed_at: date
     if intervention and condition and focus == "unknown": review.append("insufficient_focus_signal")
     if target.human_clinical_query and population == "preclinical_only": cls = "irrelevant"
     elif classes and condition and focus == "target_class_primary" and coherence == "coherent" and intent_match: cls = "class_level"
-    elif intervention and condition and focus == "target_intervention_primary" and coherence == "coherent" and intent_match: cls = "direct"
+    elif intervention and condition and focus == "target_intervention_primary" and coherence == "coherent" and intent_match and intervention_role in {"primary_intervention", "active_comparator", "combination_component", "prophylaxis_intervention"}: cls = "direct"
     elif condition: cls = "contextual"
     else: cls = "irrelevant"
     active = intervention if cls == "direct" else classes
     score = min(50, sum(x.weight for x in active)) + min(50, sum(x.weight for x in condition))
-    return ClinicalRelevanceAssessment(article.pmid, cls, score, tuple((*intervention, *classes)), tuple(condition), "excluded_irrelevant" if cls == "irrelevant" else f"included_{cls}", _reason(cls, target, focus, coherence, role, population, article), assessed_at, target.query_intents, intents, focus, coherence, role, population, bool(review), tuple(review))
+    return ClinicalRelevanceAssessment(article.pmid, cls, score, tuple((*intervention, *classes)), tuple(condition), "excluded_irrelevant" if cls == "irrelevant" else f"included_{cls}", _reason(cls, target, focus, coherence, role, population, article), assessed_at, target.query_intents, intents, focus, coherence, role, population, bool(review), tuple(review), intervention_role, role_rule, role_span)
 
 
 def assess_candidates(articles: tuple[Article, ...], target: ClinicalTarget, assessed_at: datetime) -> list[AssessedCandidate]:
@@ -213,6 +216,38 @@ def _role(article: Article, drug: list[RelevanceSignal], focus: str) -> str:
     if focus in {"unknown", "background_or_incidental"} and any(x in text for x in ("artificial intelligence", "digital pathology", "machine learning", " imaging ")): return "research_enabler"
     if focus in {"unknown", "background_or_incidental"} and any(x in text for x in ("mechanism", "pathway", "nitric oxide", "cytochrome")): return "emerging_mechanism"
     return "background_context" if focus in {"unknown", "background_or_incidental"} else "clinical_evidence"
+
+
+def _requested_intervention_role(article: Article, labels: tuple[str, ...]) -> tuple[str, str, str | None]:
+    """Classify the requested drug's grammatical role without topic-specific rules."""
+    for label in labels:
+        if _contains(article.title, label):
+            normalized_title = _normalize(article.title)
+            normalized_label = _normalize(label)
+            if re.search(rf"\b(?:comparison with|compared with|versus|vs)\b.{{0,80}}{re.escape(normalized_label)}|\b(?:and|or)\s+{re.escape(normalized_label)}\b", normalized_title):
+                return "active_comparator", "ROLE_TITLE_ACTIVE_COMPARATOR", article.title
+            if re.search(rf"\b(?:combination|combined)\b.{{0,120}}{re.escape(normalized_label)}|{re.escape(normalized_label)}\s*/", normalized_title):
+                return "combination_component", "ROLE_TITLE_COMBINATION", article.title
+            return "primary_intervention", "ROLE_TITLE_PRIMARY", article.title
+    for sentence in re.split(r"(?<=[.!?])\s+", article.abstract or ""):
+        normalized = _normalize(sentence)
+        label = next((item for item in labels if _contains(normalized, item)), None)
+        if not label:
+            continue
+        if re.search(r"\b(?:prior|previous|historical|already been shown|similar to|plasma levels|pharmacokinetic)\b", sentence, re.I):
+            return "pharmacokinetic_reference", "ROLE_BACKGROUND_OR_PK", sentence.strip()
+        if re.search(rf"\b(?:combin(?:ing|ed|ation)|group\s+[a-z])\b.{{0,180}}{re.escape(_normalize(label))}", normalized, re.I):
+            return "combination_component", "ROLE_COMBINATION_COMPONENT", sentence.strip()
+        if re.search(r"\b(?:versus|vs\.?|compared with|compared to)\b.{0,100}" + re.escape(_normalize(label)), normalized, re.I):
+            return "active_comparator", "ROLE_ACTIVE_COMPARATOR", sentence.strip()
+        if re.search(r"\b(?:randomi[sz]ed|assigned|allocated|received|treated with|administered)\b.{0,100}" + re.escape(_normalize(label)), normalized, re.I):
+            return "primary_intervention", "ROLE_EVALUATED_TREATMENT", sentence.strip()
+        if re.search(re.escape(_normalize(label)) + r".{0,100}\b(?:versus|vs\.?|compared with|compared to)\b", normalized, re.I):
+            return "primary_intervention", "ROLE_EVALUATED_TREATMENT", sentence.strip()
+        if re.search(r"\b(?:prophylaxis|prevention)\b", sentence, re.I):
+            return "prophylaxis_intervention", "ROLE_PROPHYLAXIS", sentence.strip()
+        return "incidental_mention", "ROLE_INCIDENTAL", sentence.strip()
+    return "unresolved", "ROLE_UNRESOLVED", None
 def _reason(cls: str, target: ClinicalTarget, focus: str, coherence: str, role: str, population: str, article: Article) -> str:
     if population == "preclinical_only" and target.human_clinical_query: return "Excluded as irrelevant: preclinical-only evidence does not satisfy the explicitly human clinical query; it remains retained in the audit JSON."
     if cls == "direct": return "Included as direct evidence: requested intervention has substantive, coherent results and the article intent matches the query."

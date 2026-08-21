@@ -92,6 +92,8 @@ def extract_population(article: Article) -> PopulationExtraction:
 def _population_description(text: str) -> str | None:
     best = None
     for sentence in _sentences(text):
+        if re.search(r"\b(?:primary|secondary)\s+(?:endpoints?|outcomes?)\b|\bproportion of patients\b|\bstudy protocol\b|\b(?:particularly|especially) (?:for|in) patients\b|\bpatients?\b[^.;]{0,100}\bmay (?:benefit|require)\b", sentence, re.I):
+            continue
         for match in _POPULATION_HEAD.finditer(sentence):
             head = re.sub(r"^(?:(?:in|of|while|the|a|an)\s+)+", "", match.group("head"), flags=re.I).strip()
             head = re.sub(r"^(?:(?:[IVX]+)\s+)?trial\s+in\s+", "", head, flags=re.I)
@@ -107,7 +109,7 @@ def _population_description(text: str) -> str | None:
             qualifiers = [word for word in re.findall(r"[A-Za-z][A-Za-z-]*", prefix.casefold()) if word not in {"a", "an", "and", "in", "of", "one", "or", "the", "to", "two", "three", "with"}]
             remainder = sentence[match.end():]
             has_count = bool(re.search(r"\d", head))
-            has_enrollment = bool(re.search(r"\b(?:enrolled|included|assigned|treated|studied|analy[sz]ed|received|divided)\b|\b(?:were|was)\s+randomi[sz]ed\b|\bwho\s+will\s+be\s+assigned\b", remainder, re.I))
+            has_enrollment = bool(re.search(r"\b(?:enrolled|included|participated|assigned|treated|studied|analy[sz]ed|received|divided)\b|\b(?:were|was)\s+randomi[sz]ed\b|\bwho\s+will\s+be\s+assigned\b", remainder, re.I))
             has_detail = bool(re.match(r"\s+(?:aged\b|with\b|who\b|enrolled\s+in\b)", remainder, re.I))
             unsafe_detail = bool(re.search(r"\b(?:toxicity|adverse|outcome|improved|response)\b|\bp\s*=|\d+\.\d+", remainder, re.I))
             has_study_context = bool(re.search(r"\b(?:study|trial|randomi[sz]ed|compared|comparison)\b", sentence[:match.start()], re.I))
@@ -138,7 +140,7 @@ def _extend_population_description(head: str, remainder: str) -> str:
     enrolled_in = re.match(r"\s+enrolled\s+in\s+(?P<value>[^.;,]*?)(?=\s+(?:were|was)\b|[.;,]|$)", tail, re.I)
     if enrolled_in:
         return f"{description} {enrolled_in.group(0).strip()}"
-    action = re.match(r"\s+(?:(?:were|was)\s+)?(?P<action>enrolled|included|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received|divided)\b", tail, re.I)
+    action = re.match(r"\s+(?:(?:were|was)\s+)?(?P<action>enrolled|included|participated|randomi[sz]ed|assigned|treated|studied|analy[sz]ed|received|divided)\b", tail, re.I)
     return f"{description} {action.group(0).strip()}" if action else description
 
 def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...]:
@@ -156,7 +158,7 @@ def extract_interventions(article: Article) -> tuple[InterventionExtraction, ...
                     regimen = _DOSE_REGIMEN.match(linked.group("regimen"))
                     if regimen:
                         span = f"{name} {regimen.group(0).strip()}"
-                        _append_intervention(found, seen, article, section, name, span, regimen.group("dose"), regimen.group("unit"), None, regimen.group("frequency"), None)
+                        _append_intervention(found, seen, article, section, name, span, regimen.group("dose"), regimen.group("unit"), None, regimen.group("frequency"), None, provenance_span=match.group(0).strip())
             for match in _THERAPY_REGIMEN_PAIR.finditer(sentence):
                 name = match.group("name")
                 if not _supported_intervention_name(name):
@@ -174,12 +176,12 @@ def _supported_intervention_name(name: str) -> bool:
     return bool(re.fullmatch(r"[A-Za-z][A-Za-z-]{2,30}", name or "")) and name.casefold() not in _CONTROL_INTERVENTION_WORDS
 
 
-def _append_intervention(found, seen, article, section, name, span, dose, unit, route, frequency, formulation):
+def _append_intervention(found, seen, article, section, name, span, dose, unit, route, frequency, formulation, provenance_span=None):
     key = (name.casefold(), dose, unit.casefold() if unit else None, route, frequency, formulation)
     if key in seen:
         return
     seen.add(key)
-    found.append(InterventionExtraction(name, span, dose, unit, route, frequency, _duration_from_sentence(span), formulation, None, (_prov(article,"intervention",section,span,"INTERVENTION_DOSE"),), "reported"))
+    found.append(InterventionExtraction(name, span, dose, unit, route, frequency, _duration_from_sentence(span), formulation, None, (_prov(article,"intervention",section,provenance_span or span,"INTERVENTION_DOSE"),), "reported"))
 
 def extract_comparator(article: Article) -> ComparatorExtraction:
     for wanted in ("methods", "patients", "participants", "results", "findings", "abstract"):
@@ -206,6 +208,11 @@ def extract_outcomes(article: Article) -> tuple[OutcomeExtraction, ...]:
                 continue
             name = _safe_outcome_name(sentence[:effect.start()])
             if not name:
+                leading = re.match(r"\s*(?:for|regarding)\s+(?P<name>[A-Za-z][A-Za-z -]{1,60}?)(?:,|\s+there\b)", sentence, re.I)
+                post_effect = re.search(r"\bfor\s+(?:the\s+)?(?:treatment|prevention)\s+of\s+(?P<name>[A-Za-z][A-Za-z -]{1,60}?)(?=\s+(?:among|in)\b|[.;]|$)", sentence[effect.end():], re.I)
+                candidate = (leading or post_effect)
+                name = candidate.group("name").strip() if candidate else None
+            if not name:
                 continue
             span = sentence.strip()
             label = re.search(r"\b(?:OR|RR|HR)\b|(?i:\b(?:odds|risk|hazard) ratio\b)", effect.group(0))
@@ -225,6 +232,10 @@ def _safe_outcome_name(value: str) -> str | None:
     lexical = re.findall(r"[A-Za-z][A-Za-z-]*", cleaned)
     if len(lexical) < 2:
         return None
+    if cleaned.count("(") != cleaned.count(")") or cleaned.count("[") != cleaned.count("]"):
+        return None
+    if re.search(r"\b(?:score|ratio|rate|risk)\s+of$", cleaned, re.I):
+        return None
     return cleaned
 
 def extract_safety(article: Article) -> tuple[SafetyExtraction, ...]:
@@ -235,6 +246,8 @@ def extract_safety(article: Article) -> tuple[SafetyExtraction, ...]:
     for section, section_text in _content_parts(article):
         for sentence in _sentences(section_text):
             if not re.search(r"\b(?:adverse events?|side effects?|toxicit(?:y|ies)|nausea|emesis)\b", sentence, re.I):
+                continue
+            if re.search(r"\b(?:secondary outcomes? included|were (?:collected|assessed)|data were (?:also )?collected|review assessed|conducted a systematic review|search(?:ed| strategy)?|eligib(?:le|ility)|database|methods?|study compared (?:adverse event|ae) profiles?|have been linked to adverse events?|comparison of adverse events?)\b", sentence, re.I):
                 continue
             value = sentence.strip()
             out.append(SafetyExtraction(value, signal_source_type="observed_event", provenance=(_prov(article,"safety",section,value,"ADVERSE_EVENT"),)))
