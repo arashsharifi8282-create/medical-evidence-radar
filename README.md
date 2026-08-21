@@ -1,360 +1,193 @@
 # Medical Evidence Radar
 
-Phase A transparently ranks PubMed evidence, Phase B1 adds explainable concept
-normalization, Phase B2 deterministically filters a larger recent candidate
-pool for direct clinical relevance, and Phase B3 adds explainable study-design
-and evidence-strength triage before final ranking.
+**Current release: Phase B4.2**
 
-## Scope
+Medical Evidence Radar is a deterministic, source-linked research-support tool
+for retrieving, normalizing, assessing, ranking, and presenting recent PubMed
+evidence. It is not clinical decision support or medical advice. Relevance,
+study assessment, extraction, ranking, and report placement remain separate,
+auditable decisions.
 
-- **Source:** PubMed only (EUtils API)
-- **Topic:** any free-text PubMed topic (the default is `GLP-1-based therapies`)
-- **Goal:** fetch 50 recent candidates by default, assess every candidate, and show at most 10 clinically relevant articles by default
-- **Topic expansion:** discover recurring MeSH headings and author keywords; accepted and rejected terms are stored for the topic without changing the original retrieval query
-- **Persistence:** optional local JSON snapshot + Markdown report + standalone HTML report + topic-profile JSON (no database, no hosting)
-- **Concept normalization:** retain PubMed MeSH identifiers and normalize only accepted discovered terms against RxNorm, preserving unresolved terms
-- **Safe relationship:** Phase B1 emits only `ARTICLE_MENTIONS_CONCEPT`; it never infers treatment, causality, efficacy, safety, or clinical associations
+The latest validated automated suite result is **213 passed**.
 
-Out of scope for this slice: UMLS, SNOMED CT, Mondo, LLMs, knowledge graphs,
-clinical inference, FastAPI, databases, email, Docker, frontend, web app, and deployment.
+## Capabilities through Phase B4.2
 
-## Setup
+- **Phase B1 — concept provenance:** retains PubMed MeSH identifiers, resolves
+  accepted discovered terms through exact-first RxNorm lookup, preserves
+  unresolved terms, and emits only `ARTICLE_MENTIONS_CONCEPT`. It does not infer
+  treatment, efficacy, safety, causality, or association relationships.
+- **Phase B2 — clinical relevance:** builds an explicit intervention/condition
+  target and classifies every candidate as `direct`, `class_level`,
+  `contextual`, or `irrelevant` using field-aware source signals. Approved
+  class-level evidence requires a structural `has_member`, `isa`, or `part_of`
+  relationship from ATC or MEDRT.
+- **Phase B2.2 — intent and focus:** adds query-intent, article-focus,
+  condition-coherence, population-scope, content-role, and needs-review rules.
+  Co-occurrence alone is not enough for direct relevance. Frozen reviewer data
+  is retained for regression/replay, not treated as official gold-standard
+  adjudication.
+- **Phase B3 — study assessment:** separates relevance from study design and
+  abstract-based evidence strength. It records design family, result status,
+  population scope, sample size, comparator, follow-up, limitations, supporting
+  spans, named rules, and conservative triage tiers.
+- **Phase B4 — clinical extraction and policy:** extracts source-supported
+  population, intervention/regimen, comparator, duration/follow-up, outcomes,
+  effects, and safety fields. The versioned report policy routes evidence into
+  explicit report sections while preserving the complete JSON audit.
+- **Phase B4.1 — real-record presentation validation:** replays 20 normalized
+  Acyclovir and Losartan PubMed records and verifies consistent clinical cards
+  and centralized report placement across JSON, Markdown, and HTML.
+- **Phase B4.2 — role-aware multi-topic validation:** distinguishes a requested
+  intervention used as the primary intervention from background,
+  pharmacokinetic-reference, rescue/concomitant, and other non-primary roles.
+  A deterministic 24-record Acyclovir/Losartan evaluator validates development
+  and holdout splits, conservative extraction, provenance, ranking, placement,
+  and renderer integrity. An additional fixed 8-record replay covers bounded
+  defects found during final live validation.
 
-```bash
-pip install -r requirements.txt
+## Current pipeline
+
+1. **Retrieve** — send the original free-text topic to PubMed ESearch, sorted by
+   publication date, then EFetch normalized article metadata and abstracts.
+2. **Normalize and de-duplicate** — preserve PMID, DOI, URL, publication types,
+   dates, structured abstract sections, MeSH descriptors, and author keywords.
+3. **Assess relevance** — construct the clinical target and evaluate intent,
+   focus, intervention role, condition support, population scope, and explicit
+   field-level signals for every candidate.
+4. **Assess the study** — classify design and result status, then record
+   abstract-based evidence-strength signals and limitations without conflating
+   them with relevance.
+5. **Extract clinical fields** — conservatively extract only supported values,
+   each with status, source section/span, rule ID, and rule version; otherwise
+   abstain explicitly.
+6. **Rank** — apply named, reconstructable lexicographic ranking components.
+7. **Place** — use `config/report_policy.json` to route principal evidence,
+   safety signals, pharmacovigilance, background, emerging mechanisms, and
+   audit-only records without losing selected articles.
+8. **Report** — persist complete JSON audit data plus concise Markdown and
+   standalone HTML views. Topic profiles and concept artifacts are optional
+   local outputs.
+
+## Validation status
+
+Phase B4.2 has controlled multi-topic validation for:
+
+- **Acyclovir efficacy and safety in herpes zoster**
+- **Losartan efficacy and safety in hypertension**
+
+The checksummed benchmark contains 24 records: 12 development and 12 holdout,
+with both topics represented in each split. Its acceptance gates pass by split,
+by topic, and overall. Accepted extraction values have 1.0 precision in the
+current evaluator; malformed values, unsupported effect/safety outputs, and
+provenance failures are zero. Ranking reconstruction, placement uniqueness,
+selected-article retention, renderer agreement, protocol/result separation,
+and key-evidence relevance checks also report zero failures. Coverage is
+intentionally lower where abstracts do not safely report a field.
+
+Automated tests are offline and use controlled fixtures, fake transports, and
+temporary directories. Live CLI runs use PubMed and RxNorm network services.
+
+## Limitations and safety boundary
+
+- **Abstract/metadata only:** assessment and extraction do not inspect article
+  full text.
+- **Conservative abstention:** missing or ambiguous values remain
+  `not_reported`, `unclear`, `not_extractable`, or another explicit abstention;
+  lower extraction coverage is preferred to unsupported output.
+- **No LLM:** all current decisions are deterministic rules; no opaque model or
+  generated PubMed query is used.
+- **No full-text scraping:** the tool uses PubMed EUtils metadata and abstracts
+  only.
+- **No clinical inference beyond the text:** it does not infer diagnosis,
+  treatment recommendations, causality, regulatory approval, or unreported
+  clinical relationships.
+- The study tier is not GRADE, certainty-of-evidence grading, or formal
+  risk-of-bias assessment. Reports require source review before research use.
+- PubMed is the only literature source in the current release. Live RxNorm may
+  resolve an intervention while returning no approved structural RxClass parent;
+  the engine does not guess class-level evidence in that case.
+
+## Installation
+
+Python 3.10 or newer is recommended. On Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-## Usage
+## Run the tests
 
-Fetch and assess the 50 most recent candidates, then print up to 10 report articles:
+Canonical validation command:
 
-```bash
-python -m app.sources.pubmed.cli
+```powershell
+.\.venv\Scripts\python.exe -m pytest -ra -W default
 ```
 
-Fetch, rank, print, **and save** a JSON snapshot, a Markdown report, a standalone
-HTML report, and a topic profile locally:
+## Run the CLI
 
-```bash
-python -m app.sources.pubmed.cli --save
+Print the default topic's ranked results without writing artifacts:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.sources.pubmed.cli
 ```
 
-When `--save` is used, files are named from a filesystem-safe slug of the exact
-search query:
+Run the validated Losartan topic with an explicit target and save JSON,
+Markdown, HTML, topic-profile, and concept outputs:
 
-- `data/raw/pubmed/<query_slug>.json` — machine-readable snapshot
-- `reports/pubmed/<query_slug>.md` — human-readable report
-- `reports/pubmed/<query_slug>.html` — standalone HTML report
-- `data/topic_profiles/<topic_slug>.json` — incrementally merged discovered-term profile
-- `data/concepts/<topic_slug>.json` — latest per-topic normalized concepts and article links
-
-If a query-named file already exists, the new run gets a timestamp suffix (for
-example, `<query_slug>_YYYYMMDD_HHMMSS.json`) instead of overwriting it. Generated
-file paths, including the per-topic concept file, are printed to the terminal.
-
-Pass a specific topic with `--topic`; the exact free-text topic is sent to PubMed
-and is also used for the transparent relevance score:
-
-```bash
-python -m app.sources.pubmed.cli --topic "GLP-1 receptor agonists for obesity" --save
+```powershell
+.\.venv\Scripts\python.exe -m app.sources.pubmed.cli `
+  --topic "losartan efficacy and safety in hypertension" `
+  --intervention losartan `
+  --condition hypertension `
+  --candidate-limit 50 `
+  --report-limit 10 `
+  --save
 ```
 
-Candidate and visible report limits are independent:
+Equivalent Acyclovir example:
 
-```bash
-python -m app.sources.pubmed.cli --topic "losartan efficacy and safety in hypertension" \
-  --intervention losartan --condition hypertension \
-  --candidate-limit 50 --report-limit 10 --save
+```powershell
+.\.venv\Scripts\python.exe -m app.sources.pubmed.cli `
+  --topic "acyclovir efficacy and safety in herpes zoster" `
+  --intervention acyclovir `
+  --condition "herpes zoster" `
+  --candidate-limit 50 `
+  --report-limit 10 `
+  --save
 ```
 
-`--intervention` and `--condition` are optional for backward compatibility. Use
-them when the free-text topic does not follow a clear `<intervention> for/in
-<condition>` form. PubMed retrieval continues to use the original topic verbatim
-with `sort=pub_date`; no LLM or generated query is used.
+With `--save`, runtime artifacts are written under `data/raw/pubmed/`,
+`data/topic_profiles/`, `data/concepts/`, and `reports/pubmed/`. They are local
+audit outputs and must not be committed by default. The HTML report is
+self-contained and uses no JavaScript, CDN, server, or frontend framework.
 
-To open the HTML report, simply double-click the file or open it in any browser:
+## Key architecture
 
-```bash
-start reports/pubmed/<query_slug>.html
+```text
+app/sources/pubmed/       PubMed client and CLI orchestration
+app/sources/rxnorm/       RxNorm lookup and approved RxClass provenance
+app/models/               Article, relevance, study, clinical, and audit models
+app/services/normalizer.py
+app/services/relevance.py
+app/services/study_design.py
+app/services/clinical_extraction.py
+app/services/report_policy.py
+app/services/persistence.py
+config/report_policy.json Versioned deterministic placement policy
+tests/                    Offline unit, replay, benchmark, and integrity coverage
 ```
 
-The HTML report is fully self-contained: it uses inline CSS only, with no
-external CDN, JavaScript, web server, or frontend framework. All article content
-is HTML-escaped for safe display.
+## Phase documentation
 
-### JSON snapshot structure
+- [Phase B4 policy and extraction](docs/PHASE_B4.md)
+- [Phase B4.1 real extraction validation and presentation](docs/PHASE_B4_1.md)
+- [Phase B4.2 multi-topic validation release](docs/PHASE_B4_2.md)
 
-```json
-{
-  "schema_version": "b2",
-  "topic": "losartan efficacy and safety in hypertension",
-  "query": "GLP-1-based therapies",
-  "fetched_at": "2026-08-10T09:30:00",
-  "search_quality": {
-    "total_pubmed_result_count": 127,
-    "fetched_candidate_count": 50,
-    "included_count": 10,
-    "excluded_count": 40,
-    "direct_count": 6,
-    "class_level_count": 3,
-    "contextual_count": 12,
-    "irrelevant_count": 29,
-    "candidate_limit": 50,
-    "report_limit": 10
-  },
-  "articles": [
-    {
-      "pmid": "38522001",
-      "title": "...",
-      "abstract": "...",
-      "authors": ["Smith JA", "Chen ML"],
-      "journal": "Diabetes care",
-      "publication_date": "2024-06-01",
-      "publication_date_raw": "2024 Jun",
-      "publication_types": ["Journal Article", "Systematic Review"],
-      "doi": "10.2337/dc24-0123",
-      "pubmed_url": "https://pubmed.ncbi.nlm.nih.gov/38522001/",
-      "source": "pubmed",
-      "clinical_relevance": {
-        "relevance_class": "direct",
-        "relevance_score": 100,
-        "matched_intervention_signals": [{"source_field": "title", "weight": 30}],
-        "matched_condition_signals": [{"source_field": "mesh_major", "weight": 30}],
-        "decision": "included_direct",
-        "reason": "Included as direct evidence: ...",
-        "assessed_at": "2026-08-11T09:00:00"
-      }
-    }
-  ],
-  "normalized_concepts": [
-    {
-      "concept_id": "D000093742",
-      "vocabulary": "mesh",
-      "preferred_label": "Glucagon-Like Peptide-1 Receptor Agonists",
-      "original_term": "Glucagon-Like Peptide-1 Receptor Agonists",
-      "concept_type": "mesh_concept",
-      "match_method": "source_metadata",
-      "confidence": 1.0,
-      "supporting_pmids": ["38522001"],
-      "source_fields": ["mesh"]
-    }
-  ],
-  "article_concept_links": [
-    {
-      "relationship": "ARTICLE_MENTIONS_CONCEPT",
-      "pmid": "38522001",
-      "concept_id": "D000093742",
-      "source_field": "mesh",
-      "match_method": "source_metadata",
-      "confidence": 1.0,
-      "evidence_level": "systematic_review"
-    }
-  ]
-}
-```
+## Service limits
 
-Every fetched candidate remains in JSON, including candidates excluded as
-irrelevant or by the report limit. Each retains its source-field signals,
-decision, human-readable reason, and assessment timestamp. Articles also retain
-`mesh_descriptors` with descriptor text, MeSH UI, `major_topic`, and
-`supporting_pmid` directly from EFetch XML.
-
-### Markdown report structure
-
-Each report includes:
-
-- Report title
-- Fetch timestamp
-- Article title
-- Publication date
-- Publication types
-- DOI
-- Clickable PubMed URL
-- Abstract (when available)
-- A `Normalized medical concepts` section showing identifier, vocabulary,
-  preferred name, original term, confidence, supporting PMIDs, and match method
-
-### HTML report structure
-
-The standalone HTML report is generated directly from normalized `Article`
-data (not by converting Markdown). It includes:
-
-- A header with the topic, fetch timestamp, and article count
-- One source card per article showing:
-  - Title
-  - Publication date as listed by PubMed
-  - Publication types
-  - DOI
-  - Clickable PubMed link
-  - Abstract (when available)
-- Inline CSS only — no external CDN, JavaScript, or frameworks
-- All article content safely escaped with `html.escape`
-
-### Evidence ranking and topic expansion
-
-Phase A uses deterministic, explainable rules—there is no LLM or opaque model:
-
-- Evidence levels are classified from PubMed publication types: guideline, systematic review/meta-analysis, randomized controlled trial, observational study, narrative review/expert opinion, or other.
-- Each article receives evidence, lexical relevance, and overall scores, plus reasons and limitations.
-- Reports are divided into `Key evidence`, `Important updates`, and `Exploratory evidence`; future journal-issue dates are kept out of the key-evidence section.
-- MeSH headings and author keywords occurring in at least two fetched articles are scored using document frequency, evidence quality, recency, and topic overlap. Terms are accepted or rejected transparently and merged into `data/topic_profiles` across runs.
-
-### Phase B2 clinical relevance
-
-- Every unique candidate is classified as `direct`, `class_level`, `contextual`,
-  or `irrelevant` before Phase-A evidence ranking.
-- A direct match requires both intervention and condition support. Field weights
-  are transparent: title and major MeSH `30`, ordinary MeSH `20`, author keyword
-  `18`, and abstract `10`, capped at 50 points per target side.
-- Class-level evidence requires an official RxClass ATC or MED-RT **structural
-  parent-membership** relationship for an RxNorm-confirmed intervention.
-  Indication (`may_treat`), mechanism, physiologic-effect, and ingredient links
-  are not treated as parent drug classes. Without a confirmed parent
-  relationship, the article remains contextual rather than being guessed as
-  class-level.
-- Final ordering is relevance class, B2 score, existing Phase-A section/score,
-  publication date, and PMID. Direct evidence therefore precedes class-level and
-  contextual evidence.
-- Only direct articles appear under `Key evidence`; class-level evidence has its
-  own section, contextual evidence is background (collapsed in HTML), and
-  irrelevant articles do not appear in default Markdown/HTML.
-- The compact search-quality summary reports PubMed total count when available,
-  candidate/inclusion/exclusion counts, class counts, original query, and limits.
-
-### Phase B3 evidence-strength triage
-
-- B3 keeps relevance (`direct`, `class_level`, `contextual`, `irrelevant`) separate
-  from study design, population scope, and evidence strength.
-- `study_assessment` is a typed, source-linked audit object with design subtype,
-  triage tier, three-state method signals, sample size, comparator, follow-up,
-  limitation codes, supporting spans, named rules, and confidence.
-- Tiers are `higher_strength`, `moderate_strength`, `limited_strength`,
-  `signal_only`, `preclinical`, and `not_assessable`. They are conservative
-  abstract/metadata-based triage only, not GRADE, certainty of evidence, or a
-  formal risk-of-bias assessment.
-- Missing values remain `unknown`, `unclear`, or `not_reported`; numbers are not
-  treated as sample sizes unless the abstract connects them to a study population.
-- JSON snapshots retain the full B3 audit and named lexicographic ranking
-  components. Markdown and HTML show a compact study summary and the same scope
-  limitation; technical signals remain in JSON and the HTML audit disclosure.
-
-### Phase B1 concept normalization
-
-- PubMed MeSH descriptors are accepted only from EFetch source metadata and use
-  the supplied MeSH UI with confidence `1.0` and match method `source_metadata`.
-- Only Phase-A **accepted** discovered terms are sent to the public RxNorm API.
-- RxNorm lookup uses exact matching first, then normalized matching. A term is
-  classified as `drug` only when RxNorm confirms an RXCUI.
-- Distinct official RXCUIs remain distinct (for example, branded and clinical
-  drug concepts are not collapsed into an ingredient).
-- Failed or empty RxNorm lookups produce an `unresolved` concept instead of
-  deleting or guessing the term. Transport failures add a clear warning while
-  PubMed reports and MeSH concepts are still saved.
-- RxNorm responses, including empty responses, are cached by normalized term in
-  `data/cache/rxnorm/`; no API key is used or required.
-- The only relationship is `ARTICLE_MENTIONS_CONCEPT`. `TREATS`, `CAUSES`,
-  `IMPROVES`, `REDUCES_RISK`, and `ASSOCIATED_WITH` are never produced.
-
-Programmatic use:
-
-```python
-from app.sources.pubmed.cli import fetch_top_recent, save_results
-
-from app.services.evidence import rank_articles
-from datetime import datetime
-
-articles = fetch_top_recent(query="GLP-1-based therapies", retmax=10)
-ranked = rank_articles(articles, datetime.now(), topic="GLP-1-based therapies")
-json_path, md_path, html_path, profile_path = save_results(
-    ranked,
-    topic="GLP-1-based therapies",
-    query="GLP-1-based therapies",
-)
-print(f"Saved: {json_path}, {md_path}, {html_path}, {profile_path}")
-```
-
-## Architecture
-
-```
-app/
-  models/article.py          # Normalized Article dataclass
-  services/normalizer.py     # EFetch XML -> Article (pure, no I/O)
-  models/assessment.py        # EvidenceAssessment and RankedArticle dataclasses
-  models/topic_profile.py     # CandidateTerm and TopicProfile dataclasses
-  models/concept.py           # NormalizedConcept and safe article-link models
-  models/retrieval.py         # PubMed count/candidate retrieval metadata
-  models/relevance.py         # B2 targets, signals, decisions, and run summary
-  models/study.py             # Typed B3 study-design and triage audit models
-  services/evidence.py        # Rule-based evidence classification and ranking
-  services/study_design.py    # Conservative B3 design, tier, and limitation rules
-  services/topic_expansion.py # MeSH/keyword discovery and profile persistence
-  services/concept_normalization.py # Source-backed MeSH/RxNorm normalization
-  services/relevance.py       # Field-weighted clinical filtering before Phase A
-  services/persistence.py    # JSON snapshot + Markdown + HTML report writers
-  sources/pubmed/client.py   # ESearch / ESummary / EFetch HTTP client
-  sources/pubmed/cli.py      # Orchestrator: ESearch -> EFetch -> normalize -> optional save
-  sources/rxnorm/client.py    # Public RxNorm exact/normalized lookup + local cache
-tests/
-  fixtures/                  # Offline captured responses
-  test_normalizer.py         # XML -> Article mapping tests
-  test_client.py             # Client tests with fake transport
-  test_cli.py                # End-to-end slice test (offline)
-  test_evidence.py            # Evidence classification, scoring, and triage
-  test_study_design.py        # B3 taxonomy, extraction, tiers, and ranking tests
-  test_topic_expansion.py     # Candidate-term discovery and scoring
-  test_topic_profile_storage.py # Topic profile round-trip and merging
-  test_persistence.py        # JSON/Markdown/HTML persistence tests (tmp_path, offline)
-  test_rxnorm_client.py       # Fake-transport RxNorm matching and cache tests
-  test_concept_normalization.py # MeSH/RxNorm normalization and edge safety tests
-```
-
-## Retrieval path
-
-1. **ESearch** — find PMIDs for the query, sorted by publication date (newest first).
-2. **EFetch** — fetch full records (title, abstract, authors, DOI, dates, publication types) as XML.
-3. **Normalize** — parse XML with `xml.etree.ElementTree` into `Article` records.
-4. **Assess and rank** — apply deterministic relevance, study-design, evidence-tier, and recency-aware triage rules.
-5. **Expand the topic** — score recurring MeSH headings and author keywords without modifying the original query.
-6. **Normalize concepts** — retain source MeSH UIs and check accepted terms with
-   exact-first RxNorm lookup; preserve unconfirmed terms as unresolved.
-7. **Persist (optional)** — with `--save`, write a JSON snapshot, Markdown and
-   HTML reports, the merged topic profile, and a per-topic concept file.
-
-`ESummary` is available on the client but is **not** used in the primary orchestration path.
-
-## Date handling
-
-- Raw PubMed date text is always preserved in `publication_date_raw`.
-- `publication_date` is set only when a precise ISO date can be determined:
-  - Year + Month + Day → `date(year, month, day)`
-  - Year + Month → `date(year, month, 1)`
-- Year-only, season-only, or ambiguous dates (e.g. `2024 Mar-Apr`) → `publication_date = None`. No day or month is ever invented.
-
-## Testing
-
-```bash
-pytest
-```
-
-All automated tests run offline using captured PubMed/RxNorm fixtures, fake HTTP
-transports, and `tmp_path`; no automated test makes a live network call.
-
-## Phase B1 live smoke test
-
-To verify real-world behavior against PubMed (not part of the automated suite):
-
-```bash
-python -m app.sources.pubmed.cli --topic "losartan efficacy and safety in hypertension" --save
-```
-
-## Rate limits
-
-NCBI EUtils recommends no more than 3 requests per second. The PubMed client
-sleeps 0.34s between outbound calls by default. RxNorm uses its public API and
-local response caching to avoid repeated requests for the same term.
-
-## Future phases
-
-Clinical relationship inference, graph analysis, LLM-assisted synthesis,
-database storage, web application, email delivery, Docker, and deployment are
-intentionally not part of Phase B1.
+The PubMed client defaults to a 0.34-second delay between outbound requests to
+respect the NCBI EUtils guideline of no more than three requests per second
+without an API key. RxNorm responses are cached locally to avoid repeated
+lookups.
