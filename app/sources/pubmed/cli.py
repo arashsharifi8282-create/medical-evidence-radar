@@ -237,6 +237,7 @@ def save_results(
         profile=profile,
         concepts=concepts,
         search_quality=search_quality,
+        candidates=candidates,
     )
     md_path = save_markdown_report(markdown, output_dir=md_dir, fetched_at=fetched_at, query=query)
 
@@ -247,6 +248,7 @@ def save_results(
         profile=profile,
         concepts=concepts,
         search_quality=search_quality,
+        candidates=candidates,
     )
     html_path = save_html_report(html_report, output_dir=html_dir, fetched_at=fetched_at, query=query)
 
@@ -358,6 +360,9 @@ def main(argv: list[str] | None = None) -> None:
                 f"({relevance.relevance_score}/100)"
             )
             emit(f"Why: {relevance.reason}")
+        integrity = r.publication_integrity
+        if integrity and integrity.status != "no_signal":
+            emit(f"Publication integrity: {integrity.status} — {integrity.reason}")
         emit(f"Scores: evidence {a.evidence_score}/100, relevance {a.relevance_score}/100, overall {a.overall_score}/100")
         emit(f"Section: {a.section}")
         abstract_preview = article.abstract[:200] if article.abstract else "Abstract not available in PubMed"

@@ -10,13 +10,44 @@ import calendar
 import xml.etree.ElementTree as ET
 from datetime import date
 
-from app.models.article import AbstractSection, Article, MeshDescriptor
+from app.models.article import (
+    AbstractSection,
+    Article,
+    MeshDescriptor,
+    PublicationIntegrityRelation,
+)
 
 # Month name -> number, used to resolve PubMed's abbreviated month names.
 _MONTHS = {name.lower(): num for num, name in enumerate(calendar.month_name) if name}
 _MONTHS.update({abbr.lower(): num for num, abbr in enumerate(calendar.month_abbr) if abbr})
 
 _PUBMED_BASE_URL = "https://pubmed.ncbi.nlm.nih.gov"
+
+_INTEGRITY_RELATION_TYPES = {
+    "AssociatedDataset": "associated_dataset",
+    "AssociatedPublication": "associated_publication",
+    "CommentIn": "comment_in",
+    "CommentOn": "comment_on",
+    "CorrectedandRepublishedIn": "corrected_and_republished_in",
+    "CorrectedandRepublishedFrom": "corrected_and_republished_from",
+    "RetractionIn": "retraction_in",
+    "RetractionOf": "retraction_of",
+    "ExpressionOfConcernIn": "expression_of_concern_in",
+    "ExpressionOfConcernFor": "expression_of_concern_for",
+    "ErratumIn": "erratum_in",
+    "ErratumFor": "erratum_for",
+    "UpdateIn": "update_in",
+    "UpdateOf": "update_of",
+    "RepublishedIn": "republished_in",
+    "RepublishedFrom": "republished_from",
+    "RetractedandRepublishedIn": "retracted_and_republished_in",
+    "RetractedandRepublishedFrom": "retracted_and_republished_from",
+    "SummaryForPatientsIn": "summary_for_patients_in",
+    "OriginalReportIn": "original_report_in",
+    "ReprintIn": "reprint_in",
+    "ReprintOf": "reprint_of",
+    "Cites": "cites",
+}
 
 
 def parse_pubmed_articles(xml_text: str) -> list[ET.Element]:
@@ -44,6 +75,7 @@ def normalize_article(article_elem: ET.Element) -> Article:
     mesh_descriptors = _mesh_descriptors(article_elem, pmid)
     mesh_headings = tuple(descriptor.text for descriptor in mesh_descriptors)
     keywords = _keywords(article_elem)
+    integrity_relations = _integrity_relations(article_elem)
 
     return Article(
         pmid=pmid,
@@ -62,6 +94,7 @@ def normalize_article(article_elem: ET.Element) -> Article:
         keywords=keywords,
         mesh_descriptors=mesh_descriptors,
         abstract_sections=abstract_sections,
+        integrity_relations=integrity_relations,
     )
 
 
@@ -110,6 +143,34 @@ def _doi(article_elem: ET.Element) -> str:
         if article_id.get("IdType") == "doi" and article_id.text:
             return article_id.text.strip()
     return ""
+
+
+def _integrity_relations(article_elem: ET.Element) -> tuple[PublicationIntegrityRelation, ...]:
+    """Retain and deterministically normalize PubMed CommentsCorrections."""
+    unique: dict[tuple[str, str, str | None, str | None, str], PublicationIntegrityRelation] = {}
+    for item in article_elem.findall(".//CommentsCorrectionsList/CommentsCorrections"):
+        raw_ref_type = (item.get("RefType") or "").strip()
+        normalized_relation = _INTEGRITY_RELATION_TYPES.get(raw_ref_type, "unknown")
+        related_pmid = _text(item, "PMID")
+        related_pmid = related_pmid.strip() if related_pmid and related_pmid.strip() else None
+        related_doi = None
+        for article_id in item.findall(".//ArticleId"):
+            if (article_id.get("IdType") or "").casefold() == "doi" and article_id.text and article_id.text.strip():
+                related_doi = article_id.text.strip()
+                break
+        source_text = (_text(item, "RefSource") or "").strip()
+        key = (normalized_relation, raw_ref_type, related_pmid, related_doi, source_text)
+        unique.setdefault(
+            key,
+            PublicationIntegrityRelation(
+                normalized_relation=normalized_relation,
+                raw_ref_type=raw_ref_type,
+                related_pmid=related_pmid,
+                related_doi=related_doi,
+                source_text=source_text,
+            ),
+        )
+    return tuple(unique[key] for key in sorted(unique, key=lambda value: tuple(part or "" for part in value)))
 
 
 def _mesh_descriptors(article_elem: ET.Element, pmid: str) -> tuple[MeshDescriptor, ...]:

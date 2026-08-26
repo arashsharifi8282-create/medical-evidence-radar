@@ -9,6 +9,7 @@ from datetime import date, datetime
 from app.models.article import Article
 from app.models.assessment import RankedArticle
 from app.models.relevance import AssessedCandidate, ClinicalRelevanceAssessment, ClinicalTarget, ConfirmedDrugClass, RelevanceSignal, SearchQualitySummary
+from app.services.integrity import assess_publication_integrity
 from app.models.retrieval import RetrievalBatch
 from app.services.evidence import rank_articles
 
@@ -126,19 +127,46 @@ def assess_candidate(article: Article, target: ClinicalTarget, assessed_at: date
 
 
 def assess_candidates(articles: tuple[Article, ...], target: ClinicalTarget, assessed_at: datetime) -> list[AssessedCandidate]:
-    return [AssessedCandidate(a, assess_candidate(a, target, assessed_at)) for a in articles]
+    return [
+        AssessedCandidate(
+            a,
+            assess_candidate(a, target, assessed_at),
+            assess_publication_integrity(a),
+        )
+        for a in articles
+    ]
 
 
 def rank_and_select_candidates(candidates: list[AssessedCandidate], fetched_at: datetime, topic: str, report_limit: int) -> tuple[list[RankedArticle], list[AssessedCandidate], list[RankedArticle]]:
-    eligible = [c for c in candidates if c.relevance.relevance_class != "irrelevant"]
+    candidates = [
+        c if c.integrity is not None else replace(c, integrity=assess_publication_integrity(c.article))
+        for c in candidates
+    ]
+    eligible = [
+        c for c in candidates
+        if c.relevance.relevance_class != "irrelevant" and c.integrity.report_eligible
+    ]
     by_pmid = {c.article.pmid: c.relevance for c in eligible}
-    ranked = [RankedArticle(x.article, x.assessment, by_pmid[x.article.pmid]) for x in rank_articles([c.article for c in eligible], fetched_at, topic)]
+    integrity_by_pmid = {c.article.pmid: c.integrity for c in eligible}
+    ranked = [
+        RankedArticle(
+            x.article,
+            x.assessment,
+            by_pmid[x.article.pmid],
+            integrity_by_pmid[x.article.pmid],
+        )
+        for x in rank_articles([c.article for c in eligible], fetched_at, topic)
+    ]
     ranked.sort(key=_rank_key); selected = ranked[:report_limit]; selected_pmids = {x.article.pmid for x in selected}; audit = []
     for candidate in candidates:
         relevance = candidate.relevance
-        if relevance.relevance_class != "irrelevant" and candidate.article.pmid not in selected_pmids:
+        if (
+            relevance.relevance_class != "irrelevant"
+            and candidate.integrity.report_eligible
+            and candidate.article.pmid not in selected_pmids
+        ):
             relevance = replace(relevance, decision="excluded_report_limit", reason=f"Excluded from the visible report after ranking because report limit {report_limit} was reached. {relevance.reason}")
-        audit.append(AssessedCandidate(candidate.article, relevance))
+        audit.append(AssessedCandidate(candidate.article, relevance, candidate.integrity))
     return selected, audit, ranked
 
 
@@ -146,7 +174,8 @@ def build_search_quality_summary(batch: RetrievalBatch, candidates: list[Assesse
     counts = {k: sum(c.relevance.relevance_class == k for c in candidates) for k in _CLASS_ORDER}
     included = sum(c.relevance.decision.startswith("included_") for c in candidates)
     excluded_i = sum(c.relevance.decision == "excluded_irrelevant" for c in candidates); excluded_l = sum(c.relevance.decision == "excluded_report_limit" for c in candidates)
-    return SearchQualitySummary(batch.query, batch.total_count, batch.candidate_limit, report_limit, raw_candidate_count if raw_candidate_count is not None else len(batch.articles) + len(batch.duplicate_pmids), len(batch.articles), len(batch.duplicate_pmids), batch.duplicate_pmids, included, excluded_i + excluded_l, counts["direct"], counts["class_level"], counts["contextual"], counts["irrelevant"], excluded_i, excluded_l)
+    excluded_integrity = sum(c.integrity is not None and not c.integrity.report_eligible for c in candidates)
+    return SearchQualitySummary(batch.query, batch.total_count, batch.candidate_limit, report_limit, raw_candidate_count if raw_candidate_count is not None else len(batch.articles) + len(batch.duplicate_pmids), len(batch.articles), len(batch.duplicate_pmids), batch.duplicate_pmids, included, excluded_i + excluded_l, counts["direct"], counts["class_level"], counts["contextual"], counts["irrelevant"], excluded_i, excluded_l, excluded_integrity)
 
 
 def _signals(article: Article, role: str, labels: tuple[str, ...], ids: tuple[str, ...], vocab: str, mesh_uis: set[str] | None = None, relationship: str = "") -> list[RelevanceSignal]:

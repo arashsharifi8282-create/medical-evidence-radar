@@ -18,6 +18,7 @@ from pathlib import Path
 
 from app.models.article import Article
 from app.models.assessment import RankedArticle
+from app.models.integrity import PublicationIntegrityAssessment
 from app.models.concept import ArticleConceptLink, ConceptNormalizationResult, NormalizedConcept
 from app.models.relevance import (
     AssessedCandidate,
@@ -29,6 +30,7 @@ from app.models.relevance import (
 )
 from app.models.study import StudyAssessment
 from app.services.evidence import assess_article
+from app.services.integrity import assess_publication_integrity
 from app.services.clinical_extraction import extract_clinical
 from app.services.report_policy import load_policy, route_report_section
 from app.services.relevance import (
@@ -117,12 +119,92 @@ def _excluded_candidate_placement(decision: str, reason: str) -> dict:
     }
 
 
+def _integrity_exclusion_placement(assessment: PublicationIntegrityAssessment) -> dict:
+    return {
+        "section": "publication_integrity_warnings",
+        "visible": True,
+        "display_mode": "integrity_warning",
+        "reason": assessment.reason,
+        "policy_section": None,
+        "policy_reason": None,
+    }
+
+
 def _report_ranked(ranked: list[RankedArticle]) -> list[RankedArticle]:
     """Apply the active placement policy once for every renderer."""
     if not any(item.clinical_relevance for item in ranked):
         return list(ranked)
     placements = _effective_placements(ranked)
     return [item for item in ranked if placements[item.article.pmid].visible]
+
+
+def _integrity_warning_candidates(
+    candidates: tuple[AssessedCandidate, ...] | None,
+) -> list[tuple[AssessedCandidate, PublicationIntegrityAssessment]]:
+    """Return integrity-excluded candidates in stable retrieval order."""
+    warnings: list[tuple[AssessedCandidate, PublicationIntegrityAssessment]] = []
+    for candidate in candidates or ():
+        integrity = candidate.integrity or assess_publication_integrity(candidate.article)
+        if not integrity.report_eligible:
+            warnings.append((candidate, integrity))
+    return warnings
+
+
+def _integrity_warnings_html(candidates: tuple[AssessedCandidate, ...] | None) -> str:
+    """Render concise escaped warnings; the complete audit remains in JSON."""
+    warnings = _integrity_warning_candidates(candidates)
+    if not warnings:
+        return ""
+    e = html.escape
+    cards: list[str] = []
+    for candidate, integrity in warnings:
+        article = candidate.article
+        links: list[str] = []
+        if article.pubmed_url:
+            links.append(
+                f'<a class="meta-link" href="{e(article.pubmed_url)}" target="_blank" '
+                f'rel="noopener noreferrer">PMID {e(article.pmid)}</a>'
+            )
+        else:
+            links.append(f"PMID {e(article.pmid)}")
+        if article.doi:
+            links.append(
+                f'<a class="meta-link" href="https://doi.org/{e(article.doi)}" target="_blank" '
+                f'rel="noopener noreferrer">DOI {e(article.doi)}</a>'
+            )
+        relations = []
+        for relation in integrity.related_records:
+            values = [e(relation.source_text)] if relation.source_text else []
+            if relation.related_pmid:
+                pmid = e(relation.related_pmid)
+                values.append(
+                    f'<a class="meta-link" href="https://pubmed.ncbi.nlm.nih.gov/{pmid}/" '
+                    f'target="_blank" rel="noopener noreferrer">related PMID {pmid}</a>'
+                )
+            if relation.related_doi:
+                doi = e(relation.related_doi)
+                values.append(
+                    f'<a class="meta-link" href="https://doi.org/{doi}" target="_blank" '
+                    f'rel="noopener noreferrer">related DOI {doi}</a>'
+                )
+            if values:
+                relations.append(
+                    f'<li><strong>{e(relation.raw_ref_type or "unknown")}:</strong> '
+                    f'{"; ".join(values)}</li>'
+                )
+        relation_html = f'<ul>{"".join(relations)}</ul>' if relations else ""
+        cards.append(
+            f'<article class="integrity-warning" data-pmid="{e(article.pmid)}">'
+            f'<h3>{e(article.title)}</h3>'
+            f'<p><strong>{e(integrity.status.replace("_", " ").title())}</strong> — '
+            f'{e(integrity.reason)}</p><p>{" · ".join(links)}</p>{relation_html}</article>'
+        )
+    return (
+        '<section class="integrity-warnings" id="publication_integrity_warnings">'
+        '<h2>Publication integrity warnings</h2>'
+        '<p>These records are retained for audit and are not presented as ordinary clinical evidence.</p>'
+        f'{"".join(cards)}</section>'
+    )
 
 
 def _display_value(value, default: str = "Not reported") -> str:
@@ -183,6 +265,48 @@ def _article_to_dict(article: Article) -> dict:
             {"label": section.label, "text": section.text}
             for section in article.abstract_sections
         ],
+        "integrity_relations": [
+            {
+                "normalized_relation": relation.normalized_relation,
+                "raw_ref_type": relation.raw_ref_type,
+                "related_pmid": relation.related_pmid,
+                "related_doi": relation.related_doi,
+                "source_text": relation.source_text,
+                "source_field": relation.source_field,
+                "rule_id": relation.rule_id,
+                "rule_version": relation.rule_version,
+            }
+            for relation in article.integrity_relations
+        ],
+    }
+
+
+def _integrity_to_dict(assessment: PublicationIntegrityAssessment) -> dict:
+    return {
+        "status": assessment.status,
+        "record_role": assessment.record_role,
+        "needs_review": assessment.needs_review,
+        "report_eligible": assessment.report_eligible,
+        "reason_codes": list(assessment.reason_codes),
+        "reason": assessment.reason,
+        "supporting_signals": list(assessment.supporting_signals),
+        "related_records": [
+            {
+                "normalized_relation": relation.normalized_relation,
+                "raw_ref_type": relation.raw_ref_type,
+                "related_pmid": relation.related_pmid,
+                "related_doi": relation.related_doi,
+                "source_text": relation.source_text,
+                "source_field": relation.source_field,
+                "rule_id": relation.rule_id,
+                "rule_version": relation.rule_version,
+            }
+            for relation in assessment.related_records
+        ],
+        "rule_id": assessment.rule_id,
+        "rule_version": assessment.rule_version,
+        "source": assessment.source,
+        "final_decision": assessment.final_decision,
     }
 
 
@@ -267,6 +391,8 @@ def _ranked_to_dict(
     d["ranking_audit"] = _ranking_audit(r, final_evidence_rank)
     if r.clinical_relevance:
         d["clinical_relevance"] = _clinical_relevance_to_dict(r.clinical_relevance)
+    integrity = r.publication_integrity or assess_publication_integrity(r.article)
+    d["publication_integrity"] = _integrity_to_dict(integrity)
     d["structured_clinical_extraction"] = asdict(extract_clinical(r.article))
     d["report_placement"] = _placement_to_dict(placement)
     return d
@@ -385,6 +511,7 @@ def _quality_to_dict(summary: SearchQualitySummary) -> dict:
         "irrelevant_count": summary.irrelevant_count,
         "excluded_irrelevant_count": summary.excluded_irrelevant_count,
         "excluded_report_limit_count": summary.excluded_report_limit_count,
+        "excluded_integrity_count": summary.excluded_integrity_count,
         "duplicate_count": summary.duplicate_count,
         "duplicate_pmids": list(summary.duplicate_pmids),
         "original_query": summary.query,
@@ -535,8 +662,10 @@ def build_snapshot(
         serialized_articles = []
         for candidate in candidates:
             ranked_item = ranked_by_pmid.get(candidate.article.pmid)
+            integrity = candidate.integrity or assess_publication_integrity(candidate.article)
             payload = _article_to_dict(candidate.article)
             payload["clinical_relevance"] = _clinical_relevance_to_dict(candidate.relevance)
+            payload["publication_integrity"] = _integrity_to_dict(integrity)
             if ranked_item:
                 payload["assessment"] = _assessment_to_dict(ranked_item.assessment)
                 payload["final_evidence_rank"] = rank_by_pmid[candidate.article.pmid]
@@ -549,8 +678,12 @@ def build_snapshot(
                 payload["assessment"] = None
                 payload["final_evidence_rank"] = None
                 payload["ranking_audit"] = None
-                payload["report_placement"] = _excluded_candidate_placement(
-                    candidate.relevance.decision, candidate.relevance.reason,
+                payload["report_placement"] = (
+                    _integrity_exclusion_placement(integrity)
+                    if not integrity.report_eligible
+                    else _excluded_candidate_placement(
+                        candidate.relevance.decision, candidate.relevance.reason,
+                    )
                 )
             serialized_articles.append(payload)
     else:
@@ -571,9 +704,14 @@ def build_snapshot(
         item.article.pmid for item in ranked
         if placements[item.article.pmid].display_mode == "audit_only"
     ]
-    represented_article_pmids = [item.article.pmid for item in report_ranked]
+    integrity_warning_pmids = [
+        candidate.article.pmid
+        for candidate in (candidates or ())
+        if not (candidate.integrity or assess_publication_integrity(candidate.article)).report_eligible
+    ]
+    represented_article_pmids = [item.article.pmid for item in report_ranked] + integrity_warning_pmids
     snapshot = {
-        "schema_version": "b4" if candidates is not None else "legacy",
+        "schema_version": "b5" if candidates is not None else "legacy",
         "topic": topic,
         "query": query,
         "fetched_at": fetched_at.isoformat(),
@@ -582,6 +720,7 @@ def build_snapshot(
         "primary_article_pmids": primary_article_pmids,
         "collapsed_article_pmids": collapsed_article_pmids,
         "audit_only_article_pmids": audit_only_article_pmids,
+        "integrity_warning_pmids": integrity_warning_pmids,
         "represented_article_pmids": represented_article_pmids,
         "b2_selected_article_pmids": [item.article.pmid for item in ranked if item.clinical_relevance],
         "report_sections": {
@@ -592,6 +731,8 @@ def build_snapshot(
         "ranking_policy_version": RANKING_POLICY_VERSION,
         "active_policy": load_policy(),
     }
+    if integrity_warning_pmids:
+        snapshot["report_sections"]["publication_integrity_warnings"] = integrity_warning_pmids
     if clinical_target is not None:
         snapshot["clinical_target"] = _target_to_dict(clinical_target)
     if search_quality is not None:
@@ -693,6 +834,7 @@ def build_markdown_report(
     concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
     search_quality: SearchQualitySummary | None = None,
+    candidates: tuple[AssessedCandidate, ...] | None = None,
 ) -> str:
     """Build a human-readable Markdown report."""
     legacy_articles = ranked is None and articles is not None
@@ -733,11 +875,43 @@ def build_markdown_report(
                 f"- **Direct / class-level / contextual / irrelevant:** "
                 f"{search_quality.direct_count} / {search_quality.class_level_count} / "
                 f"{search_quality.contextual_count} / {search_quality.irrelevant_count}",
+                f"- **Publication-integrity exclusions:** {search_quality.excluded_integrity_count}",
                 "",
             ]
         )
     lines.append("---")
     lines.append("")
+
+    warning_candidates = _integrity_warning_candidates(candidates)
+    if warning_candidates:
+        lines.extend(["## Publication integrity warnings", ""])
+        for candidate, integrity in warning_candidates:
+            article = candidate.article
+            lines.extend([
+                f"### {article.title}",
+                "",
+                f"- **Publication integrity:** {integrity.status.replace('_', ' ')}",
+                f"- **Record role:** {integrity.record_role.replace('_', ' ')}",
+                f"- **Final decision:** `{integrity.final_decision}`",
+                f"- **Warning:** {integrity.reason}",
+                f"- **PMID:** [{article.pmid}]({article.pubmed_url})" if article.pubmed_url else f"- **PMID:** {article.pmid}",
+            ])
+            for relation in integrity.related_records:
+                relation_bits = [relation.source_text] if relation.source_text else []
+                if relation.related_pmid:
+                    relation_bits.append(
+                        f"[related PMID {relation.related_pmid}]"
+                        f"(https://pubmed.ncbi.nlm.nih.gov/{relation.related_pmid}/)"
+                    )
+                if relation.related_doi:
+                    relation_bits.append(
+                        f"[related DOI {relation.related_doi}]"
+                        f"(https://doi.org/{relation.related_doi})"
+                    )
+                if relation_bits:
+                    lines.append(f"- **Structured relation ({relation.raw_ref_type or 'unknown'}):** {'; '.join(relation_bits)}")
+            lines.append("")
+        lines.extend(["---", ""])
 
     concept_summary = _concept_summary_markdown(topic, profile, concepts)
     if concept_summary:
@@ -826,6 +1000,9 @@ def build_markdown_report(
                 a = r.assessment
                 lines.append(f"## {i}. {article.title}")
                 lines.append("")
+                integrity = r.publication_integrity or assess_publication_integrity(article)
+                if integrity.status != "no_signal":
+                    lines.append(f"- **Publication integrity:** {integrity.reason}")
                 lines.append(f"- **Evidence level:** {a.evidence_level_label}")
                 if a.study_assessment:
                     study = a.study_assessment
@@ -1015,6 +1192,7 @@ def build_html_report(
     concepts: ConceptNormalizationResult | None = None,
     articles: list[Article] | None = None,
     search_quality: SearchQualitySummary | None = None,
+    candidates: tuple[AssessedCandidate, ...] | None = None,
 ) -> str:
     """Build a polished, standalone HTML report directly from ranked data.
 
@@ -1085,6 +1263,7 @@ def build_html_report(
             esc_doi = e(article.doi)
             esc_url = e(article.pubmed_url)
             esc_abstract = e(article.abstract)
+            integrity = r.publication_integrity or assess_publication_integrity(article)
             esc_epub_date = (
                 e(article.electronic_publication_date.isoformat())
                 if article.electronic_publication_date
@@ -1092,6 +1271,11 @@ def build_html_report(
             )
 
             meta_items: list[str] = []
+            if integrity.status != "no_signal":
+                meta_items.append(
+                    f'<div class="integrity-banner"><span class="meta-label">Publication integrity:</span> '
+                    f'<span class="meta-value">{e(integrity.reason)}</span></div>'
+                )
             if r.clinical_relevance:
                 meta_items.append(
                     f'<div class="meta-item"><span class="meta-label">Clinical relevance:</span> '
@@ -1232,6 +1416,7 @@ def build_html_report(
 
             cards.append(
                 f"""<article class="card">
+  <span class="pmid-anchor" data-pmid="{e(article.pmid)}"></span>
   <h2 class="card-title"><span class="card-index">{i}.</span> {esc_title}</h2>
   <div class="card-meta">
     {chr(10).join(meta_items)}
@@ -1256,6 +1441,7 @@ def build_html_report(
             )
 
     cards_html = "\n".join(section_html_parts)
+    integrity_html = _integrity_warnings_html(candidates)
     concepts_html = _concept_summary_html(topic, profile, concepts)
     quality_html = ""
     if search_quality:
@@ -1353,6 +1539,13 @@ def build_html_report(
     .search-quality dt {{ font-weight: 600; color: #4a5568; }}
     .contextual-evidence > summary {{ cursor: pointer; color: #1a365d; font-weight: 700;
       font-size: 1.2rem; margin-bottom: 1rem; }}
+    .integrity-warnings {{ background: #fffaf0; border: 2px solid #c05621; border-radius: 10px;
+      padding: 1.25rem 1.5rem; margin-bottom: 2rem; }}
+    .integrity-warnings h2 {{ color: #9c4221; margin-bottom: .75rem; }}
+    .integrity-warning {{ border-top: 1px solid #ed8936; padding: .8rem 0; }}
+    .integrity-warning:first-of-type {{ border-top: 0; }}
+    .integrity-banner {{ background: #fffaf0; border-left: 4px solid #c05621;
+      padding: .65rem .8rem; margin-bottom: .5rem; }}
 
     .section-heading {{
       font-size: 1.4rem;
@@ -1609,6 +1802,8 @@ def build_html_report(
     </header>
 
     {quality_html}
+
+    {integrity_html}
 
     {concepts_html}
 

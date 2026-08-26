@@ -1,0 +1,12 @@
+{
+  "fixture_id": "b5_publication_integrity_v1",
+  "schema_version": "1.0",
+  "source_authority": "Synthetic PubMed EFetch-shaped structured metadata; controlled regression fixture, not an external gold standard.",
+  "adjudication_policy": "Only publication types and CommentsCorrections RefType metadata determine labels; free title and abstract text are ignored.",
+  "record_count": 9,
+  "record_pmids": ["99000001", "99000002", "99000003", "99000004", "99000005", "99000006", "99000007", "99000008", "99000009"],
+  "checksums": {
+    "records.xml": "54983c6ee2896c647d36b4b8b2971fcc6d465549d9ae7a45953994ef5d1d4e89",
+    "expected.json": "04cf28e862f58b4ba9ac446463322aa93b2be69b80e0dd762d493ff262a17507"
+  }
+}

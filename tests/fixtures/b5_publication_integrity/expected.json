@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "records": [
+    {"pmid": "99000001", "group": "retracted_original", "status": "retracted", "record_role": "primary_article", "report_eligible": false, "needs_review": false},
+    {"pmid": "99000002", "group": "retraction_notice", "status": "retracted", "record_role": "retraction_notice", "report_eligible": false, "needs_review": false},
+    {"pmid": "99000003", "group": "expression_of_concern_original", "status": "expression_of_concern", "record_role": "primary_article", "report_eligible": false, "needs_review": true},
+    {"pmid": "99000004", "group": "expression_of_concern_notice", "status": "expression_of_concern", "record_role": "expression_of_concern_notice", "report_eligible": false, "needs_review": true},
+    {"pmid": "99000005", "group": "corrected_original", "status": "corrected_or_updated", "record_role": "primary_article", "report_eligible": true, "needs_review": false},
+    {"pmid": "99000006", "group": "correction_notice", "status": "corrected_or_updated", "record_role": "correction_notice", "report_eligible": false, "needs_review": false},
+    {"pmid": "99000007", "group": "update_republished", "status": "corrected_or_updated", "record_role": "primary_article", "report_eligible": true, "needs_review": false},
+    {"pmid": "99000008", "group": "clean_ordinary", "status": "no_signal", "record_role": "primary_article", "report_eligible": true, "needs_review": false},
+    {"pmid": "99000009", "group": "unknown_conflicting", "status": "retracted", "record_role": "unknown", "report_eligible": false, "needs_review": true}
+  ]
+}

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 
 from app.models.article import Article
 from app.models.relevance import ClinicalRelevanceAssessment
+from app.models.integrity import PublicationIntegrityAssessment
 from app.models.study import StudyAssessment
 
 # Evidence level — a closed set of 6 categories.
@@ -42,3 +43,4 @@ class RankedArticle:
     article: Article
     assessment: EvidenceAssessment
     clinical_relevance: ClinicalRelevanceAssessment | None = None
+    publication_integrity: PublicationIntegrityAssessment | None = None

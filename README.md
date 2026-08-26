@@ -1,6 +1,6 @@
 # Medical Evidence Radar
 
-**Current release: Phase B4.2**
+**Current release: Phase B5**
 
 Medical Evidence Radar is a deterministic, source-linked research-support tool
 for retrieving, normalizing, assessing, ranking, and presenting recent PubMed
@@ -8,9 +8,9 @@ evidence. It is not clinical decision support or medical advice. Relevance,
 study assessment, extraction, ranking, and report placement remain separate,
 auditable decisions.
 
-The latest validated automated suite result is **213 passed**.
+The latest validated automated suite result is **225 passed**.
 
-## Capabilities through Phase B4.2
+## Capabilities through Phase B5
 
 - **Phase B1 — concept provenance:** retains PubMed MeSH identifiers, resolves
   accepted discovered terms through exact-first RxNorm lookup, preserves
@@ -44,6 +44,12 @@ The latest validated automated suite result is **213 passed**.
   and holdout splits, conservative extraction, provenance, ranking, placement,
   and renderer integrity. An additional fixed 8-record replay covers bounded
   defects found during final live validation.
+- **Phase B5 — publication integrity and retraction safety:** retains PubMed
+  `CommentsCorrections` relationships, assesses retractions, expressions of
+  concern, corrections, republications, and integrity notices independently
+  from B2 relevance, and prevents ineligible records from consuming visible
+  evidence slots. Full provenance remains in JSON while Markdown and HTML show
+  concise warnings.
 
 ## Current pipeline
 
@@ -51,20 +57,24 @@ The latest validated automated suite result is **213 passed**.
    publication date, then EFetch normalized article metadata and abstracts.
 2. **Normalize and de-duplicate** — preserve PMID, DOI, URL, publication types,
    dates, structured abstract sections, MeSH descriptors, and author keywords.
-3. **Assess relevance** — construct the clinical target and evaluate intent,
+3. **Assess publication integrity** — apply a versioned policy only to retained
+   structured PubMed publication types and `CommentsCorrections` metadata.
+   Retracted records and integrity notices remain auditable but cannot enter
+   ordinary evidence sections.
+4. **Assess relevance** — construct the clinical target and evaluate intent,
    focus, intervention role, condition support, population scope, and explicit
    field-level signals for every candidate.
-4. **Assess the study** — classify design and result status, then record
+5. **Assess the study** — classify design and result status, then record
    abstract-based evidence-strength signals and limitations without conflating
    them with relevance.
-5. **Extract clinical fields** — conservatively extract only supported values,
+6. **Extract clinical fields** — conservatively extract only supported values,
    each with status, source section/span, rule ID, and rule version; otherwise
    abstain explicitly.
-6. **Rank** — apply named, reconstructable lexicographic ranking components.
-7. **Place** — use `config/report_policy.json` to route principal evidence,
+7. **Rank** — apply named, reconstructable lexicographic ranking components.
+8. **Place** — use `config/report_policy.json` to route principal evidence,
    safety signals, pharmacovigilance, background, emerging mechanisms, and
    audit-only records without losing selected articles.
-8. **Report** — persist complete JSON audit data plus concise Markdown and
+9. **Report** — persist complete JSON audit data plus concise Markdown and
    standalone HTML views. Topic profiles and concept artifacts are optional
    local outputs.
 
@@ -87,10 +97,20 @@ intentionally lower where abstracts do not safely report a field.
 Automated tests are offline and use controlled fixtures, fake transports, and
 temporary directories. Live CLI runs use PubMed and RxNorm network services.
 
+Phase B5 adds a checksummed nine-record controlled fixture covering retracted
+articles, retraction notices, expression-of-concern articles/notices,
+corrections, republication, a clean record, and unknown/conflicting metadata.
+It is a regression fixture, not an external gold standard. Absence of a retained
+PubMed integrity signal is not proof that an article is valid or problem-free.
+
 ## Limitations and safety boundary
 
 - **Abstract/metadata only:** assessment and extraction do not inspect article
   full text.
+- **PubMed integrity metadata only:** B5 does not consult Crossref, Retraction
+  Watch, publishers, or full text. Missing PubMed metadata can therefore leave
+  a publication issue undetected; `no_signal` means only that no warning was
+  found in the retained metadata.
 - **Conservative abstention:** missing or ambiguous values remain
   `not_reported`, `unclear`, `not_extractable`, or another explicit abstention;
   lower extraction coverage is preferred to unsupported output.
@@ -168,8 +188,9 @@ self-contained and uses no JavaScript, CDN, server, or frontend framework.
 ```text
 app/sources/pubmed/       PubMed client and CLI orchestration
 app/sources/rxnorm/       RxNorm lookup and approved RxClass provenance
-app/models/               Article, relevance, study, clinical, and audit models
+app/models/               Article, integrity, relevance, study, clinical, and audit models
 app/services/normalizer.py
+app/services/integrity.py
 app/services/relevance.py
 app/services/study_design.py
 app/services/clinical_extraction.py
@@ -184,6 +205,7 @@ tests/                    Offline unit, replay, benchmark, and integrity coverag
 - [Phase B4 policy and extraction](docs/PHASE_B4.md)
 - [Phase B4.1 real extraction validation and presentation](docs/PHASE_B4_1.md)
 - [Phase B4.2 multi-topic validation release](docs/PHASE_B4_2.md)
+- [Phase B5 publication integrity and retraction safety](docs/PHASE_B5.md)
 
 ## Service limits
 

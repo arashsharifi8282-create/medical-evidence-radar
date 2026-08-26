@@ -11,6 +11,7 @@ from app.models.retrieval import RetrievalBatch
 
 if TYPE_CHECKING:
     from app.models.assessment import RankedArticle
+    from app.models.integrity import PublicationIntegrityAssessment
 
 
 @dataclass(frozen=True)
@@ -89,6 +90,7 @@ class AssessedCandidate:
 
     article: Article
     relevance: ClinicalRelevanceAssessment
+    integrity: PublicationIntegrityAssessment | None = None
 
 
 @dataclass(frozen=True)
@@ -111,6 +113,7 @@ class SearchQualitySummary:
     irrelevant_count: int
     excluded_irrelevant_count: int
     excluded_report_limit_count: int
+    excluded_integrity_count: int = 0
 
 
 @dataclass(frozen=True)

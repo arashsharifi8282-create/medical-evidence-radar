@@ -23,6 +23,25 @@ class AbstractSection:
 
 
 @dataclass(frozen=True)
+class PublicationIntegrityRelation:
+    """One structured PubMed ``CommentsCorrections`` relationship.
+
+    Values are retained conservatively: a missing related identifier remains
+    ``None`` and an unknown ``RefType`` is normalized to ``unknown`` rather
+    than inferred from citation text.
+    """
+
+    normalized_relation: str
+    raw_ref_type: str
+    related_pmid: str | None
+    related_doi: str | None
+    source_text: str
+    source_field: str = "CommentsCorrections"
+    rule_id: str = "PUBMED_COMMENTS_CORRECTIONS"
+    rule_version: str = "1.0"
+
+
+@dataclass(frozen=True)
 class Article:
     """A single normalized article record.
 
@@ -52,3 +71,4 @@ class Article:
     keywords: tuple[str, ...] = ()
     mesh_descriptors: tuple[MeshDescriptor, ...] = ()
     abstract_sections: tuple[AbstractSection, ...] = ()
+    integrity_relations: tuple[PublicationIntegrityRelation, ...] = ()
