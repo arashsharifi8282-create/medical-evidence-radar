@@ -1,12 +1,18 @@
 # Medical Evidence Radar
 
-**Current release: Phase B4.2**
+AI-assisted Evidence Discovery for Biomedical Research
 
-Medical Evidence Radar is a deterministic, source-linked research-support tool
-for retrieving, normalizing, assessing, ranking, and presenting recent PubMed
-evidence. It is not clinical decision support or medical advice. Relevance,
-study assessment, extraction, ranking, and report placement remain separate,
-auditable decisions.
+## Why Medical Evidence Radar?
+
+[متن جدید]
+
+## Background
+
+[داستان تو]
+
+## Current release: Phase B4.2
+
+[README]
 
 The latest validated automated suite result is **213 passed**.
 
