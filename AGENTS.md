@@ -15,7 +15,7 @@ This project retrieves, normalizes, assesses, and presents medical-literature ev
 
 ## Current checkpoint and architecture
 
-Completed local checkpoint: **Phase B2.2B.2**.
+Completed local checkpoint: **Phase B6 — longitudinal evidence change detection** (`app/services/evidence_diff.py`, committed locally as `c79480d`, 269 tests passing). Latest published tag: **v0.5.0** (Phase B5); v0.6.0 is not yet tagged or released.
 
 - `app/sources/pubmed/`: PubMed retrieval, CLI orchestration, normalization inputs.
 - `app/sources/rxnorm/`: RxNorm lookup and RxClass provenance retrieval.
@@ -23,7 +23,8 @@ Completed local checkpoint: **Phase B2.2B.2**.
 - `app/services/normalizer.py`: source normalization and structured abstracts.
 - `app/services/relevance.py`: deterministic target construction, relevance assessment, and ranking selection.
 - `app/services/persistence.py`: JSON, Markdown, and HTML audit/report serialization.
-- `tests/`: offline regression, client, persistence, and relevance coverage.
+- `app/services/evidence_diff.py`: deterministic comparison of two explicitly supplied persisted evidence snapshots (Phase B6).
+- `tests/`: offline regression, client, persistence, relevance, and evidence-diff coverage.
 
 Canonical validation command:
 

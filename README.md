@@ -1,6 +1,7 @@
 # Medical Evidence Radar
 
-**Current release: Phase B5**
+**Latest completed phase: Phase B6** — not yet tagged. Latest published
+tag: **v0.5.0 (Phase B5)**.
 
 Medical Evidence Radar is a deterministic, source-linked research-support tool
 for retrieving, normalizing, assessing, ranking, and presenting recent PubMed
@@ -8,9 +9,10 @@ evidence. It is not clinical decision support or medical advice. Relevance,
 study assessment, extraction, ranking, and report placement remain separate,
 auditable decisions.
 
-The latest validated automated suite result is **225 passed**.
+The latest validated automated suite result is **269 passed**, including
+**44 Phase B6** regression tests.
 
-## Capabilities through Phase B5
+## Capabilities through Phase B6
 
 - **Phase B1 — concept provenance:** retains PubMed MeSH identifiers, resolves
   accepted discovered terms through exact-first RxNorm lookup, preserves
@@ -50,6 +52,18 @@ The latest validated automated suite result is **225 passed**.
   from B2 relevance, and prevents ineligible records from consuming visible
   evidence slots. Full provenance remains in JSON while Markdown and HTML show
   concise warnings.
+- **Phase B6 — longitudinal evidence change detection:** deterministically
+  compares two explicitly supplied persisted snapshots (schema `b5`) and
+  reports factual before/after changes by category and priority: membership,
+  relevance, study design and result, publication integrity, clinical
+  extraction (including abstention transitions and provenance-only edits),
+  review-source handoffs, ranking, and report placement. An explicit
+  comparability policy treats the normalized topic as collection identity —
+  distinct topics fail closed, while unverifiable scope or an evolved query
+  emits an auditable priority-8 comparability record. Normalized semantic
+  snapshot IDs exclude audit-only timestamps and candidate ordering, so
+  comparison identity stays stable. B6 reports what changed, never what that
+  change means medically.
 
 ## Current pipeline
 
@@ -78,6 +92,11 @@ The latest validated automated suite result is **225 passed**.
    standalone HTML views. Topic profiles and concept artifacts are optional
    local outputs.
 
+After a run is persisted, Phase B6 can compare any two explicitly supplied
+stored snapshots to report factual evidence-state changes between them. The
+comparison runs offline, never modifies its inputs, and adds no clinical
+interpretation.
+
 ## Validation status
 
 Phase B4.2 has controlled multi-topic validation for:
@@ -102,6 +121,13 @@ articles, retraction notices, expression-of-concern articles/notices,
 corrections, republication, a clean record, and unknown/conflicting metadata.
 It is a regression fixture, not an external gold standard. Absence of a retained
 PubMed integrity signal is not proof that an article is valid or problem-free.
+
+Phase B6 adds 44 offline regression tests covering the deterministic
+comparison contract, article-identity and snapshot-comparability policies,
+renderer escaping, and an end-to-end path that builds real B5 snapshots,
+serializes them, runs the comparison CLI, and verifies the JSON, Markdown,
+and HTML artifacts. A missing snapshot file fails closed with
+`snapshot_not_found` and exit code 2 without writing artifacts.
 
 ## Limitations and safety boundary
 
@@ -183,6 +209,18 @@ With `--save`, runtime artifacts are written under `data/raw/pubmed/`,
 audit outputs and must not be committed by default. The HTML report is
 self-contained and uses no JavaScript, CDN, server, or frontend framework.
 
+Compare two persisted `b5` snapshots and write JSON, Markdown, and HTML
+comparison artifacts to `reports/evidence_diff/` by default:
+
+```powershell
+.\.venv\Scripts\python.exe -m app.services.evidence_diff `
+  <baseline-snapshot>.json `
+  <target-snapshot>.json
+```
+
+Both snapshot paths must be given explicitly; the CLI has no default
+baseline and performs no directory scan.
+
 ## Key architecture
 
 ```text
@@ -196,8 +234,9 @@ app/services/study_design.py
 app/services/clinical_extraction.py
 app/services/report_policy.py
 app/services/persistence.py
+app/services/evidence_diff.py
 config/report_policy.json Versioned deterministic placement policy
-tests/                    Offline unit, replay, benchmark, and integrity coverage
+tests/                    Offline unit, replay, benchmark, integrity, and evidence-diff coverage
 ```
 
 ## Phase documentation
@@ -206,6 +245,8 @@ tests/                    Offline unit, replay, benchmark, and integrity coverag
 - [Phase B4.1 real extraction validation and presentation](docs/PHASE_B4_1.md)
 - [Phase B4.2 multi-topic validation release](docs/PHASE_B4_2.md)
 - [Phase B5 publication integrity and retraction safety](docs/PHASE_B5.md)
+- [Phase B6 evidence change detection](docs/PHASE_B6.md)
+  ([requirements matrix](docs/PHASE_B6_RTM.md))
 
 ## Service limits
 
