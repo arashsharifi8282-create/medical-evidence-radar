@@ -1,0 +1,3 @@
+# Checksummed test fixtures are verified over raw bytes (sha256 of read_bytes()).
+# Keep end-of-line conversion off so every checkout matches the recorded digests.
+tests/fixtures/** -text
