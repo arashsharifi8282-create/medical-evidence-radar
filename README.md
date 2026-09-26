@@ -10,9 +10,8 @@ evidence. It is not clinical decision support or medical advice. Relevance,
 study assessment, extraction, ranking, and report placement remain separate,
 auditable decisions.
 
-**Latest completed phase: Phase B6.** Local tag: **v0.5.0** (Phase B5; not
-yet published to `origin`). Latest tag published on `origin`: **v0.4.2**.
-`v0.6.0` is not tagged or released.
+**Latest completed phase: Phase B6** (tagged **v0.6.0**). Previous
+release: **v0.5.0** (Phase B5).
 
 The latest validated automated suite result is **269 passed**, including
 **44 Phase B6** regression tests.
