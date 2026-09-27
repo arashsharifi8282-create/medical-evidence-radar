@@ -10,11 +10,12 @@ evidence. It is not clinical decision support or medical advice. Relevance,
 study assessment, extraction, ranking, and report placement remain separate,
 auditable decisions.
 
-**Latest completed phase: Phase B6** (tagged **v0.6.0**). Previous
-release: **v0.5.0** (Phase B5).
+**Latest completed phase: Phase B7** (release **v0.7.0**; local release commit,
+annotated tag created here, remote publication verified separately). Previous
+releases: **v0.6.0** (Phase B6), **v0.5.0** (Phase B5).
 
-The latest validated automated suite result is **269 passed**, including
-**44 Phase B6** regression tests.
+The latest validated automated suite result is **378 passed**, including
+**109 Phase B7** tests and **5/5** B7 fixture checksums.
 
 ## Capabilities through Phase B6
 
@@ -251,6 +252,10 @@ tests/                    Offline unit, replay, benchmark, integrity, and eviden
 - [Phase B5 publication integrity and retraction safety](docs/PHASE_B5.md)
 - [Phase B6 evidence change detection](docs/PHASE_B6.md)
   ([requirements matrix](docs/PHASE_B6_RTM.md))
+- [Phase B7 official regulatory metadata](docs/PHASE_B7_PROPOSED.md)
+  ([requirements matrix](docs/PHASE_B7_RTM.md),
+  [M0 source contract](docs/PHASE_B7_M0_SOURCE_CONTRACT.md),
+  [D6 attestation contract](docs/PHASE_B7_D6_ATTESTATION_CONTRACT.md))
 
 ## Service limits
 

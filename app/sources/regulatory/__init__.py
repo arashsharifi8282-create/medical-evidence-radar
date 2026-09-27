@@ -1,0 +1,1 @@
+"""Explicit FDA regulatory metadata source (not clinical evidence)."""

@@ -15,7 +15,12 @@ This project retrieves, normalizes, assesses, and presents medical-literature ev
 
 ## Current checkpoint and architecture
 
-Completed local checkpoint: **Phase B6 — longitudinal evidence change detection** (`app/services/evidence_diff.py`, committed as `c79480d`, 269 tests passing). Released as **v0.6.0**; previous release: **v0.5.0** (Phase B5).
+Completed release checkpoint: **Phase B7 — FDA regulatory metadata**
+(release **v0.7.0**; local commit/tag created here, remote publication
+verified separately). Previous checkpoint: **Phase B6 — longitudinal evidence
+change detection** (`app/services/evidence_diff.py`, committed as `c79480d`,
+269 tests passing). Released as **v0.6.0**; earlier release: **v0.5.0**
+(Phase B5).
 
 - `app/sources/pubmed/`: PubMed retrieval, CLI orchestration, normalization inputs.
 - `app/sources/rxnorm/`: RxNorm lookup and RxClass provenance retrieval.
@@ -24,6 +29,8 @@ Completed local checkpoint: **Phase B6 — longitudinal evidence change detectio
 - `app/services/relevance.py`: deterministic target construction, relevance assessment, and ranking selection.
 - `app/services/persistence.py`: JSON, Markdown, and HTML audit/report serialization.
 - `app/services/evidence_diff.py`: deterministic comparison of two explicitly supplied persisted evidence snapshots (Phase B6).
+- `app/sources/regulatory/`: FDA Drugs@FDA metadata-only retrieval, validation, CLI (Phase B7, `b7/1.0`).
+- `app/models/regulatory_document.py`, `app/services/regulatory_normalizer.py`, `app/services/regulatory_persistence.py`: B7 normalization and audit projections.
 - `tests/`: offline regression, client, persistence, relevance, and evidence-diff coverage.
 
 Canonical validation command:

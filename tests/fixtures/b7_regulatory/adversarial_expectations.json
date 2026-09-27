@@ -1,0 +1,14 @@
+{
+  "fixture_id": "b7_synthetic_adversarial_v1",
+  "source_authority": "Synthetic openFDA-shaped test data; not FDA evidence",
+  "cases": [
+    {"id": "duplicate_json_key", "input_kind": "raw_json", "expected_code": "invalid_json"},
+    {"id": "zip_traversal", "input_kind": "zip_member", "expected_code": "invalid_zip"},
+    {"id": "zip_multiple_members", "input_kind": "zip_members", "expected_code": "invalid_zip"},
+    {"id": "source_client_secret", "input_kind": "source_url", "expected_code": "malformed_source"},
+    {"id": "source_signature", "input_kind": "source_url", "expected_code": "malformed_source"},
+    {"id": "bad_partition_boolean_count", "input_kind": "bulk_envelope", "expected_code": "incomplete_ingestion"},
+    {"id": "interrupted_publication", "input_kind": "publication", "expected_code": "artifact_write_failed"},
+    {"id": "interrupted_generation_reader", "input_kind": "publication", "expected_code": "artifact_corrupt"}
+  ]
+}

@@ -1,6 +1,7 @@
 # Generated output folders (keep parent dirs in the project)
 data/raw/pubmed/
 data/cache/rxnorm/
+data/regulatory/
 reports/
 
 # Python
